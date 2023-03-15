@@ -18,14 +18,15 @@ const PageLayout: React.FC<PageLayoutProps> = ({
       <Head>
         <title>novusys</title>
       </Head>
-      <Header/>
+      
       <div className={styles['wrapper']}>
-        
+      <Header/>
         <div className={styles['page__content__container']}>
             {children}
             </div>
+            <Footer/>
       </div>
-      <Footer/>
+      
     </BackgroundLayout>
   )
 }
