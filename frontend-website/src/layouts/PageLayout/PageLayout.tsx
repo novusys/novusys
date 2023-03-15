@@ -4,6 +4,7 @@ import Head from 'next/head'
 import MenuBar from '@/components/menu-bar/MenuBar'
 import Sticky from 'react-stickynode'
 import Header from '@/components/Header/Header'
+import Footer from '@/components/Footer/Footer'
 import BackgroundLayout from '../BackgroundLayout/BackgroundLayout'
 interface PageLayoutProps {
   children?: React.ReactNode
@@ -24,6 +25,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
             {children}
             </div>
       </div>
+      <Footer/>
     </BackgroundLayout>
   )
 }
