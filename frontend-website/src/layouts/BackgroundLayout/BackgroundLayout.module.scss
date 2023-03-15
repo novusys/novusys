@@ -28,9 +28,9 @@
     top: 0;
     left: 0;
     z-index: -50;
-    background-color: rgba(255, 255, 255, .5);
-    -webkit-backdrop-filter: blur(2em);
-    backdrop-filter: blur(2em);
+    background-color: rgba(255, 255, 255, .2);
+    -webkit-backdrop-filter: blur(3em);
+    backdrop-filter: blur(3em);
     overflow: hidden;
 }
 .blob__1{
@@ -56,8 +56,8 @@
 
 .blob__3{
     position: absolute;
-    top: -10vh;
-    left: -70vw;
+    top: -40vh;
+    left: -50vw;
     width: 100vw;
     animation: rotation 30s infinite linear reverse;
     z-index: -99;
