@@ -6,6 +6,9 @@ import PageLayout from '@/layouts/PageLayout/PageLayout'
 import LandingBanner from '@/components/index/LandingBanner/LandingBanner'
 import BasicContainer from '@/layouts/Containers/BasicContainer/BasicContainer'
 import BlurPaper from '@/layouts/Papers/BlurPaper/BlurPaper'
+import Features from '@/components/index/Features/Features'
+import BluredContainer from '@/layouts/Containers/BluredContainer/BluredContainer'
+import Description from '@/components/index/Description/Description'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,20 +22,13 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <PageLayout>
-        <LandingBanner/>
-        <BasicContainer>
-          <BlurPaper>
-          <div className={styles['test__container']}>
-          Test
-        </div>
-          </BlurPaper>
-          
-        </BasicContainer>
-        <div className={styles['test__container']}>
-          Test
-        </div>
+        <LandingBanner />
+        <Features />
+        <Description/>
+        <div>seperator</div>
+
       </PageLayout>
-     
+
     </>
   )
 }

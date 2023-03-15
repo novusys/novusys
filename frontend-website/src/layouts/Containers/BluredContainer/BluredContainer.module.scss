@@ -1,0 +1,11 @@
+.out__container {
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    padding-top: var(--top-padding);
+    padding: var(--top-padding) var(--side-padding) 0 var(--side-padding);
+    background-color: rgba(217, 217, 217, 0.3);
+    -webkit-backdrop-filter: blur(10em);
+    backdrop-filter: blur(10em);
+  
+  }
