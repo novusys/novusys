@@ -2,7 +2,7 @@
     width: 100vw;
     background: white;
     display: flex;
-    // justify-content: center;
+    justify-content: space-between;
     align-items: center;
     padding-top: var(--top-padding);
     padding: var(--top-padding) var(--side-padding) 0 var(--side-padding);
@@ -13,7 +13,6 @@
     align-items: center;
     gap: 60px;
     color: var(--color-primary);
-    margin-right: auto;
 }
 .logo__container{
     padding-top: 3px;
@@ -27,36 +26,14 @@
     font-size: 18px;
 }
 
-//TODO: Refactor middle container to absolute pos at top bar
 .middle__container{
     color: var(--color-primary);
     font-weight: 700;
-    display: flex;
-    flex: 1;
-    justify-content: center;
 }
 
 .right__container{
     display: flex;
-    align-items: center;
     color: var(--color-primary);
     gap: 50px;
     font-weight: 700;
-    margin-left: auto;
-}
-
-.icon__container{
-    display: flex;
-    align-items: center;
-    font-size: 40px !important;
-
-    svg{
-        width: 1em;
-        height: 1em;
-    }
-}
-
-.signup__container{
-    display: flex;
-    gap: 20px;
 }
