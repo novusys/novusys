@@ -7,6 +7,8 @@
   padding: var(--top-padding) var(--side-padding) 0 var(--side-padding);
   max-width: var(--max-width);
   justify-content: center;
+  
+  flex-wrap: wrap;
 }
 
 .left__container {
@@ -49,3 +51,20 @@
     }
 }
 
+@media only screen and (max-width: 600px) {
+  .out__container {
+    flex-direction: column;
+  }
+  .headline__container{
+    font-size: 50px;
+  }
+  .description__container{
+    font-size: 20px;
+}
+  .left__container{
+    width: 100%;
+  }
+  .right__container{
+    display: none;
+  }
+}

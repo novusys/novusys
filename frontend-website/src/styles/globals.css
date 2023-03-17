@@ -48,6 +48,13 @@
   --card-border-rgb: 131, 134, 135;
 }
 
+@media only screen and (max-width: 600px) {
+  :root{
+    --top-padding: 10px;
+    --side-padding: 20px;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
