@@ -1,9 +1,9 @@
 {
-  "name": "novusys-extension",
+  "name": "test",
   "version": "0.1.0",
   "private": true,
   "watch": {
-    "package": {
+    "build": {
       "patterns": [
         ".",
         "styles/**",
@@ -23,29 +23,27 @@
         "lock",
         "tsx",
         "ts",
-        "scss"
+        "scss",
+        "css"
       ]
     }
   },
   "scripts": {
-    "dev": "next dev",
-    "dev:watch": "npm-watch",
-    "start": "next start",
-    "lint": "next lint",
+    "dev": "npm-watch",
     "build": "next build && next export && npm run lint:build",
     "lint:build": "move out/_next out/assets && sed -i \"s/\\/_next/\\/assets/g\" out/**.html"
   },
   "dependencies": {
+    "@types/chrome": "^0.0.224",
     "@types/node": "18.15.3",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
-    "eslint": "8.36.0",
-    "eslint-config-next": "13.2.4",
     "next": "13.2.4",
     "npm-watch": "^0.11.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.8.0",
     "sass": "^1.59.3",
-    "typescript": "4.9.5"
+    "typescript": "5.0.2"
   }
 }

@@ -1,0 +1,25 @@
+.main__container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 1rem 0.3rem 1rem;
+}
+
+.switcher__container {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.logo {
+  margin-right: auto;
+  width: 32px;
+  height: 32px;
+}
+
+.logout__icon {
+  margin-left: auto;
+  width: 24px;
+  height: 24px;
+}
