@@ -1,0 +1,38 @@
+.main__container {
+  height: 100%;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  z-index: 1;
+}
+
+.tab__container {
+  width: 100%;
+  top: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  list-style-type: none;
+}
+
+.li__active {
+  border-bottom: 3px solid rgba(255, 255, 255, 0.8);
+}
+
+.tab__container li {
+  height: 100%;
+  width: 50%;
+  padding: 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  // border-bottom: 3px solid white;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.content__container {
+  width: 100%;
+  height: 100%;
+}

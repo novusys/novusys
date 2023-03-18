@@ -6,6 +6,7 @@ export default function BalanceBox() {
     <div className={styles["main__container"]}>
       <div className={styles["profile__container"]}>
         <img className={styles["profile__image"]} src="images/punk2924.png" alt="" />
+        <h1>satoshi.eth</h1>
       </div>
 
       {/* crypto balance */}

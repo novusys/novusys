@@ -5,6 +5,7 @@ import styles from "@/styles/Home.module.css";
 import ExtensionLayout from "@/layouts/ExtensionLayout/ExtensionLayout";
 import Header from "@/components/Header/Header";
 import BalanceBox from "@/components/BalanceBox/BalanceBox";
+import Tabs from "@/components/Tabs/Tabs";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <ExtensionLayout>
         <Header />
         <BalanceBox />
+        <Tabs />
       </ExtensionLayout>
     </>
   );

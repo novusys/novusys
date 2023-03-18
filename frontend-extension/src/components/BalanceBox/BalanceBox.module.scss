@@ -5,8 +5,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
-  margin-top: 1rem;
+  padding: 0 1rem 0 1rem;
   z-index: 1;
 }
 
@@ -15,7 +14,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
 .action__button {
@@ -27,14 +26,13 @@
   padding: 0.7rem;
   margin: 0.5rem;
   border-radius: 3rem;
-  background-color: rgba(255, 255, 255, 0.75);
+  background-color: rgba(255, 255, 255, 0.9);
   filter: drop-shadow(0 1mm 1mm rgba(0, 0, 0, 0.8));
   border: none;
 }
 
 .crypto__balance {
   font-size: 3rem;
-  margin-top: 1.5rem;
   font-weight: 500;
 }
 
@@ -44,16 +42,20 @@
 }
 
 .profile__container {
-  height: 35%;
+  height: 45%;
   width: 100vw;
+  font-size: 0.5rem;
+  font-weight: 100;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   filter: drop-shadow(0 2mm 2mm rgba(0, 0, 0, 0.8));
 }
 
 .profile__image {
+  margin-bottom: 10px;
   border-radius: 50%;
-  height: 100%;
+  height: 65%;
   width: auto;
 }
