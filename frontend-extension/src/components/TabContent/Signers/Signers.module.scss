@@ -1,8 +1,29 @@
 .main__container {
-  height: 100%;
+  height: auto;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.role {
+  display: flex;
+  align-items: center;
   justify-content: center;
+  color: white;
+  border-radius: 2rem;
+  padding: 0.3rem;
+  font-weight: 600;
+}
+
+.role__guardian {
+  background-color: green;
+}
+
+.role__signer {
+  background-color: red;
+}
+
+.main__container::-webkit-scrollbar {
+  display: none;
 }

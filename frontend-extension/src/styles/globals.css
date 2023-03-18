@@ -57,10 +57,17 @@
   margin: 0;
 }
 
+* {
+  -ms-overflow-style: none;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
 html,
 body {
   width: 374px;
-  min-height: 600px;
+  height: 600px;
   overflow-x: hidden;
   overflow-y: hidden;
 

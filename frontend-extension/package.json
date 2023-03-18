@@ -34,6 +34,7 @@
     "lint:build": "move out/_next out/assets && sed -i \"s/\\/_next/\\/assets/g\" out/**.html"
   },
   "dependencies": {
+    "@nextui-org/react": "^1.0.0-beta.12",
     "@types/chrome": "^0.0.224",
     "@types/node": "18.15.3",
     "@types/react": "18.0.28",
