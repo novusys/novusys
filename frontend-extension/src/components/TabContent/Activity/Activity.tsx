@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Activity.module.scss";
-import { Table, User, css } from "@nextui-org/react";
+import tableStyles from "../Table.module.scss";
 
 // Simple example. Can be updated later
 type Transaction = {
@@ -11,124 +11,125 @@ type Transaction = {
   // Labels the transaction (Approval All ..., Transferred ..., etc)
   action: string;
   // Add more options later (idea for an icon mapping)
-  type: "pause" | "approve" | "transfer" | "exchange";
+  type: "pause" | "approve" | "transfer" | "sign";
   chain: string;
   amount: string;
-};
-type Signer = {
-  id: number;
-  address: string;
-  avatar?: string;
-  role: string;
+  tx_hash: string;
 };
 
 export default function Activity() {
-  const columns = [
-    { name: "Transaction", uid: "action" },
-    { name: "Details", uid: "amount" },
-  ];
-
-  // Fetch signers and populate array
-  const accounts: Signer[] = [
-    {
-      id: 1,
-      avatar: "",
-      address: "",
-      role: "Guardian",
-    },
-    { id: 2, avatar: "", address: "", role: "Signer" },
-    { id: 3, avatar: "", address: "", role: "Signer" },
-    { id: 4, avatar: "", address: "", role: "Guardian" },
-    { id: 5, avatar: "", address: "", role: "Guardian" },
-    { id: 6, avatar: "", address: "", role: "Guardian" },
-    { id: 7, avatar: "", address: "", role: "Guardian" },
-    { id: 8, avatar: "", address: "", role: "Guardian" },
-  ];
-
   const transactions: Transaction[] = [
     {
       id: 1,
-      timestamp: "",
+      timestamp: "Mar 18",
+      address: "0x48jf...RT98",
+      action: "Signed Social Recovery",
+      type: "sign",
+      chain: "ETH",
+      amount: "-0ETH",
+      tx_hash: "",
+    },
+    {
+      id: 2,
+      timestamp: "Mar 18",
       address: "0x54ut...LR94",
+      action: "Transfer Token",
+      type: "transfer",
+      chain: "ETH",
+      amount: "-1ETH",
+      tx_hash: "",
+    },
+    {
+      id: 3,
+      timestamp: "Mar 18",
+      address: "0xar4t...he64",
       action: "Set Approval for Token",
       type: "approve",
       chain: "ETH",
-      amount: "-1ETH",
+      amount: "-0ETH",
+      tx_hash: "",
+    },
+    {
+      id: 4,
+      timestamp: "Mar 17",
+      address: "0x54ut...LR94",
+      action: "Set Pause for Wallet",
+      type: "pause",
+      chain: "ETH",
+      amount: "-0ETH",
+      tx_hash: "",
     },
     {
       id: 1,
-      timestamp: "",
-      address: "0x54ut...LR94",
-      action: "Set Approval for Token",
-      type: "approve",
+      timestamp: "Mar 17",
+      address: "0x48jf...RT98",
+      action: "Signed Social Recovery",
+      type: "sign",
       chain: "ETH",
-      amount: "-1ETH",
+      amount: "-0ETH",
+      tx_hash: "",
     },
     {
-      id: 1,
-      timestamp: "",
+      id: 2,
+      timestamp: "Mar 16",
       address: "0x54ut...LR94",
-      action: "Set Approval for Token",
-      type: "approve",
+      action: "Transfer Token",
+      type: "transfer",
       chain: "ETH",
       amount: "-1ETH",
+      tx_hash: "",
     },
     {
-      id: 1,
-      timestamp: "",
-      address: "0x54ut...LR94",
+      id: 3,
+      timestamp: "Mar 16",
+      address: "0xar4t...he64",
       action: "Set Approval for Token",
       type: "approve",
       chain: "ETH",
-      amount: "-1ETH",
+      amount: "-0ETH",
+      tx_hash: "",
     },
     {
-      id: 1,
-      timestamp: "",
+      id: 4,
+      timestamp: "Mar 16",
       address: "0x54ut...LR94",
-      action: "Set Approval for Token",
-      type: "approve",
+      action: "Set Pause for Wallet",
+      type: "pause",
       chain: "ETH",
-      amount: "-1ETH",
-    },
-    {
-      id: 1,
-      timestamp: "",
-      address: "0x54ut...LR94",
-      action: "Set Approval for Token",
-      type: "approve",
-      chain: "ETH",
-      amount: "-1ETH",
+      amount: "-0ETH",
+      tx_hash: "",
     },
   ];
 
-  const renderCell = (txn: Transaction, key: React.Key) => {
-    const value = txn[key as keyof typeof txn];
-    switch (key) {
-      case "action":
-        return (
-          <User squared src={txn?.timestamp} name={value}>
-            {txn.address}
-          </User>
-        );
-      default:
-        return value;
-    }
+  const renderCell = (item: Transaction) => {
+    // Handle any invalid parameters or defaults
+    // For transactions likely need to cut off action name if too long
+    // Map an action icon to each item based on action type
+    // Parse timestamp format to a readable format
+
+    return (
+      <>
+        {/* <td>
+          <img src={item.} className={styles["account__avatar"]} alt="" />
+        </td> */}
+        <td className={styles["action__container"]}>
+          {item.action}{" "}
+          <div className={styles["details__container"]}>
+            {item.timestamp} · {item.address}
+          </div>
+        </td>
+        <td className={styles["amount__container"]}>{item.amount}</td>
+      </>
+    );
   };
 
   return (
-    <Table
-      css={{
-        height: "100%",
-        width: "100%",
-        padding: "0.8rem 0.8rem 0 0.8rem",
-      }}
-      selectionMode="none"
-    >
-      <Table.Header columns={columns}>{(column) => <Table.Column key={column.uid}>{column.name}</Table.Column>}</Table.Header>
-      <Table.Body items={transactions}>
-        {(item: Transaction) => <Table.Row>{(columnKey) => <Table.Cell>{renderCell(item, columnKey)}</Table.Cell>}</Table.Row>}
-      </Table.Body>
-    </Table>
+    <table className={tableStyles["table__container"]}>
+      <tbody className={tableStyles["table__body"]}>
+        {transactions.map((item) => (
+          <tr className={tableStyles["table__item"]}>{renderCell(item)}</tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

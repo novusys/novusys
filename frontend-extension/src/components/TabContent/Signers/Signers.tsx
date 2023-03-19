@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Signers.module.scss";
-import { Table, User, css } from "@nextui-org/react";
+import tableStyles from "../Table.module.scss";
 
 type Signer = {
   id: number;
@@ -29,43 +29,50 @@ export default function Signers() {
       address: "0x89py...09py",
       role: "Signer",
     },
-    { id: 3, avatar: "", address: "0x45yi...8C32", role: "Signer" },
-    { id: 4, avatar: "", address: "0xfr54...76F3", role: "Guardian" },
+    {
+      id: 3,
+      avatar: "https://blogs.airdropalert.com/wp-content/uploads/2021/09/cool-cats-pfp-nft.png",
+      address: "0x45yi...8C32",
+      role: "Signer",
+    },
+    {
+      id: 4,
+      avatar: "https://www.mintface.xyz/content/images/2021/08/QmdhoQdQ1oB2rdJD3ZpexSwwfspqAWGMdDjPR3mYeWGpZT.png",
+      address: "0xfr54...76F3",
+      role: "Guardian",
+    },
     { id: 5, avatar: "", address: "0x46t9...43L1", role: "Guardian" },
     { id: 6, avatar: "", address: "0x94c7...76F3", role: "Guardian" },
     { id: 7, avatar: "", address: "0x94c7...76F3", role: "Guardian" },
     { id: 8, avatar: "", address: "0x94c7...76F3", role: "Guardian" },
   ];
 
-  const renderCell = (account: Signer, key: React.Key) => {
-    const value = account[key as keyof typeof account];
-    switch (key) {
-      case "address":
-        return <User squared src={account?.avatar} name={value}></User>;
-      case "role":
-        return (
-          <div className={styles["role"] + " " + (value == "Guardian" ? styles["role__guardian"] : styles["role__signer"])}>
-            {value}
-          </div>
-        );
-      default:
-        return value;
+  const renderCell = (item: Signer) => {
+    // Handle any invalid parameters or defaults
+    if (!item.avatar) {
+      item.avatar = "/images/defaultaccount.png";
     }
+
+    return (
+      <>
+        <td>
+          <img src={item.avatar} className={styles["account__avatar"]} alt="" />
+        </td>
+        <td>{item.address}</td>
+        <td className={styles["role"] + " " + (item.role == "Guardian" ? styles["role__guardian"] : styles["role__signer"])}>
+          {item.role}
+        </td>
+      </>
+    );
   };
 
   return (
-    <Table
-      css={{
-        height: "100%",
-        width: "100%",
-        padding: "0.8rem 0.8rem 0 0.8rem",
-      }}
-      selectionMode="none"
-    >
-      <Table.Header columns={columns}>{(column) => <Table.Column key={column.uid}>{column.name}</Table.Column>}</Table.Header>
-      <Table.Body items={accounts}>
-        {(item: Signer) => <Table.Row>{(columnKey) => <Table.Cell>{renderCell(item, columnKey)}</Table.Cell>}</Table.Row>}
-      </Table.Body>
-    </Table>
+    <table className={tableStyles["table__container"]}>
+      <tbody className={tableStyles["table__body"]}>
+        {accounts.map((item) => (
+          <tr className={tableStyles["table__item"]}>{renderCell(item)}</tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
