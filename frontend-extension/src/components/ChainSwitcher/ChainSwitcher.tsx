@@ -10,11 +10,11 @@ interface Chain {
 }
 
 // Event Listener to close drop down menu
-function clickOutside(ref: any, setOnOutsideClick: () => void) {
+function clickOutside(ref: any, setOnOutsideClick: (state: boolean) => void) {
   useEffect(() => {
     function handleClickOutside(event: any) {
       if (ref.current && !ref.current.contains(event.target)) {
-        setOnOutsideClick();
+        setOnOutsideClick(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -33,8 +33,8 @@ export default function ChainSwitcher() {
   };
 
   // Handles outside clicks to close drop down menu
-  const menuRef = useRef("main__container");
-  clickOutside(menuRef, handleMenuClick);
+  const menuRef = useRef<HTMLDivElement>(null);
+  clickOutside(menuRef, setOpen);
 
   // Likely set to null here at startup or load most recently used chain for wallet
   const [chain, setChain] = useState<string | undefined>("Ethereum Mainnet");
@@ -57,7 +57,7 @@ export default function ChainSwitcher() {
   ];
 
   return (
-    <div className={styles["main__container"]}>
+    <div ref={menuRef} className={styles["main__container"]}>
       <button className={[open ? styles["active"] : "", styles["switcher__button"]].join(" ")} onClick={handleMenuClick}>
         {chain} ▼
       </button>

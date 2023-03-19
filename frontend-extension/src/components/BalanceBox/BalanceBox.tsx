@@ -19,7 +19,7 @@ export default function BalanceBox() {
       <div className={styles["action__container"]}>
         <button className={styles["action__button"]}>Pause</button>
         <button className={styles["action__button"]}>Transfer</button>
-        <button className={styles["action__button"]}>Approve</button>
+        <button className={styles["action__button"]}>Sign</button>
       </div>
     </div>
   );
