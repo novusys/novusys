@@ -4,10 +4,17 @@ import { Inter } from 'next/font/google'
 import styles from './Header.module.scss'
 import ButtonOutline from '../Buttons/ButtonOutline/ButtonOutline'
 import DarkMode from '@material-design-icons/svg/outlined/dark_mode.svg'
-
+import { useUser } from '@auth0/nextjs-auth0/client';
+import ThemeToggle from '../ThemeToggle/ThemeToggle'
 
 
 export default function Header() {
+
+  const { user, error, isLoading } = useUser();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
+  console.log("user", user)
   return (
     <div className={styles['out__container']}>
       <div className={styles['left__container']}>
@@ -28,18 +35,30 @@ export default function Header() {
           Tip The Project
         </div>
       </div>
-      <div className={styles['right__container']}>
-        <div>
-          Login
-        </div>
-        <div className={styles['signup__container']}>
-          <ButtonOutline text='SignUp' />
-          <div className={styles['icon__container']}>
-            <DarkMode viewBox="0 0 25 25" />
+      {user == undefined ?
+        <div className={styles['right__container']}>
+          <div>
+            Login
           </div>
-        </div>
+          <div className={styles['signup__container']}>
+            <ButtonOutline text='SignUp' onClick={() => { window.location.href = "/api/auth/login" }} />
+            <div className={styles['icon__container']}>
+              <DarkMode viewBox="0 0 25 25" />
+            </div>
+          </div>
 
-      </div>
+        </div> :
+        <div className={styles['right__container']}>
+           <div>
+            Dashboard
+          </div>
+          <div className={styles['signup__container']}>
+            <ButtonOutline text='Launch a Wallet' onClick={() => { }} />
+            <ThemeToggle/>
+          </div>
+
+        </div>
+      }
 
     </div>
   )

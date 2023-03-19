@@ -115,6 +115,15 @@ a {
   text-decoration: none;
 }
 
+body,
+body[data-theme="light"] {
+  --color-primary: black;
+}
+
+body[data-theme="dark"] {
+  --color-primary: white;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
