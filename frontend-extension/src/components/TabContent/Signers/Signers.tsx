@@ -10,12 +10,8 @@ type Signer = {
 };
 
 export default function Signers() {
-  const columns = [
-    { name: "Address", uid: "address" },
-    { name: "Role", uid: "role" },
-  ];
-
   // Fetch signers and populate array
+  // Signer details (pfp, name, etc) could be pulled from ens type services or potentially from our own contracts
   const accounts: Signer[] = [
     {
       id: 1,

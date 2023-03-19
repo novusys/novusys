@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  z-index: 1;
+  z-index: 2;
 }
 
 .switcher__container {
@@ -20,6 +20,8 @@
 }
 
 .logout__button {
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;

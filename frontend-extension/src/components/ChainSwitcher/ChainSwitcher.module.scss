@@ -3,4 +3,61 @@
   width: 100%;
   display: flex;
   align-items: center;
+  flex-direction: column;
+  transition: all 0.7s ease-out;
+}
+
+.switcher__button {
+  cursor: pointer;
+  background-color: transparent;
+  border-style: none;
+  border-radius: 2rem;
+  color: black;
+  border: 3px solid black;
+  padding: 1rem;
+  padding: 0.5em 1em 0.5em 1em;
+}
+
+.active {
+  background-color: white;
+  color: blue;
+  border: none;
+}
+
+.switcher__menu {
+  width: 60%;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 35px;
+  padding: 1rem;
+  background-color: white;
+  filter: drop-shadow(0 1mm 1mm rgba(0, 0, 0, 0.65));
+  list-style: none;
+  border-radius: 1rem;
+}
+
+.switcher__item {
+  cursor: pointer;
+  background-color: transparent;
+  border-style: none;
+  border-radius: 2rem;
+  color: black;
+  padding: 1rem;
+  padding: 0.5em 1em 0.5em 1em;
+}
+
+.switcher__item:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+.item__unselected {
+  color: grey;
+  font-weight: 400;
+}
+
+.item__selected {
+  color: black;
+  font-weight: 700;
 }
