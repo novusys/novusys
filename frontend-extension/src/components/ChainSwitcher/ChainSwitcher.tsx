@@ -46,7 +46,6 @@ export default function ChainSwitcher() {
   };
 
   // Chains to import can be ones that the user has interacted with our contracts
-  // Chains that the user has signed to use with our contracts
 
   // May need to implement a char limit for chain name to prevent it from breaking the styles of the header
   // Not super important but something to consider later

@@ -7,7 +7,7 @@ interface PageLayoutProps {
 }
 
 const ExtensionLayout: React.FC<PageLayoutProps> = ({ children }) => {
-  return <div className={styles["container"]}>{children}</div>;
+  return <div className={styles["main__container"]}>{children}</div>;
 };
 
 export default ExtensionLayout;
