@@ -1,0 +1,265 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type CurrencyInformation {
+  """Currency ID"""
+  id: Int!
+
+  """Name"""
+  name: String!
+
+  """Ticker"""
+  ticker: String!
+
+  """Chain ID"""
+  chain_id: Int!
+}
+
+type Currency {
+  """UUID"""
+  uuid: String!
+
+  """Address"""
+  address: String!
+
+  """Chain Information"""
+  currency_information: CurrencyInformation!
+
+  """Count"""
+  count: Int!
+}
+
+type NftInformation {
+  """NFT ID"""
+  id: Int!
+
+  """Name"""
+  name: String!
+
+  """Ticker"""
+  ticker: String!
+
+  """Chain ID"""
+  chain_id: Int!
+
+  """Currency"""
+  currency: Currency
+
+  """NFTs"""
+  nfts: [Nft!]
+}
+
+type Nft {
+  """UUID"""
+  uuid: String!
+
+  """Address"""
+  address: String!
+
+  """ID"""
+  id: Int!
+
+  """NFT Information"""
+  nft_information: NftInformation!
+}
+
+type Transaction {
+  """Transaction Hash"""
+  hash: String!
+
+  """Chain ID"""
+  chain_id: Int!
+
+  """Related Wallet Address"""
+  related_wallet_address: String!
+
+  """Type"""
+  type: Int!
+
+  """Contract Settings"""
+  contract_settings: JSON!
+
+  """Currency"""
+  currency: Currency
+
+  """NFTs"""
+  nfts: [Nft!]
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Wallet {
+  """Wallet Address (blockchain)"""
+  address: String!
+
+  """Chain ID"""
+  chain_id: Int!
+
+  """ABI"""
+  abi: JSON!
+
+  """Owner User ID"""
+  owner_user_id: String!
+
+  """Contract settings"""
+  contract_settings: JSON!
+
+  """Transactions"""
+  transactions: [Transaction!]
+
+  """Gas Saved (gwei)"""
+  gas_saved: Int!
+
+  """Currency Holdings"""
+  currency_holdings: [Currency!]
+
+  """NFT Holdings"""
+  nft_holdings: [Nft!]
+}
+
+type Account {
+  """User ID (auth0) e.g., novusys|12345678"""
+  user_id: String!
+
+  """Account Address"""
+  address: String!
+
+  """User Name"""
+  user_name: String!
+
+  """Account Type"""
+  account_type: String!
+
+  """User Avatar Image URL"""
+  avatar_url: String!
+
+  """Account Settings"""
+  account_settings: JSON!
+
+  """Secondary Address"""
+  secondary_address: String!
+
+  """Wallets"""
+  wallets: [Wallet!]
+
+  """Signers"""
+  signers: [Account!]
+
+  """Activity"""
+  activity: [String!]
+}
+
+type Query {
+  account(id: Int!): Account!
+  wallet(id: Int!): Wallet!
+  nft(id: Int!): Nft!
+  transaction(id: Int!): Transaction!
+  currency(id: Int!): Currency!
+  currencyInformation(id: Int!): CurrencyInformation!
+  nftInformation(id: Int!): NftInformation!
+}
+
+type Mutation {
+  createAccount(createAccountInput: CreateAccountInput!): Account!
+  updateAccount(updateAccountInput: UpdateAccountInput!): Account!
+  removeAccount(id: Int!): Account!
+  createWallet(createWalletInput: CreateWalletInput!): Wallet!
+  updateWallet(updateWalletInput: UpdateWalletInput!): Wallet!
+  removeWallet(id: Int!): Wallet!
+  createNft(createNftInput: CreateNftInput!): Nft!
+  updateNft(updateNftInput: UpdateNftInput!): Nft!
+  removeNft(id: Int!): Nft!
+  createTransaction(createTransactionInput: CreateTransactionInput!): Transaction!
+  updateTransaction(updateTransactionInput: UpdateTransactionInput!): Transaction!
+  removeTransaction(id: Int!): Transaction!
+  createCurrency(createCurrencyInput: CreateCurrencyInput!): Currency!
+  updateCurrency(updateCurrencyInput: UpdateCurrencyInput!): Currency!
+  removeCurrency(id: Int!): Currency!
+  createCurrencyInformation(createCurrencyInformationInput: CreateCurrencyInformationInput!): CurrencyInformation!
+  updateCurrencyInformation(updateCurrencyInformationInput: UpdateCurrencyInformationInput!): CurrencyInformation!
+  removeCurrencyInformation(id: Int!): CurrencyInformation!
+  createNftInformation(createNftInformationInput: CreateNftInformationInput!): NftInformation!
+  updateNftInformation(updateNftInformationInput: UpdateNftInformationInput!): NftInformation!
+  removeNftInformation(id: Int!): NftInformation!
+}
+
+input CreateAccountInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateAccountInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateWalletInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateWalletInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateNftInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateNftInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateTransactionInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateTransactionInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateCurrencyInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateCurrencyInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateCurrencyInformationInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateCurrencyInformationInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input CreateNftInformationInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateNftInformationInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
