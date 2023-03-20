@@ -7,6 +7,7 @@
   justify-content: space-between;
   padding-top: var(--top-padding);
   padding: 120px var(--side-padding) 120px var(--side-padding);
+  
 }
 
 .feature__container{
@@ -31,4 +32,19 @@
   font-size: 25px;
   font-weight: bold;
   max-width: 80%;
+}
+
+@media only screen and (max-width: 600px) {
+  .feature__description{
+    font-size: 15px;
+    font-weight: bold;
+    max-width: 80%;
+  }
+  .feature__icon{
+    font-size: 80px;
+  }
+  .out__container {
+    gap: 20px;
+    padding: 60px var(--side-padding) 60px var(--side-padding);
+  }
 }

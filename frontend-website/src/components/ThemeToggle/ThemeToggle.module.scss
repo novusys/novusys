@@ -1,0 +1,12 @@
+.icon__container{
+    display: flex;
+    align-items: center;
+    font-size: 40px !important;
+    
+    cursor: pointer;
+    svg{
+        width: 1em;
+        height: 1em;
+       
+    }
+}

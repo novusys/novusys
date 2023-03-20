@@ -1,6 +1,6 @@
 .background__container{
     position: absolute;
-    background-color: white;
+    background-color: var(--page-background);
     top: 0;
     left: 0;
     z-index: -100;
@@ -28,7 +28,7 @@
     top: 0;
     left: 0;
     z-index: -50;
-    background-color: rgba(255, 255, 255, .2);
+    background-color: var(--background-blur);
     -webkit-backdrop-filter: blur(3em);
     backdrop-filter: blur(3em);
     overflow: hidden;
