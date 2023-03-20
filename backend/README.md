@@ -32,7 +32,7 @@
 $ cd nuvosys
 $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 $ nvm install node # for Ubuntu 22.04
-# $ nvm install v16.19.1 # for Ubuntu 18.04
+# $ nvm install 16.19.1 # for Ubuntu 18.04
 $ npm install -g @nestjs/cli
 # We probably don't need the commented out installations anymore
 # $ npm install --global yarn
