@@ -29,7 +29,7 @@
 ## Installation
 
 ```bash
-$ cd nuvosys
+$ cd novusys
 $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 $ nvm install node # for Ubuntu 22.04
 # $ nvm install 16.19.1 # for Ubuntu 18.04
