@@ -98,6 +98,54 @@ novusys-dev=> \dt
  public | _NftToTransaction   | table | postgres
  public | _prisma_migrations  | table | postgres
 (10 rows)
+
+novusys-dev=> \d "Account";
+                    Table "public.Account"
+      Column       |  Type   | Collation | Nullable | Default 
+-------------------+---------+-----------+----------+---------
+ id                | integer |           | not null | 
+ user_id           | text    |           | not null | 
+ address           | text    |           | not null | 
+ user_name         | text    |           | not null | 
+ account_type      | text    |           | not null | 
+ avatar_url        | text    |           | not null | 
+ account_settings  | jsonb   |           |          | 
+ secondary_address | text    |           | not null | 
+ activity          | text[]  |           |          | 
+Indexes:
+    "Account_pkey" PRIMARY KEY, btree (id)
+    "Account_address_key" UNIQUE, btree (address)
+    "Account_id_key" UNIQUE, btree (id)
+    "Account_user_id_key" UNIQUE, btree (user_id)
+    "Account_user_name_key" UNIQUE, btree (user_name)
+Referenced by:
+    TABLE ""Signer"" CONSTRAINT "Signer_signer_id_fkey" FOREIGN KEY (signer_id) REFERENCES "Account"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+    TABLE ""Wallet"" CONSTRAINT "Wallet_owner_id_fkey" FOREIGN KEY (owner_id) REFERENCES "Account"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+    TABLE ""_Signers"" CONSTRAINT "_Signers_A_fkey" FOREIGN KEY ("A") REFERENCES "Account"(id) ON UPDATE CASCADE ON DELETE CASCADE
+
+novusys-dev=> \d "Wallet";
+                    Table "public.Wallet"
+      Column       |  Type   | Collation | Nullable | Default 
+-------------------+---------+-----------+----------+---------
+ id                | integer |           | not null | 
+ address           | text    |           | not null | 
+ chain_id          | integer |           | not null | 
+ abi               | jsonb   |           |          | 
+ owner_id          | integer |           | not null | 
+ contract_settings | jsonb   |           |          | 
+ gas_saved         | integer |           | not null | 
+Indexes:
+    "Wallet_pkey" PRIMARY KEY, btree (id)
+    "Wallet_address_key" UNIQUE, btree (address)
+    "Wallet_id_key" UNIQUE, btree (id)
+Foreign-key constraints:
+    "Wallet_owner_id_fkey" FOREIGN KEY (owner_id) REFERENCES "Account"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+Referenced by:
+    TABLE ""Currency"" CONSTRAINT "Currency_wallet_id_fkey" FOREIGN KEY (wallet_id) REFERENCES "Wallet"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+    TABLE ""Nft"" CONSTRAINT "Nft_wallet_id_fkey" FOREIGN KEY (wallet_id) REFERENCES "Wallet"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+    TABLE ""Transaction"" CONSTRAINT "Transaction_wallet_id_fkey" FOREIGN KEY (wallet_id) REFERENCES "Wallet"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+
+novusys-dev=> quit
 ```
 
 ## Support
