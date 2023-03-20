@@ -1,10 +1,13 @@
 import React from "react";
 import styles from "./Header.module.scss";
-import { FiLogOut } from "react-icons/fi";
+import { FiLogOut, FiInfo, FiArrowLeft } from "react-icons/fi";
 import ChainSwitcher from "../ChainSwitcher/ChainSwitcher";
 
 interface HeaderProps {
   showTools: boolean;
+  setLogin: (state: boolean) => void;
+  activeWallet: (state: boolean) => void;
+  setLanding: (action: string) => void;
 }
 
 const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
@@ -17,12 +20,21 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
             <ChainSwitcher />
           </div>
 
-          <button className={styles["logout__button"]}>
-            <FiLogOut className={styles["logout_icon"]} />
+          <button onClick={() => props.activeWallet(false)} className={styles["right__button"]}>
+            <FiLogOut />
           </button>
         </>
       ) : (
-        <img src="logos/novusys-logo.png" className={styles["landing__logo"]} alt="" />
+        <>
+          <button onClick={() => props.setLanding("abort")} className={styles["left__button"]}>
+            <FiArrowLeft />
+          </button>
+          <img src="logos/novusys-logo.png" className={styles["landing__logo"]} alt="" />
+
+          <button className={styles["right__button"]}>
+            <FiInfo />
+          </button>
+        </>
       )}
     </div>
   );

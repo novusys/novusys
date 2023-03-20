@@ -32,3 +32,23 @@
   font-size: 40px;
   text-align: center;
 }
+
+@media only screen and (max-width: 600px) {
+  .content{
+    font-size: 15px;
+  }
+  .header__title{
+    font-size: 30px;
+  
+    a{
+      font-weight: bold;
+      font-size: 35px;
+    }
+  }
+  .header__container{
+    justify-content: center;
+    div{
+      max-width: 100%;
+    }
+  }
+}

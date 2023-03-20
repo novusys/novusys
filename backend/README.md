@@ -29,7 +29,16 @@
 ## Installation
 
 ```bash
-$ npm install
+$ cd nuvosys
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+$ nvm install node
+$ npm install -g @nestjs/cli
+$ npm install --global yarn
+$ yarn add graphql @nestjs/graphql apollo-server-express
+$ npm install graphql-type-json
+$ npm install @apollo/server
+$ npm install @nestjs/apollo
+$ npm install @types/uuid
 ```
 
 ## Running the app

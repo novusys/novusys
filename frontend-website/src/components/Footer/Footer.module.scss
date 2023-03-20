@@ -6,3 +6,11 @@
     width: 100%;
 
 }
+
+@media only screen and (max-width: 600px) {
+    .out__container {
+      img{
+        max-width: 50%;
+      }
+    }
+  }

@@ -26,7 +26,7 @@
   width: auto;
 }
 
-.logout__button {
+.right__button {
   width: 36px;
   height: 36px;
   display: flex;
@@ -37,6 +37,21 @@
   background-color: transparent;
   border: none;
   margin-left: auto;
+  padding: 0;
+  font-size: 1.5rem;
+}
+
+.left__button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: black;
+  background-color: transparent;
+  border: none;
+  margin-right: auto;
   padding: 0;
   font-size: 1.5rem;
 }
