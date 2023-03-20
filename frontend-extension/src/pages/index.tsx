@@ -4,7 +4,8 @@ import ExtensionLayout from "@/layouts/ExtensionLayout/ExtensionLayout";
 
 import Landing from "./Landing/Landing";
 import Login from "./Login/Login";
-import CreateWallet from "./Create/CreateWallet";
+import SignUp from "./SignUp/SignUp";
+import ImportWallet from "./Import/ImportWallet";
 import Wallet from "./Wallet/Wallet";
 
 export default function Home() {
@@ -17,11 +18,19 @@ export default function Home() {
    * Conditionally render certain components differently based on state of the extension
    * This was my approach to being able to render components differently based on state.
    * Feel free to let me know if there's a better way.
+   *
+   * Current Flow:
+   * - User Sign Up => novusys website onboarding (no wallet creation within extension)
+   * - User Login => auth0 authentication to 'import' wallet
+   * - Existing wallet registered with extension => Local PW Login to unlock wallet
+   * - Reset wallet registered => wipe and reset to landing page
+   *
    */
 
   // These states would be set after checking cookies / auth0 to set initial values
-  const [loggedIn, setLogin] = useState(true);
-  const [walletInit, setInit] = useState(false);
+  const [loggedIn, setLogin] = useState(true); // Tracks login state
+  const [walletInit, setInit] = useState(false); // Tracks if a wallet has been init on extension
+  const [landingAction, setLandingAction] = useState("abort"); // Tracks if Create Wallet was called from Landing
 
   // Pass this to child components to be able to reflect conditional render changes
   // This is the alternative to routing (render certain page components based on these states)
@@ -30,21 +39,37 @@ export default function Home() {
   };
 
   // Called from Landing page to update wallet status
-  const handleLanding = (state: boolean) => {
+  // Upon successful create/import set states and show wallet
+  // Possible options for action: 'create', 'import', 'abort'
+  const handleLanding = (action: string) => {
+    setLandingAction(action);
+  };
+
+  // Active means a wallet is instantiated for extension via login auth0
+  // When activeWallet(false) is called then we reset the wallet and go back to landing page
+  const activeWallet = (state: boolean) => {
     setInit(state);
     setLogin(state);
+    setLandingAction("abort");
   };
 
   // Return the page to render into the layout
-  const renderState = (walletInit: boolean, loggedIn: boolean) => {
+  const renderState = () => {
     if (walletInit) {
       if (loggedIn) {
-        return <Wallet handleLogin={handleLogin} resetWallet={handleLanding} />;
+        return <Wallet setLogin={handleLogin} activeWallet={activeWallet} setLanding={handleLanding} />;
       } else {
-        <Login handleLogin={handleLogin} />;
+        return <Login setLogin={handleLogin} setLanding={handleLanding} />;
       }
     } else {
-      return <Landing handleLanding={handleLanding} />;
+      switch (landingAction) {
+        case "create": // Just redirect to novusys website onboarding for wallet init
+          return <SignUp setLogin={handleLogin} activeWallet={activeWallet} setLanding={handleLanding} />;
+        case "import": // Login via auth0 after signing up on website
+          return <ImportWallet setLogin={handleLogin} activeWallet={activeWallet} setLanding={handleLanding} />;
+        default:
+          return <Landing setLanding={handleLanding} />;
+      }
     }
   };
 
@@ -56,7 +81,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <ExtensionLayout>{renderState(walletInit, loggedIn)}</ExtensionLayout>
+      <ExtensionLayout>{renderState()}</ExtensionLayout>
     </>
   );
 }
