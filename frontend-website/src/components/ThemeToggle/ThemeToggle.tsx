@@ -6,27 +6,27 @@ import ButtonOutline from '../Buttons/ButtonOutline/ButtonOutline'
 import DarkMode from '@material-design-icons/svg/outlined/dark_mode.svg'
 import LightMode from '@material-design-icons/svg/outlined/light_mode.svg'
 import { useEffect, useState } from 'react'
+import {useTheme} from '../../api/theme-toggle'
 
 
 const ThemeToggle: React.FC = () => {
-  const [activeTheme, setActiveTheme] = useState("light");
-  const inactiveTheme = activeTheme === "light" ? "dark" : "light";
+  const {activeTheme, inactiveTheme, setActiveTheme} = useTheme()
+  console.log(activeTheme, inactiveTheme)
   useEffect(() => {
     document.body.dataset.theme = activeTheme;
   }, [activeTheme]);
   return (
     <>
-
       {
         activeTheme == "dark" ?
           <div className={styles['icon__container']} onClick={()=>{setActiveTheme("light")
           console.log("Test")}}>
-            <DarkMode viewBox="0 0 25 25" />
+            <LightMode viewBox="0 0 25 25"  style={{ fill: 'white' }}/>
+            
           </div> : <div className={styles['icon__container']} onClick={()=>{setActiveTheme("dark")}}>
-            <LightMode viewBox="0 0 25 25" />
+            <DarkMode viewBox="0 0 25 25" />
           </div>
       }
-
     </>
   )
 }

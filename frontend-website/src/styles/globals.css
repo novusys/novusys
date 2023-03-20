@@ -118,10 +118,14 @@ a {
 body,
 body[data-theme="light"] {
   --color-primary: black;
+  --background-blur: rgba(255, 255, 255, .2);
+  --page-background: white;
 }
 
 body[data-theme="dark"] {
   --color-primary: white;
+  --background-blur: rgba(0, 0, 0, .2);
+  --page-background: black;
 }
 
 @media (prefers-color-scheme: dark) {
