@@ -39,6 +39,7 @@ $ npm install graphql-type-json
 $ npm install @apollo/server
 $ npm install @nestjs/apollo
 $ npm install @types/uuid
+$ npm install prisma --save-dev
 ```
 
 ## Running the app
@@ -52,6 +53,9 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+
+# migration
+$ npx prisma migrate dev --name init
 ```
 
 ## Test
@@ -65,6 +69,33 @@ $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
+
+# test AWS RDS
+$ psql -h novusys-dev.cky9ffqjqe5i.us-east-2.rds.amazonaws.com -U postgres
+Password for user postgres: 
+psql (14.7 (Ubuntu 14.7-0ubuntu0.22.04.1), server 14.6)
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+postgres=> \c novusys-dev
+psql (14.7 (Ubuntu 14.7-0ubuntu0.22.04.1), server 14.6)
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+You are now connected to database "novusys-dev" as user "postgres".
+novusys-dev=> \dt
+                List of relations
+ Schema |        Name         | Type  |  Owner   
+--------+---------------------+-------+----------
+ public | Account             | table | postgres
+ public | Currency            | table | postgres
+ public | CurrencyInformation | table | postgres
+ public | Nft                 | table | postgres
+ public | NftInformation      | table | postgres
+ public | Signer              | table | postgres
+ public | Transaction         | table | postgres
+ public | Wallet              | table | postgres
+ public | _NftToTransaction   | table | postgres
+ public | _prisma_migrations  | table | postgres
+(10 rows)
 ```
 
 ## Support
