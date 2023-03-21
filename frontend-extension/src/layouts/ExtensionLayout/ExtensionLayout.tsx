@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./ExtensionLayout.module.scss";
-import Head from "next/head";
 
 interface PageLayoutProps {
   children?: React.ReactNode;

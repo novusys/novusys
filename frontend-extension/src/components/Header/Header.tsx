@@ -6,7 +6,7 @@ import ChainSwitcher from "../ChainSwitcher/ChainSwitcher";
 interface HeaderProps {
   showTools: boolean;
   setLogin: (state: boolean) => void;
-  activeWallet: (state: boolean) => void;
+  resetWallet: () => void;
   setLanding: (action: string) => void;
 }
 
@@ -20,8 +20,8 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
             <ChainSwitcher />
           </div>
 
-          <button onClick={() => props.activeWallet(false)} className={styles["right__button"]}>
-            <FiLogOut />
+          <button onClick={() => props.resetWallet()} className={styles["right__button"]}>
+            <FiLogOut className={styles["logout__icon"]} />
           </button>
         </>
       ) : (

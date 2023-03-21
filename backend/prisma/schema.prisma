@@ -1,0 +1,203 @@
+// This is your Prisma schema file,
+// learn more about it in the docs https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  /// Account ID
+  id Int @id @unique
+
+  /// User ID (auth0)
+  user_id String @unique
+
+  /// Account Address
+  address String @unique
+
+  /// User Name
+  user_name String @unique
+
+  /// Account Type
+  account_type String 
+
+  /// User Avatar Image URL
+  avatar_url String 
+
+  /// Account Settings
+  account_settings  Json? 
+
+  /// Secondary Address
+  secondary_address String 
+
+  /// Wallets
+  wallets Wallet[] 
+
+  /// Signers
+  signers Signer[] @relation("Signers")
+
+  /// Activity
+  activity String[] 
+
+  signer Signer? @relation("SignerAccount") // prisma forces this opposite relation field for what should be one-way relationships (see prisma issue #2018)
+}
+
+model Signer {
+  id Int @id @unique
+
+  signer Account @relation(name: "SignerAccount", fields: [signer_id], references: [id])
+  signer_id Int @unique
+
+  authorized Account[] @relation("Signers")
+}
+
+model Currency {
+  /// Currency ID
+  id Int @id @unique 
+
+  /// UUID
+  uuid String @unique 
+
+  /// Address
+  address String 
+
+  /// Currency Information
+  currency_information CurrencyInformation @relation(name: "CurrencyInformationLookup", fields: [currency_id], references: [id])
+  currency_id Int @unique
+
+  /// Count
+  count Int // should this be fractional/real?
+
+  wallet Wallet @relation(fields: [wallet_id], references: [id])
+  wallet_id Int
+}
+
+
+model CurrencyInformation {
+  /// Currency ID
+  id Int @id @unique 
+
+  /// Name
+  name String 
+
+  /// Ticker
+  ticker String 
+
+  /// Chain ID
+  chain_id Int 
+
+  currency Currency[] @relation(name: "CurrencyInformationLookup") // prisma forces this opposite relation field for what should be one-way relationships (see prisma issue #2018)
+  nft_information NftInformation[] @relation(name: "NftInformationToCurrencyInformation") // prisma forces this opposite relation field for what should be one-way relationships (see prisma issue #2018)
+  transaction Transaction[] @relation(name: "TransactionToCurrencyInformation") // prisma forces this opposite relation field for what should be one-way relationships (see prisma issue #2018)
+}
+
+model Wallet {
+  /// Wallet id
+  id Int @id @unique
+
+  /// Wallet Address (blockchain)
+  address String @unique
+
+  /// Chain ID
+  chain_id Int 
+
+  /// ABI
+  abi  Json? 
+
+  /// Owner User ID
+  owner Account @relation(fields: [owner_id], references: [id])
+  owner_id Int
+  
+  /// Contract settings
+  contract_settings  Json? 
+
+  /// Transactions
+  transactions Transaction[]
+
+  /// Gas Saved (gwei)
+  gas_saved Int 
+
+  /// Currency Holdings
+  currency_holdings Currency[] 
+
+  /// NFT Holdings
+  nft_holdings Nft[] 
+}
+
+model Nft {
+  /// ID
+  id Int @id @unique
+
+  /// UUID
+  uuid String @unique
+
+  /// Address
+  address String 
+
+  /// NFT Information
+  nft_information NftInformation @relation(name: "NftToNftInformation", fields: [nft_information_id], references: [id])
+  nft_information_id Int
+
+  transaction Transaction[]
+
+  wallet Wallet @relation(fields: [wallet_id], references: [id])
+  wallet_id Int
+}
+
+model NftInformation {
+  /// NFT ID
+  id Int @id @unique
+
+  /// Name
+  name String 
+
+  /// Chain ID
+  chain_id Int 
+
+  /// Currency Information
+  currency_information CurrencyInformation @relation(name: "NftInformationToCurrencyInformation", fields: [currency_id], references: [id])
+  currency_id Int
+
+  /// Count
+  currency_count Int // should this be fractional/real?
+
+  /// NFT
+  nft Nft[] @relation(name: "NftToNftInformation") // prisma forces this opposite relation field for what should be one-way relationships (see prisma issue #2018)
+}
+
+
+model Transaction {
+  /// Transaction ID
+  id Int @id @unique
+
+  /// Transaction Hash
+  hash String @unique
+
+  /// Chain ID
+  chain_id Int 
+
+  /// Type
+  type Int 
+
+  /// Contract Settings
+  contract_settings  Json? 
+
+  /// Currency
+  currency_information CurrencyInformation @relation(name: "TransactionToCurrencyInformation", fields: [currency_id], references: [id])
+  currency_id Int
+
+  /// Currency amount
+  currency_count Int // should this be fractional/real type?
+
+  /// NFTs
+  nfts Nft[] 
+
+  wallet Wallet @relation(fields: [wallet_id], references: [id])
+  wallet_id Int
+}
+

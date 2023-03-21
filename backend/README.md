@@ -29,16 +29,21 @@
 ## Installation
 
 ```bash
-$ cd nuvosys
+$ cd novusys
 $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-$ nvm install node
+$ nvm install node # for Ubuntu 22.04
+# $ nvm install 16.19.1 # for Ubuntu 18.04
 $ npm install -g @nestjs/cli
-$ npm install --global yarn
-$ yarn add graphql @nestjs/graphql apollo-server-express
-$ npm install graphql-type-json
-$ npm install @apollo/server
-$ npm install @nestjs/apollo
-$ npm install @types/uuid
+# We probably don't need the commented out installations anymore
+# $ npm install --global yarn
+# $ yarn add graphql @nestjs/graphql apollo-server-express
+# $ npm install graphql-type-json
+# $ npm install @apollo/server
+# $ npm install @nestjs/apollo
+# $ npm install @types/uuid
+$ npm install prisma --save-dev
+$ npm install @prisma/client
+$ npm install -g typescript
 ```
 
 ## Running the app
@@ -52,6 +57,9 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+
+# migration
+$ npx prisma migrate dev --name init
 ```
 
 ## Test
@@ -65,6 +73,81 @@ $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
+
+# test AWS RDS
+$ psql -h novusys-dev.cky9ffqjqe5i.us-east-2.rds.amazonaws.com -U postgres
+Password for user postgres: 
+psql (14.7 (Ubuntu 14.7-0ubuntu0.22.04.1), server 14.6)
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+postgres=> \c novusys-dev
+psql (14.7 (Ubuntu 14.7-0ubuntu0.22.04.1), server 14.6)
+SSL connection (protocol: TLSv1.2, cipher: ECDHE-RSA-AES256-GCM-SHA384, bits: 256, compression: off)
+You are now connected to database "novusys-dev" as user "postgres".
+novusys-dev=> \dt
+                List of relations
+ Schema |        Name         | Type  |  Owner   
+--------+---------------------+-------+----------
+ public | Account             | table | postgres
+ public | Currency            | table | postgres
+ public | CurrencyInformation | table | postgres
+ public | Nft                 | table | postgres
+ public | NftInformation      | table | postgres
+ public | Signer              | table | postgres
+ public | Transaction         | table | postgres
+ public | Wallet              | table | postgres
+ public | _NftToTransaction   | table | postgres
+ public | _prisma_migrations  | table | postgres
+(10 rows)
+
+novusys-dev=> \d "Account";
+                    Table "public.Account"
+      Column       |  Type   | Collation | Nullable | Default 
+-------------------+---------+-----------+----------+---------
+ id                | integer |           | not null | 
+ user_id           | text    |           | not null | 
+ address           | text    |           | not null | 
+ user_name         | text    |           | not null | 
+ account_type      | text    |           | not null | 
+ avatar_url        | text    |           | not null | 
+ account_settings  | jsonb   |           |          | 
+ secondary_address | text    |           | not null | 
+ activity          | text[]  |           |          | 
+Indexes:
+    "Account_pkey" PRIMARY KEY, btree (id)
+    "Account_address_key" UNIQUE, btree (address)
+    "Account_id_key" UNIQUE, btree (id)
+    "Account_user_id_key" UNIQUE, btree (user_id)
+    "Account_user_name_key" UNIQUE, btree (user_name)
+Referenced by:
+    TABLE ""Signer"" CONSTRAINT "Signer_signer_id_fkey" FOREIGN KEY (signer_id) REFERENCES "Account"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+    TABLE ""Wallet"" CONSTRAINT "Wallet_owner_id_fkey" FOREIGN KEY (owner_id) REFERENCES "Account"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+    TABLE ""_Signers"" CONSTRAINT "_Signers_A_fkey" FOREIGN KEY ("A") REFERENCES "Account"(id) ON UPDATE CASCADE ON DELETE CASCADE
+
+novusys-dev=> \d "Wallet";
+                    Table "public.Wallet"
+      Column       |  Type   | Collation | Nullable | Default 
+-------------------+---------+-----------+----------+---------
+ id                | integer |           | not null | 
+ address           | text    |           | not null | 
+ chain_id          | integer |           | not null | 
+ abi               | jsonb   |           |          | 
+ owner_id          | integer |           | not null | 
+ contract_settings | jsonb   |           |          | 
+ gas_saved         | integer |           | not null | 
+Indexes:
+    "Wallet_pkey" PRIMARY KEY, btree (id)
+    "Wallet_address_key" UNIQUE, btree (address)
+    "Wallet_id_key" UNIQUE, btree (id)
+Foreign-key constraints:
+    "Wallet_owner_id_fkey" FOREIGN KEY (owner_id) REFERENCES "Account"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+Referenced by:
+    TABLE ""Currency"" CONSTRAINT "Currency_wallet_id_fkey" FOREIGN KEY (wallet_id) REFERENCES "Wallet"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+    TABLE ""Nft"" CONSTRAINT "Nft_wallet_id_fkey" FOREIGN KEY (wallet_id) REFERENCES "Wallet"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+    TABLE ""Transaction"" CONSTRAINT "Transaction_wallet_id_fkey" FOREIGN KEY (wallet_id) REFERENCES "Wallet"(id) ON UPDATE CASCADE ON DELETE RESTRICT
+
+novusys-dev=> quit
 ```
 
 ## Support
