@@ -1,0 +1,19 @@
+.header__container{
+    width: 100%;
+    height: 15vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.title__container{
+    color: var(--color-primary);
+    font-size: 40px;
+    font-weight: 700;
+
+    a{
+        font-size: 45px;
+        font-weight: 900;
+    }
+}

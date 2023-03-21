@@ -53,7 +53,7 @@ export default function Header() {
             Dashboard
           </div>
           <div className={styles['signup__container']}>
-            <ButtonOutline text='Launch a Wallet' onClick={() => { }} />
+            <ButtonOutline text='Launch a Wallet' onClick={() => { window.location.href = '/create' }} />
             <ThemeToggle/>
           </div>
 

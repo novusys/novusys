@@ -1,0 +1,30 @@
+.out__container{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding-bottom: 20px;
+    color: var(--color-primary);
+}
+
+.title__container{
+    font-size: 40px;
+    font-weight: bolder;
+}
+
+.testnet__container, .mainnet__container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 80%;
+    justify-content: center;
+    gap: 10px;
+}
+
+.network__title{
+    font-size: 20px;
+    font-weight: bold;
+    padding-top: 30px;
+    padding-bottom: 10px;
+}
