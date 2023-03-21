@@ -13,6 +13,7 @@ import Password from '@material-design-icons/svg/outlined/password.svg'
 import Key from '@material-design-icons/svg/outlined/key.svg'
 import { InputAdornment, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { endianness } from 'os'
+import { ethers } from 'ethers'
 
 // {
 //   balance_multisig: {
@@ -52,6 +53,7 @@ interface SecurityFeaturesProps {
 
 const SecurityFeatures: React.FC<SecurityFeaturesProps> = ({ securityFeatures, setSecurityFeatures }) => {
 
+  console.log(securityFeatures)
   const updateFeatures = (feature: keyof Features, prop: keyof Savings | keyof BalanceMultisig, value: any) => {
     const update: Features = JSON.parse(JSON.stringify(securityFeatures))
     update[feature][prop] = value
@@ -93,6 +95,9 @@ const SecurityFeatures: React.FC<SecurityFeaturesProps> = ({ securityFeatures, s
                 </div>
                 <div className={styles['field__container']}>
                   <TextField
+                   error={securityFeatures.balance_multisig.value < 0 ? true : false}
+                   helperText={securityFeatures.balance_multisig.value < 0 ? "Not a valid value" : ""}
+                    type="number"
                     label="Amount"
                     id="filled-start-adornment"
                     sx={{ m: 1, width: '25ch' }}
@@ -111,6 +116,8 @@ const SecurityFeatures: React.FC<SecurityFeaturesProps> = ({ securityFeatures, s
                 </div>
                 <div className={styles['field__container']}>
                   <TextField
+                    error={!ethers.utils.isAddress(securityFeatures.balance_multisig.address)}
+                    helperText={!ethers.utils.isAddress(securityFeatures.balance_multisig.address) ? "Not a Valid EVM Address" : ""}
                     label="Address"
                     id="filled-start-adornment"
                     sx={{ m: 1, width: '25ch' }}
@@ -151,14 +158,17 @@ const SecurityFeatures: React.FC<SecurityFeaturesProps> = ({ securityFeatures, s
             <>
               <div className={styles['attr__container']}>
                 <div className={styles['inst__container']}>
-                  Percentage of incoming funds to bve saved                </div>
+                  Percentage of incoming funds to be saved                </div>
                 <div className={styles['field__container']}>
                   <TextField
+                    error={securityFeatures.savings.savings_percent <= 0 || securityFeatures.savings.savings_percent > 100 ? true : false}
+                    helperText={securityFeatures.savings.savings_percent <= 0 || securityFeatures.savings.savings_percent > 100 ? "Not a valid value" : ""}
+                    type="number"
                     label="Amount"
                     id="filled-start-adornment"
                     sx={{ m: 1, width: '25ch' }}
-                    value={securityFeatures.savings.value}
-                    onChange={(event) => updateFeatures('savings', 'value', event.target.value)}
+                    value={securityFeatures.savings.savings_percent}
+                    onChange={(event) => updateFeatures('savings', 'savings_percent', event.target.value)}
                     InputProps={{
                       startAdornment: <InputAdornment position="start">%</InputAdornment>,
                     }}
@@ -171,6 +181,8 @@ const SecurityFeatures: React.FC<SecurityFeaturesProps> = ({ securityFeatures, s
                   Add your savings wallet                </div>
                 <div className={styles['field__container']}>
                   <TextField
+                    error={!ethers.utils.isAddress(securityFeatures.savings.address)}
+                    helperText={!ethers.utils.isAddress(securityFeatures.savings.address) ? "Not a Valid EVM Address" : ""}
                     label="Address"
                     id="filled-start-adornment"
                     sx={{ m: 1, width: '25ch' }}
