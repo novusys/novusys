@@ -43,6 +43,7 @@ $ npm install -g @nestjs/cli
 # $ npm install @types/uuid
 $ npm install prisma --save-dev
 $ npm install @prisma/client
+$ npm install -g typescript
 ```
 
 ## Running the app
