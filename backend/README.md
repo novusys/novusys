@@ -44,6 +44,7 @@ $ npm install -g @nestjs/cli
 $ npm install prisma --save-dev
 $ npm install @prisma/client
 $ npm install -g typescript
+$ npm install --save @nestjs/swagger
 ```
 
 ## Running the app
