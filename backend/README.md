@@ -46,6 +46,18 @@ $ npm install @prisma/client
 $ npm install -g typescript
 $ npm install --save @nestjs/swagger
 ```
+## Generation Steps
+```
+## Prisma code generation
+$ npx nest generate module prisma
+$ npx nest generate service prisma
+
+## Database migration
+$ npx prisma migrate dev --name init
+
+## Generates Prisma Client CRUD operations
+$ prisma generate  
+```
 
 ## Running the app
 
@@ -59,9 +71,6 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 
-# migration
-$ npx prisma migrate dev --name init
-$ prisma generate  # Generates Prisma Client CRUD operations
 ```
 
 ## Test
