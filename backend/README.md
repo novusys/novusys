@@ -60,6 +60,7 @@ $ npm run start:prod
 
 # migration
 $ npx prisma migrate dev --name init
+$ prisma generate  # Generates Prisma Client CRUD operations
 ```
 
 ## Test
