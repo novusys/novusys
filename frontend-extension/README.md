@@ -1,1 +1,0 @@
-# novusys chrome extension

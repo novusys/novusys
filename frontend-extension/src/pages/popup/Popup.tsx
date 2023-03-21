@@ -1,14 +1,13 @@
-import Head from "next/head";
 import { useState } from "react";
-import ExtensionLayout from "@/layouts/ExtensionLayout/ExtensionLayout";
+import "./Popup.css";
 
-import Landing from "./Landing/Landing";
-import Login from "./Login/Login";
-import SignUp from "./SignUp/SignUp";
-import ImportWallet from "./Import/ImportWallet";
-import Wallet from "./Wallet/Wallet";
+import ExtensionLayout from "../../layouts/ExtensionLayout/ExtensionLayout";
+import Landing from "../Landing/Landing";
+import Wallet from "../Wallet/Wallet";
+import Login from "../Login/Login";
+import PendingLogin from "../PendingLogin/PendingLogin";
 
-export default function Home() {
+export default function App() {
   /**
    * Idea is to use Chrome cookies to detect different states of the extension
    * 1. Logged in => Show main screen with balance, action buttons, and signers/activity
@@ -34,8 +33,24 @@ export default function Home() {
 
   // Pass this to child components to be able to reflect conditional render changes
   // This is the alternative to routing (render certain page components based on these states)
-  const handleLogin = (state: boolean) => {
-    setLogin(state);
+  const handleLogin = async () => {
+    // Here instead of parsing a boolean input we would set the login state based on the results of the auth0 login
+    // So we would wait for a message from background.js of whether auth0 login was successful or not
+    // For testing purposes it is set manually
+    setLandingAction("login");
+    chrome.runtime.sendMessage({ loginAuth0: true });
+    chrome.runtime.onMessage.addListener(async function (message, sender) {
+      if (message.loginResponse) {
+        console.log("novusys wallet login successful");
+        setLogin(true);
+        setInit(true);
+      } else if (!message.loginResponse) {
+        console.log("novusys wallet login cancelled");
+        setLandingAction("abort");
+        setLogin(false);
+        setInit(false);
+      }
+    });
   };
 
   // Called from Landing page to update wallet status
@@ -46,42 +61,33 @@ export default function Home() {
   };
 
   // Active means a wallet is instantiated for extension via login auth0
-  // When activeWallet(false) is called then we reset the wallet and go back to landing page
-  const activeWallet = (state: boolean) => {
-    setInit(state);
-    setLogin(state);
+  // When resetWallet is called then we reset the wallet and go back to landing page
+  // Handle any chrome session storage cleaning here
+  const resetWallet = () => {
+    setInit(false);
+    setLogin(false);
     setLandingAction("abort");
   };
 
-  // Return the page to render into the layout
+  // Return the page to render into the layout based on wallet state
   const renderState = () => {
     if (walletInit) {
       if (loggedIn) {
-        return <Wallet setLogin={handleLogin} activeWallet={activeWallet} setLanding={handleLanding} />;
+        return <Wallet setLogin={handleLogin} resetWallet={resetWallet} setLanding={handleLanding} />;
       } else {
         return <Login setLogin={handleLogin} setLanding={handleLanding} />;
       }
     } else {
       switch (landingAction) {
-        case "create": // Just redirect to novusys website onboarding for wallet init
-          return <SignUp setLogin={handleLogin} activeWallet={activeWallet} setLanding={handleLanding} />;
-        case "import": // Login via auth0 after signing up on website
-          return <ImportWallet setLogin={handleLogin} activeWallet={activeWallet} setLanding={handleLanding} />;
+        // Login from landing displays a pending page, opening up the auth0 popup
+        // After successful auth0 login redirects to wallet page Else returns to landing upon cancel/fail
+        case "login":
+          return <PendingLogin setLogin={handleLogin} setLanding={handleLanding} resetWallet={resetWallet} />;
         default:
-          return <Landing setLanding={handleLanding} />;
+          return <Landing setLogin={handleLogin} setLanding={handleLanding} />;
       }
     }
   };
 
-  return (
-    <>
-      <Head>
-        <title>novusys wallet</title>
-        <meta name="description" content="A wallet that grows with you." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <ExtensionLayout>{renderState()}</ExtensionLayout>
-    </>
-  );
+  return <ExtensionLayout>{renderState()}</ExtensionLayout>;
 }

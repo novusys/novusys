@@ -9,13 +9,11 @@ export default function BalanceBox() {
         <h1>satoshi.eth</h1>
       </div>
 
-      {/* crypto balance */}
-      <div className={styles["crypto__balance"]}>1.4665 ETH</div>
+      <div className={styles["balance__container"]}>
+        <div className={styles["crypto__balance"]}>1.4665 ETH</div>
+        <div className={styles["usd__balance"]}>$2,527.75 USD</div>
+      </div>
 
-      {/* USD conversion of balance */}
-      <div className={styles["usd__balance"]}>$2,527.75 USD</div>
-
-      {/* Action row buttons (pause wallet, respond to sigs, etc) */}
       <div className={styles["action__container"]}>
         <button className={styles["action__button"]}>Pause</button>
         <button className={styles["action__button"]}>Transfer</button>
