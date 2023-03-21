@@ -14,20 +14,32 @@ import { create } from 'domain'
 import { useState } from 'react'
 import ChainSelect from '@/components/create/ChainSelect/ChainSelect'
 import KeySelect from '@/components/create/KeySelect/KeySelect'
+import RecoverySigners from '@/components/create/RecoverySigners/RecoverySigners'
+import SecurityFeatures from '@/components/create/SecurityFeatures/SecurityFeatures'
 
 
 const Create = () => {
-    const [chains, setChains] = useState([])
+  const [chains, setChains] = useState([])
 
-    const [keyManagement, setKeyManagement] = useState("cust")
-    const [publicKey, setPublicKey] = useState("")
-    
-    const [recoverySigners, setRecoverSigners] = useState({})
-    
-    const [multiSig, setMultiSig] = useState({})
-    const [savings, setSavings] = useState({})
+  const [keyManagement, setKeyManagement] = useState("cust")
+  const [publicKey, setPublicKey] = useState("")
 
-    const [user, setUser] = useState({})
+  const [recoverySigners, setRecoverySigners] = useState([{ name: "", type: "email", value: "" }])
+
+  const [securityFeatures, setSecurityFeatures] = useState({
+    balance_multisig: {
+      enabled: false,
+      value: 0,
+      address: ""
+    },
+    savings: {
+      enabled: false,
+      savings_percent: 30,
+      address: ""
+    }
+  })
+
+  const [user, setUser] = useState({})
 
   return (
     <>
@@ -39,15 +51,19 @@ const Create = () => {
       </Head>
       <PageLayout>
         <div className={styles['header__container']}>
-            <div className={styles['title__container']}>
-                Setup your <a>novusys</a> Smart Wallet
-            </div>
+          <div className={styles['title__container']}>
+            Setup your <a>novusys</a> Smart Wallet
+          </div>
         </div>
         <BluredContainer>
-            <ChainSelect selectedChains={chains} setChains={setChains}/>
-            <LargeGap/>
-            <KeySelect keyManagement={keyManagement} setKeyManagement={setKeyManagement}/>
-            <LargeGap/>
+          <ChainSelect selectedChains={chains} setChains={setChains} />
+          <LargeGap />
+          <KeySelect keyManagement={keyManagement} setKeyManagement={setKeyManagement} />
+          <LargeGap />
+          <RecoverySigners recoverySigners={recoverySigners} setRecoverySigners={setRecoverySigners} />
+          <LargeGap />
+          <SecurityFeatures securityFeatures={securityFeatures} setSecurityFeatures={setSecurityFeatures} />
+          <LargeGap />
         </BluredContainer>
 
       </PageLayout>

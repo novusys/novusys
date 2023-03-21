@@ -17,6 +17,7 @@
     margin-top: 50px;
     display: flex;
     gap: 20px;
+    margin-bottom: 30px;
 }
 
 .selector, .selected{
@@ -30,7 +31,7 @@
 }
 
 .selected{
-    outline: 5px solid gray;
+    outline: 5px solid var(--color-primary);
     border-radius: 60px;
     
 }

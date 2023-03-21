@@ -1,0 +1,37 @@
+.out__container{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding-bottom: 20px;
+    color: var(--color-primary);
+}
+
+.title__container{
+    font-size: 40px;
+    font-weight: bolder;
+    margin-bottom: 10px;
+}
+
+.desc__container{
+    font-size: 30px;
+}
+
+.feature__container{
+    margin-top: 20px;
+    width: 60%;
+    margin-bottom: 30px;
+}
+
+.attr__container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.inst__container{
+    max-width: 60%;
+    font-size: 20px;
+    font-weight: 700;
+}

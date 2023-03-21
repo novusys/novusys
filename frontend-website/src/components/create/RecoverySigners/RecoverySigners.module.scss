@@ -1,0 +1,43 @@
+.out__container{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding-bottom: 20px;
+    color: var(--color-primary);
+    text-align: center;
+}
+
+.title__container{
+    font-size: 40px;
+    font-weight: bolder;
+    margin-bottom: 20px;
+}
+
+.desc__container{
+    font-size: 26px;
+    max-width: 80%;
+    margin-bottom: 10px;
+}
+
+.note__container{
+    max-width: 80%;
+    margin-bottom: 20px;
+   
+}
+
+.signers__form{
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    text-align: start;
+    gap: 10px;
+}
+
+.add__signer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10;
+}
