@@ -4,7 +4,7 @@ import { Wallet as PrismaWallet, Prisma } from '@prisma/client';
 @ObjectType()
 export class Wallet implements PrismaWallet {
   @Field(() => Int)
-  readonly id!: number;
+  readonly id: number;
 
   @Field(() => String)
   readonly address!: string;

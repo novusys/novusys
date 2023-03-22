@@ -4,11 +4,22 @@ import { UpdateWalletInput } from './dto/update-Wallet.input';
 import { PrismaService } from '../utils/utils-prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
-// @Injectable()
+@Injectable()
 export class WalletService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateWalletInput) {
+    // await this.prisma.account.create({
+    //   data: {
+    //     id: 1,
+    //     user_id: '1',
+    //     address: '123',
+    //     user_name: 'test',
+    //     account_type: 'test',
+    //     secondary_address: '123',
+    //     avatar_url: '123.com',
+    //   },
+    // });
     return await this.prisma.wallet.createMany({
       data: {
         ...dto,
