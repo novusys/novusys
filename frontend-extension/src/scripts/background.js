@@ -1,18 +1,24 @@
 import auth0_config from "./auth0.json";
 import { Buffer } from "buffer";
 
-function getRandomBytes() {
-  const randArr = new Uint8Array(44);
-  self.crypto.getRandomValues(randArr);
-  return randArr;
+// Used to generate a random 'state' to reduce vulnerability to CSRF attacks
+// Passed into the code challenge options and checked after getting code
+function generateShortUUID() {
+  return Math.random().toString(36).substring(2, 15);
 }
 
-function buf2Base64(buffer) {
-  return Buffer(String.fromCharCode.apply(null, new Uint8Array(buffer)))
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, "");
+function getRandomBytes() {
+  const rndArray = new Uint8Array(32);
+  self.crypto.getRandomValues(rndArray);
+  return rndArray;
+}
+
+function URLEnc(str) {
+  return str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+}
+
+function buf2Base64(randBytes) {
+  return URLEnc(Buffer.from(String.fromCharCode.apply(null, new Uint8Array(randBytes))).toString("base64"));
 }
 
 function getParameterByName(name, url = self.location.href) {
@@ -24,21 +30,16 @@ function getParameterByName(name, url = self.location.href) {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-async function runSHA256(buffer) {
+async function sha256(buffer) {
   let bytes = new TextEncoder().encode(buffer);
   return await self.crypto.subtle.digest("SHA-256", bytes);
 }
 
+// TODO: Implement Auth0 calls when frontend sends message
 async function callAuth0(accessToken) {
   const config = await getConfig();
-  const headers = await fetchHeaders(accessToken);
-}
-
-async function fetchHeaders(accessToken) {
-  return {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+  const header = {
+    Authorization: `Bearer ${accessToken}`,
   };
 }
 
@@ -50,20 +51,20 @@ chrome.runtime.onMessage.addListener(async function (message, sender) {
     // Create the code_verifier needed for auth0
     // The logic below will create a Sha256 code challenge and use it to create the code_verifier
     // https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#create-code-verifier
+    const state = generateShortUUID();
     const inputBytes = getRandomBytes();
-    const verifier = buf2Base64(inputBytes);
-    const shaHash = await runSHA256(verifier);
-    const codeChallenge = buf2Base64(shaHash);
-    // console.log("codeChallenge", codeChallenge);
+    const codeVerifier = buf2Base64(inputBytes);
+    const codeChallenge = buf2Base64(sha256(codeVerifier));
 
     let options = {
-      client_id: auth0_config.AUTH0_CLIENT_ID,
-      redirect_uri: redirectUrl,
       response_type: "code",
-      audience: auth0_config.AUTH0_AUDIENCE,
-      scope: "openid",
       code_challenge: codeChallenge,
       code_challenge_method: "S256",
+      client_id: auth0_config.AUTH0_CLIENT_ID,
+      redirect_uri: redirectUrl,
+      audience: auth0_config.AUTH0_AUDIENCE,
+      scope: "offline_access openid profile email",
+      state,
     };
     /**
      * Here we are creating a call to Chrome's identity framework in order to generate a code
@@ -81,7 +82,6 @@ chrome.runtime.onMessage.addListener(async function (message, sender) {
           interactive: true,
         },
         (callbackUrl) => {
-          // console.log(callbackUrl);
           resolve(callbackUrl);
         }
       );
@@ -90,13 +90,37 @@ chrome.runtime.onMessage.addListener(async function (message, sender) {
     if (resultUrl) {
       const code = getParameterByName("code", resultUrl);
       // console.log("code", code);
-      // TODO: Handle rest of auth flow with auth0 access token fetching
 
-      // Send a message back to Popup.tsx reporting the status of the login
-      chrome.runtime.sendMessage({ loginResponse: true });
+      // Get Auth0 Access Token
+      // https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#example-post-to-token-url
+      // By default access tokens have a 24 hour lifetime but that can be changed
+      fetch(`https://${auth0_config.AUTH0_DOMAIN}/oauth/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          redirect_uri: redirectUrl,
+          grant_type: "authorization_code",
+          client_id: auth0_config.AUTH0_CLIENT_ID,
+          code_verifier: codeVerifier,
+          code,
+          scope: "offline_access openid profile email",
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Successful Access Token fetch
+          // Likely store this token in the chrome session storage so we can access it and make auth0 calls later
+          // console.log(data);
+          chrome.runtime.sendMessage({ loginResponse: true });
+        })
+        .catch((error) => {
+          console.error(error);
+          chrome.runtime.sendMessage({ loginResponse: false });
+        });
     } else {
       chrome.runtime.sendMessage({ loginResponse: false });
     }
+    return true;
   }
 });
 

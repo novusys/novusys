@@ -35,3 +35,6 @@ src/scripts/auth0.json
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# vite timestamp
+vite.config.ts.timestamp**

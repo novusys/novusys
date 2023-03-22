@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import { crx } from "@crxjs/vite-plugin";
 import react from "@vitejs/plugin-react";
+import { terser } from "rollup-plugin-terser";
 
 import manifest from "./src/manifest";
 //@ts-ignore
@@ -20,6 +21,6 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    plugins: [crx({ manifest }), react()],
+    plugins: [crx({ manifest }), terser(), react()],
   };
 });
