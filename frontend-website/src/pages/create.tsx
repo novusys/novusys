@@ -16,9 +16,14 @@ import ChainSelect from '@/components/create/ChainSelect/ChainSelect'
 import KeySelect from '@/components/create/KeySelect/KeySelect'
 import RecoverySigners from '@/components/create/RecoverySigners/RecoverySigners'
 import SecurityFeatures from '@/components/create/SecurityFeatures/SecurityFeatures'
+import ProfileCreate from '@/components/create/ProfileCreate/ProfileCreate'
+import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { useUser } from '@auth0/nextjs-auth0/client'
 
 
-const Create = () => {
+function Create() {
+  const { user, error, isLoading } = useUser();
+
   const [chains, setChains] = useState([])
 
   const [keyManagement, setKeyManagement] = useState("cust")
@@ -39,7 +44,19 @@ const Create = () => {
     }
   })
 
-  const [user, setUser] = useState({})
+  const [profile, setProfile] = useState({
+    display_name: "",
+    display_title: "",
+    display_desc: "",
+    ens: "",
+    discord: "",
+    twitter: "",
+    reddit: "",
+    medium: "",
+    instagram: "",
+    nft: ""
+
+  })
 
   return (
     <>
@@ -64,6 +81,11 @@ const Create = () => {
           <LargeGap />
           <SecurityFeatures securityFeatures={securityFeatures} setSecurityFeatures={setSecurityFeatures} />
           <LargeGap />
+          <ProfileCreate profile={profile} setProfile={setProfile} />
+          <LargeGap />
+          <div className={styles['launch__button']}>
+            Launch your Smart Wallet
+          </div>
         </BluredContainer>
 
       </PageLayout>
@@ -72,4 +94,6 @@ const Create = () => {
   )
 }
 
+// export default withPageAuthRequired(Create);
+export const getServerSideProps = withPageAuthRequired()
 export default Create
