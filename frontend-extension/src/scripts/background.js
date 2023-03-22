@@ -35,66 +35,57 @@ async function sha256(buffer) {
   return await self.crypto.subtle.digest("SHA-256", bytes);
 }
 
-// TODO: Implement Auth0 calls when frontend sends message
-async function callAuth0(accessToken) {
-  const config = await getConfig();
-  const header = {
-    Authorization: `Bearer ${accessToken}`,
+// Get Auth0 Access Token
+// https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#example-post-to-token-url
+// By default access tokens have a 24 hour lifetime but that can be changed
+async function fetchAuth0Token() {
+  const redirectUrl = chrome.identity.getRedirectURL();
+  // console.log("redirectUrl", redirectUrl);
+
+  // Create the code_verifier needed for auth0
+  // The logic below will create a Sha256 code challenge and use it to create the code_verifier
+  // https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#create-code-verifier
+  const state = generateShortUUID();
+  const inputBytes = getRandomBytes();
+  const codeVerifier = buf2Base64(inputBytes);
+  const codeChallenge = buf2Base64(sha256(codeVerifier));
+
+  let options = {
+    response_type: "code",
+    code_challenge: codeChallenge,
+    code_challenge_method: "S256",
+    client_id: auth0_config.AUTH0_CLIENT_ID,
+    redirect_uri: redirectUrl,
+    audience: auth0_config.AUTH0_AUDIENCE,
+    scope: "offline_access openid profile email",
+    state,
   };
-}
+  /**
+   * Here we are creating a call to Chrome's identity framework in order to generate a code
+   * This code will be used to then generate an Auth0 token
+   * We would then likely store this access token within chrome.session.storage (need to double check docs for security)
+   * By doing this we are able to keep the user logged in while the session is open (when browser is closed redo login)
+   */
+  let resultUrl = await new Promise((resolve, reject) => {
+    let queryString = new URLSearchParams(options).toString();
+    let url = `https://${auth0_config.AUTH0_DOMAIN}/authorize?${queryString}`;
+    // console.log(url);
+    chrome.identity.launchWebAuthFlow(
+      {
+        url,
+        interactive: true,
+      },
+      (callbackUrl) => {
+        resolve(callbackUrl);
+      }
+    );
+  });
 
-chrome.runtime.onMessage.addListener(async function (message, sender) {
-  if (message.loginAuth0) {
-    const redirectUrl = chrome.identity.getRedirectURL();
-    // console.log("redirectUrl", redirectUrl);
-
-    // Create the code_verifier needed for auth0
-    // The logic below will create a Sha256 code challenge and use it to create the code_verifier
-    // https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#create-code-verifier
-    const state = generateShortUUID();
-    const inputBytes = getRandomBytes();
-    const codeVerifier = buf2Base64(inputBytes);
-    const codeChallenge = buf2Base64(sha256(codeVerifier));
-
-    let options = {
-      response_type: "code",
-      code_challenge: codeChallenge,
-      code_challenge_method: "S256",
-      client_id: auth0_config.AUTH0_CLIENT_ID,
-      redirect_uri: redirectUrl,
-      audience: auth0_config.AUTH0_AUDIENCE,
-      scope: "offline_access openid profile email",
-      state,
-    };
-    /**
-     * Here we are creating a call to Chrome's identity framework in order to generate a code
-     * This code will be used to then generate an Auth0 token
-     * We would then likely store this access token within chrome.session.storage (need to double check docs for security)
-     * By doing this we are able to keep the user logged in while the session is open (when browser is closed redo login)
-     */
-    let resultUrl = await new Promise((resolve, reject) => {
-      let queryString = new URLSearchParams(options).toString();
-      let url = `https://${auth0_config.AUTH0_DOMAIN}/authorize?${queryString}`;
-      // console.log(url);
-      chrome.identity.launchWebAuthFlow(
-        {
-          url,
-          interactive: true,
-        },
-        (callbackUrl) => {
-          resolve(callbackUrl);
-        }
-      );
-    });
-
-    if (resultUrl) {
-      const code = getParameterByName("code", resultUrl);
-      // console.log("code", code);
-
-      // Get Auth0 Access Token
-      // https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#example-post-to-token-url
-      // By default access tokens have a 24 hour lifetime but that can be changed
-      fetch(`https://${auth0_config.AUTH0_DOMAIN}/oauth/token`, {
+  if (resultUrl) {
+    const code = getParameterByName("code", resultUrl);
+    const state_received = getParameterByName("state", resultUrl);
+    if (state_received == state && code) {
+      return fetch(`https://${auth0_config.AUTH0_DOMAIN}/oauth/token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -111,16 +102,43 @@ chrome.runtime.onMessage.addListener(async function (message, sender) {
           // Successful Access Token fetch
           // Likely store this token in the chrome session storage so we can access it and make auth0 calls later
           // console.log(data);
-          chrome.runtime.sendMessage({ loginResponse: true });
+          return { status: 200, message: "novusys wallet successfully authenticated", error: null };
         })
         .catch((error) => {
-          console.error(error);
-          chrome.runtime.sendMessage({ loginResponse: false });
+          return { status: 401, message: "novusys wallet authentication failed", error: error };
         });
     } else {
-      chrome.runtime.sendMessage({ loginResponse: false });
+      return {
+        status: 403,
+        message: "novusys wallet invalid state received",
+        error: "State does not match initial (CSRF Prevention)",
+      };
     }
-    return true;
+  } else {
+    return { status: 404, message: "novusys wallet authentication cancelled", error: "User cancelled auth0 request" };
+  }
+}
+
+// TODO: Implement Auth0 calls when frontend sends message
+async function callAuth0(accessToken) {
+  const config = await getConfig();
+  const header = {
+    Authorization: `Bearer ${accessToken}`,
+  };
+}
+
+chrome.runtime.onMessage.addListener(async function (message) {
+  if (message.loginAuth0) {
+    const res = await fetchAuth0Token();
+    console.log(res);
+    if (res && res.status == 200) {
+      chrome.runtime.sendMessage({ loginResponse: true });
+      return true;
+    } else {
+      // console.log(res);
+      chrome.runtime.sendMessage({ loginResponse: false });
+      return false;
+    }
   }
 });
 
