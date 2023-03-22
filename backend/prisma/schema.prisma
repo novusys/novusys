@@ -5,6 +5,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator resolver {
+  provider = "prisma-generator-nestjs-nx-crud"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -27,10 +31,10 @@ model Account {
   account_type String 
 
   /// User Avatar Image URL
-  avatar_url String 
+  avatar_url String?
 
-  // /// Account Settings
-  // account_settings  Json? 
+  /// Account Settings
+  account_settings  String?
 
   /// Secondary Address
   secondary_address String 
@@ -109,15 +113,15 @@ model Wallet {
   /// Chain ID
   chain_id Int 
 
-  // /// ABI
-  // abi  Json? 
+  /// ABI
+  abi  String? 
 
   /// Owner User ID
   owner Account @relation(fields: [owner_id], references: [id])
   owner_id Int
   
-  // /// Contract settings
-  // contract_settings  Json? 
+  /// Contract settings
+  contract_settings  String? 
 
   /// Transactions
   transactions Transaction[]
@@ -187,8 +191,8 @@ model Transaction {
   /// Type
   type Int 
 
-  // /// Contract Settings
-  // contract_settings  Json? 
+  /// Contract Settings
+  contract_settings  String? 
 
   /// Currency
   currency_information CurrencyInformation @relation(name: "TransactionToCurrencyInformation", fields: [currency_id], references: [id])
