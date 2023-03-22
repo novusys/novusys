@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Wallet" ALTER COLUMN "abi" SET DATA TYPE TEXT,
+ALTER COLUMN "contract_settings" SET DATA TYPE TEXT;

@@ -4,6 +4,10 @@
 generator client {
   provider = "prisma-client-js"
 }
+// generator client {
+//   provider = "prisma-generator-nestjs-nx-crud"
+//   output = "../.gen"
+// }
 
 datasource db {
   provider = "postgresql"
@@ -107,14 +111,14 @@ model Wallet {
   chain_id Int 
 
   /// ABI
-  abi  Json? 
+  abi  String? 
 
   /// Owner User ID
   owner Account @relation(fields: [owner_id], references: [id])
   owner_id Int
   
   /// Contract settings
-  contract_settings  Json? 
+  contract_settings  String? 
 
   /// Transactions
   transactions Transaction[]
