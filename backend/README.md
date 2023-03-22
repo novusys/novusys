@@ -107,6 +107,16 @@ query Accounts {
   Accounts { id, user_id,address,user_name,account_type,avatar_url,account_settings,secondary_address,activity}
 }
 
+mutation createSigner {
+  createSigner(data:{signer_id:1,authorized_id:7}) {
+    count
+  }
+}
+
+query Signers {
+  Signers { id,signer_id,authorized_id }
+}
+
 # test AWS RDS
 $ psql -h novusys-dev.cky9ffqjqe5i.us-east-2.rds.amazonaws.com -U postgres
 Password for user postgres: 
