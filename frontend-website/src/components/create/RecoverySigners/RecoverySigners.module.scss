@@ -29,7 +29,7 @@
 
 .signers__form{
     display: flex;
-    align-items: start;
+    align-items: flex-start;
     flex-direction: column;
     text-align: start;
     gap: 10px;
@@ -40,4 +40,14 @@
     align-items: center;
     justify-content: center;
     gap: 10;
+}
+
+.display__name .dispaly__title .display__desc .social__prof{
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    svg{
+        width: 1em;
+        height: 1em;
+    }
 }

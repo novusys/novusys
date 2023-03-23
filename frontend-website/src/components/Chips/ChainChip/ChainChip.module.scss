@@ -7,6 +7,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: row;
     color: var(--color-primary);
 
     background-color: rgba(255, 255, 255, 0.2);
@@ -23,10 +24,7 @@
     // box-shadow: -1px 4px 19px 4px rgba(0, 0, 0, 0.09),
     //   inset 0px -1px 5px 1px rgba(255, 255, 255, 0.25);
   
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
+    gap: 10px;
 
     &:hover{
         border-width: 0px 3px 6px 3px;
@@ -36,4 +34,7 @@
 .out__container__selected{
     outline: 3px solid #12C302;
     outline-offset: -3px;
+}
+.chain__logo{
+    height: 20px;
 }
