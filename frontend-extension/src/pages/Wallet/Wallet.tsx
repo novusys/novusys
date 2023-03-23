@@ -4,7 +4,7 @@ import BalanceBox from "../../components/BalanceBox/BalanceBox";
 import Tabs from "../../components/Tabs/Tabs";
 
 interface WalletProps {
-  setLogin: (state: boolean) => void;
+  handleLogout: () => void;
   resetWallet: () => void;
   setLanding: (action: string) => void;
 }
@@ -12,7 +12,7 @@ interface WalletProps {
 const Wallet: React.FC<WalletProps> = (props: WalletProps) => {
   return (
     <>
-      <Header showTools={true} setLogin={props.setLogin} resetWallet={props.resetWallet} setLanding={props.setLanding} />
+      <Header showTools={true} handleLogout={props.handleLogout} resetWallet={props.resetWallet} setLanding={props.setLanding} />
       <BalanceBox />
       <Tabs />
     </>

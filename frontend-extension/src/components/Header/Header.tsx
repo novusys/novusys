@@ -5,12 +5,18 @@ import ChainSwitcher from "../ChainSwitcher/ChainSwitcher";
 
 interface HeaderProps {
   showTools: boolean;
-  setLogin: (state: boolean) => void;
-  resetWallet: () => void;
+  handleLogout?: () => void;
+  resetWallet?: () => void;
   setLanding: (action: string) => void;
 }
 
 const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
+  const handleLogoutClick: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement> = (e) => {
+    props.handleLogout?.();
+  };
+  const handleResetClick: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement> = (e) => {
+    props.resetWallet?.();
+  };
   return (
     <div className={styles["main__container"]}>
       {props.showTools ? (
@@ -20,7 +26,7 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
             <ChainSwitcher />
           </div>
 
-          <button onClick={() => props.resetWallet()} className={styles["right__button"]}>
+          <button onClick={handleLogoutClick} className={styles["right__button"]}>
             <FiLogOut className={styles["logout__icon"]} />
           </button>
         </>
