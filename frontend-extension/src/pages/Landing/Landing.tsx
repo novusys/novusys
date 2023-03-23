@@ -3,7 +3,7 @@ import styles from "./Landing.module.scss";
 
 interface LandingProps {
   setLanding: (action: string) => void;
-  setLogin: (state: boolean) => void;
+  handleLogin: () => void;
 }
 
 const Landing: React.FC<LandingProps> = (props: LandingProps) => {
@@ -16,7 +16,7 @@ const Landing: React.FC<LandingProps> = (props: LandingProps) => {
       <button onClick={() => props.setLanding("create")} className={styles["action__button"]}>
         Sign Up
       </button>
-      <button onClick={() => props.setLogin(true)} className={styles["action__button"]}>
+      <button onClick={() => props.handleLogin()} className={styles["action__button"]}>
         Login
       </button>
     </div>

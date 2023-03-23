@@ -26,10 +26,24 @@ export default function App() {
    *
    */
 
-  // These states would be set after checking cookies / auth0 to set initial values
+  // These states would be set after checking chrome session storage and is set by background.js auth0 flow
   const [loggedIn, setLogin] = useState(true); // Tracks login state
   const [walletInit, setInit] = useState(false); // Tracks if a wallet has been init on extension
   const [landingAction, setLandingAction] = useState("abort"); // Tracks if Create Wallet was called from Landing
+
+  chrome.runtime.sendMessage({ checkState: true });
+  chrome.runtime.onMessage.addListener(async function (message) {
+    if (message.initValid) {
+      setInit(true);
+    } else if (message.initInvalid) {
+      setInit(false);
+    }
+    if (message.isLoggedIn) {
+      setLogin(true);
+    } else if (message.isLoggedOut) {
+      setLogin(false);
+    }
+  });
 
   // Pass this to child components to be able to reflect conditional render changes
   // This is the alternative to routing (render certain page components based on these states)
@@ -37,18 +51,24 @@ export default function App() {
     // We wait for a message from background.js of whether auth0 login was successful or not
     // The background.js script would also likely be responsible for setting chrome session storage to allow for
     // persistent login while the browser is still open.
-    setLandingAction("login");
     chrome.runtime.sendMessage({ loginAuth0: true });
-    chrome.runtime.onMessage.addListener(async function (message, sender) {
-      if (message.loginResponse) {
-        console.log("novusys wallet login successful");
+    chrome.runtime.onMessage.addListener(async function (message) {
+      if (message.loginSuccess) {
         setLogin(true);
         setInit(true);
-      } else if (!message.loginResponse) {
-        console.log("novusys wallet login cancelled");
+      } else if (message.loginFailed) {
         setLandingAction("abort");
         setLogin(false);
         setInit(false);
+      }
+    });
+  };
+
+  const handleLogout = async () => {
+    chrome.runtime.sendMessage({ logoutAuth0: true });
+    chrome.runtime.onMessage.addListener(async function (message) {
+      if (message.logoutSuccess) {
+        setLogin(false);
       }
     });
   };
@@ -64,6 +84,7 @@ export default function App() {
   // When resetWallet is called then we reset the wallet and go back to landing page
   // Handle any chrome session storage cleaning here
   const resetWallet = () => {
+    chrome.runtime.sendMessage({ resetAuth0: true });
     setInit(false);
     setLogin(false);
     setLandingAction("abort");
@@ -73,18 +94,18 @@ export default function App() {
   const renderState = () => {
     if (walletInit) {
       if (loggedIn) {
-        return <Wallet setLogin={handleLogin} resetWallet={resetWallet} setLanding={handleLanding} />;
+        return <Wallet handleLogout={handleLogout} resetWallet={resetWallet} setLanding={handleLanding} />;
       } else {
-        return <Login setLogin={handleLogin} setLanding={handleLanding} />;
+        return <Login resetWallet={resetWallet} setLogin={handleLogin} setLanding={handleLanding} />;
       }
     } else {
       switch (landingAction) {
         // Login from landing displays a pending page, opening up the auth0 popup
         // After successful auth0 login redirects to wallet page Else returns to landing upon cancel/fail
         case "login":
-          return <PendingLogin setLogin={handleLogin} setLanding={handleLanding} resetWallet={resetWallet} />;
+          return <PendingLogin handleLogin={handleLogin} setLanding={handleLanding} resetWallet={resetWallet} />;
         default:
-          return <Landing setLogin={handleLogin} setLanding={handleLanding} />;
+          return <Landing handleLogin={handleLogin} setLanding={handleLanding} />;
       }
     }
   };

@@ -4,10 +4,6 @@
 generator client {
   provider = "prisma-client-js"
 }
-// generator client {
-//   provider = "prisma-generator-nestjs-nx-crud"
-//   output = "../.gen"
-// }
 
 generator resolver {
   provider = "prisma-generator-nestjs-nx-crud"

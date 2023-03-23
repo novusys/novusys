@@ -29,22 +29,12 @@
 ## Installation
 
 ```bash
-$ cd novusys
+$ cd novusys/backend
 $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 $ nvm install node # for Ubuntu 22.04
 # $ nvm install 16.19.1 # for Ubuntu 18.04
-$ npm install -g @nestjs/cli
-# We probably don't need the commented out installations anymore
-# $ npm install --global yarn
-# $ yarn add graphql @nestjs/graphql apollo-server-express
-# $ npm install graphql-type-json
-# $ npm install @apollo/server
-# $ npm install @nestjs/apollo
-# $ npm install @types/uuid
-$ npm install prisma --save-dev
-$ npm install @prisma/client
-$ npm install -g typescript
-$ npm install --save @nestjs/swagger
+$ npm i
+# copy .env with current login credentials
 ```
 ## Generation Steps
 ```
