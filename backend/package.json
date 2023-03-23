@@ -20,25 +20,16 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@nestjs/apollo": "^11.0.4",
-    "@nestjs/common": "^9.3.11",
-=======
     "@apollo/server": "^4.5.0",
     "@nestjs/apollo": "^11.0.4",
     "@nestjs/common": "^9.0.0",
->>>>>>> main
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.2.1",
     "@prisma/client": "^4.11.0",
     "class-validator": "^0.14.0",
-<<<<<<< HEAD
-    "dotenv": "^16.0.3",
-=======
     "graphql": "^16.6.0",
     "graphql-tools": "^8.3.19",
->>>>>>> main
     "prisma-generator-nestjs-nx-crud": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^4.4.0",
