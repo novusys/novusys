@@ -29,7 +29,7 @@ export default function App() {
    */
 
   // These states would be set after checking chrome session storage and is set by background.js auth0 flow
-  const [loggedIn, setLogin] = useState(true); // Tracks login state
+  const [loggedIn, setLogin] = useState(false); // Tracks login state
   const [walletInit, setInit] = useState(false); // Tracks if a wallet has been init on extension
   const [landingAction, setLandingAction] = useState("abort"); // Tracks if Create Wallet was called from Landing
 
@@ -47,11 +47,9 @@ export default function App() {
     }
   });
 
-  // Pass this to child components to be able to reflect conditional render changes
-  // This is the alternative to routing (render certain page components based on these states)
   const handleLogin = async () => {
     // We wait for a message from background.js of whether auth0 login was successful or not
-    // The background.js script would also likely be responsible for setting chrome session storage to allow for
+    // The background.js script is responsible for setting chrome session storage to allow for
     // persistent login while the browser is still open.
     chrome.runtime.sendMessage({ loginAuth0: true });
     chrome.runtime.onMessage.addListener(async function (message) {
@@ -77,14 +75,13 @@ export default function App() {
 
   // Called from Landing page to update wallet status
   // Upon successful create/import set states and show wallet
-  // Possible options for action: 'create', 'import', 'abort'
   const handleLanding = (action: string) => {
     setLandingAction(action);
   };
 
   // Active means a wallet is instantiated for extension via login auth0
   // When resetWallet is called then we reset the wallet and go back to landing page
-  // Handle any chrome session storage cleaning here
+  // Chrome session/local storage cleared (handled in background service worker)
   const resetWallet = () => {
     chrome.runtime.sendMessage({ resetAuth0: true });
     setInit(false);
@@ -92,9 +89,7 @@ export default function App() {
     setLandingAction("abort");
   };
 
-  // Return the page to render into the layout based on wallet state
   const renderState = () => {
-    return <Signature />;
     if (walletInit) {
       if (loggedIn) {
         return <Wallet handleLogout={handleLogout} resetWallet={resetWallet} setLanding={handleLanding} />;
@@ -103,8 +98,6 @@ export default function App() {
       }
     } else {
       switch (landingAction) {
-        // Login from landing displays a pending page, opening up the auth0 popup
-        // After successful auth0 login redirects to wallet page Else returns to landing upon cancel/fail
         case "login":
           return <PendingLogin handleLogin={handleLogin} setLanding={handleLanding} resetWallet={resetWallet} />;
         default:
