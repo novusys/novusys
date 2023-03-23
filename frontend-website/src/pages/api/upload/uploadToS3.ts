@@ -17,33 +17,34 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    console.log(typeof req.body);
-    let { name, type, file } = req.body;
+    // console.log(typeof req.body);
+    let { name, type } = req.body;
+    console.log(type, req.body)
     // let name = req.body.name
     // let type = req.body.type
-    console.log(name, type);
+    // console.log(name, type);
     const fileParams = {
-      Bucket: "nft.soulbound",
+      Bucket: "test.soulbound",
       Key: name,
       Expires: 600,
       ContentType: type,
+      ACL: "public-read"
     };
 
     const url = await s3.getSignedUrlPromise("putObject", fileParams);
-
-    console.log(url, file);
-    let { data: newData } = await axios.put(url, file, {
-      headers: {
-        "Content-type": file.type,
-        Charset: "utf-8",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-    console.log(newData);
+    console.log("TEST?ING")
+    // let { data: newData } = await axios.put(url, file, {
+    //   headers: {
+    //     "Content-type": file.type,
+    //     "Charset": "utf-8",
+    //     "Access-Control-Allow-Origin": "*",
+    //   },
+    // });
+    // console.log(newData);
 
     res.status(200).json({ url });
   } catch (err) {
-    console.log(err);
+    console.log("ERROR",err);
     res.status(400).json({ message: err });
   }
 };

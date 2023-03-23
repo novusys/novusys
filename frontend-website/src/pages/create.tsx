@@ -19,11 +19,16 @@ import SecurityFeatures from '@/components/create/SecurityFeatures/SecurityFeatu
 import ProfileCreate from '@/components/create/ProfileCreate/ProfileCreate'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import { useUser } from '@auth0/nextjs-auth0/client'
+import { useAccount } from 'wagmi'
+import ChainLaunch from '@/components/Launch/ChainLaunch/ChainLaunch'
 
 
 function Create() {
-  const { user, error, isLoading } = useUser();
 
+  const [submitting, setSubmitting] = useState(false)
+
+  const { user, error, isLoading } = useUser();
+  const { address, isConnected } = useAccount()
   const [chains, setChains] = useState([])
 
   const [keyManagement, setKeyManagement] = useState("cust")
@@ -58,6 +63,59 @@ function Create() {
 
   })
 
+  const [errorList, setErrorList] = useState([])
+
+  const validateInput = () => {
+    const errors: Array<string> = []
+    if (chains.length == 0) {
+      errors.push("Please Select at Least 1 Chain")
+    }
+    if (keyManagement == "nonc" && !address) {
+      errors.push("Please Connect a Wallet!")
+    }
+    for (let i = 0; i < recoverySigners.length; i++) {
+      if (new Set(Object.values(recoverySigners[i])).has("")) {
+        errors.push("Please fill out all Recovery Signer Fields")
+        break
+      }
+    }
+    if (securityFeatures['balance_multisig']['enabled'] && (securityFeatures['balance_multisig']['value'] <= 0 || securityFeatures['balance_multisig']['address'] == "")) {
+      errors.push("Incorrect entries for multisig security features")
+    }
+
+    if (securityFeatures['savings']['enabled'] && (securityFeatures['savings']['savings_percent'] <= 0 || securityFeatures['savings']['savings_percent'] > 100 || securityFeatures['balance_multisig']['address'] == "")) {
+      errors.push("Incorrect entries for multisig security features")
+    }
+
+    return errors
+  }
+
+  const renderErrors = () => {
+    return errorList.map((e, index) => {
+      return (
+        <div key={index}>{e}</div>
+      )
+    })
+  }
+
+  const renderSubmitChain = () => {
+    return chains.map((c, index)=>{
+      return (
+        <ChainLaunch cid={c} key={index}/>
+      )
+    })
+  }
+
+  const submitLaunch = () => {
+    const errors = validateInput()
+    if (errors.length != 0) {
+      setErrorList(errors)
+      return
+    }
+    setSubmitting(true)
+
+  }
+
   return (
     <>
       <Head>
@@ -66,29 +124,48 @@ function Create() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <PageLayout>
-        <div className={styles['header__container']}>
-          <div className={styles['title__container']}>
-            Setup your <a>novusys</a> Smart Wallet
+      {!submitting ?
+        <PageLayout>
+          <div className={styles['header__container']}>
+            <div className={styles['title__container']}>
+              Setup your <a>novusys</a> Smart Wallet
+            </div>
           </div>
-        </div>
-        <BluredContainer>
-          <ChainSelect selectedChains={chains} setChains={setChains} />
-          <LargeGap />
-          <KeySelect keyManagement={keyManagement} setKeyManagement={setKeyManagement} />
-          <LargeGap />
-          <RecoverySigners recoverySigners={recoverySigners} setRecoverySigners={setRecoverySigners} />
-          <LargeGap />
-          <SecurityFeatures securityFeatures={securityFeatures} setSecurityFeatures={setSecurityFeatures} />
-          <LargeGap />
-          <ProfileCreate profile={profile} setProfile={setProfile} />
-          <LargeGap />
-          <div className={styles['launch__button']}>
-            Launch your Smart Wallet
-          </div>
-        </BluredContainer>
+          <BluredContainer>
+            <ChainSelect selectedChains={chains} setChains={setChains} />
+            <LargeGap />
+            <KeySelect keyManagement={keyManagement} setKeyManagement={setKeyManagement} />
+            <LargeGap />
+            <RecoverySigners recoverySigners={recoverySigners} setRecoverySigners={setRecoverySigners} />
+            <LargeGap />
+            <SecurityFeatures securityFeatures={securityFeatures} setSecurityFeatures={setSecurityFeatures} />
+            <LargeGap />
+            <ProfileCreate profile={profile} setProfile={setProfile} />
+            <LargeGap />
 
-      </PageLayout>
+            <div className={styles['launch__button']} onClick={() => { submitLaunch() }}>
+              Launch your Smart Wallet
+            </div>
+            <div className={styles['error__container']}>
+              {renderErrors()}
+            </div>
+          </BluredContainer>
+
+        </PageLayout> : <PageLayout>
+          <div className={styles['header__container']}>
+            <div className={styles['title__container']}>
+              Setup your <a>novusys</a> Smart Wallet
+            </div>
+          </div>
+          <BluredContainer>
+            <div className={styles['submit__container']}>
+              {renderSubmitChain()}
+            </div>
+          </BluredContainer>
+
+        </PageLayout>
+
+      }
 
     </>
   )

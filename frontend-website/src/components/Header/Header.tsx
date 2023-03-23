@@ -6,6 +6,7 @@ import ButtonOutline from '../Buttons/ButtonOutline/ButtonOutline'
 import DarkMode from '@material-design-icons/svg/outlined/dark_mode.svg'
 import { useUser } from '@auth0/nextjs-auth0/client';
 import ThemeToggle from '../ThemeToggle/ThemeToggle'
+import ProfileChip from '../Chips/ProfileChip/ProfileChip'
 
 
 export default function Header() {
@@ -49,11 +50,12 @@ export default function Header() {
 
         </div> :
         <div className={styles['right__container']}>
-           <div>
-            Dashboard
+           <div onClick={()=>{window.location.href = '/create'}}>
+            Launch a Wallet
           </div>
           <div className={styles['signup__container']}>
-            <ButtonOutline text='Launch a Wallet' onClick={() => { window.location.href = '/create' }} />
+            <ProfileChip name={''} logo={''} onClick={undefined}/>
+            {/* <ButtonOutline text='Launch a Wallet' onClick={() => { window.location.href = '/create' }} /> */}
             <ThemeToggle/>
           </div>
 

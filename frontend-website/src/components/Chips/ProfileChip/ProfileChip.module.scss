@@ -1,0 +1,94 @@
+.out__container,
+.out__container__selected {
+  padding: 10px 50px 10px 10px;
+  background-color: black;
+  width: fit-content;
+  font-weight: bold;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  color: var(--color-primary);
+
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 60px;
+  -webkit-backdrop-filter: blur(6em);
+  backdrop-filter: blur(6em);
+
+  background: rgba(217, 217, 217, 0.2);
+  border-width: 0px 1px 2px 1px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.2);
+  // box-shadow: -1px 4px 19px 4px rgba(0, 0, 0, 0.09),
+  //   inset 0px -1px 5px 1px rgba(255, 255, 255, 0.25);
+
+  gap: 10px;
+  &:hover {
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+
+    .expand {
+      display: flex;
+      height: fit-content;
+    }
+  }
+}
+
+.expand {
+  overflow: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  height: 0;
+  width: 100%;
+  display: none;
+  line-height: 30px;
+  box-sizing: border-box;
+  transition: height 0.5s ease-in-out;
+  transition-delay: 0.1s;
+  //   display: none;
+  flex-direction: column;
+  padding: 0 20px 20px 20px;
+
+  background: rgba(217, 217, 217, 0.5);
+  border-width: 0px 1px 2px 1px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.5);
+
+  border-bottom-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+  div {
+    font-weight: 100;
+
+    &:hover {
+        cursor: pointer;
+      font-weight: bold;
+    }
+  }
+}
+
+.user__container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.out__container__selected {
+  outline: 3px solid #12c302;
+  outline-offset: -3px;
+}
+.user__logo {
+  height: 40px;
+  border-radius: 100px;
+}
+.nickname {
+  font-size: 24px;
+  font-weight: bold;
+}
+.email {
+  font-weight: 200;
+  font-size: 15px;
+}

@@ -9,6 +9,7 @@ import BlurPaper from '@/layouts/Papers/BlurPaper/BlurPaper'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { getEns } from '@/api/getEns'
+import { NFTStorage, File, Blob } from 'nft.storage'
 
 import TextField from '@mui/material/TextField';
 import Edit from '@material-design-icons/svg/outlined/edit.svg'
@@ -16,6 +17,7 @@ import Close from '@material-design-icons/svg/outlined/close.svg'
 import Key from '@material-design-icons/svg/outlined/key.svg'
 import { useUser } from '@auth0/nextjs-auth0/client'
 import { useState } from 'react'
+import axios from 'axios'
 
 interface Profile {
   display_name: string
@@ -48,14 +50,13 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
 
   const [edit, setEdit] = useState("")
   const [newImage, setNewImage] = useState("")
-
-  if (isConnected && address) {
-    console.log(address)
-    if(profile.ens == ""){
-      fetchEns(address, (p: any) => { updateProfile('ens', p['decryptedName']) })
-    }
-    
-  }
+  const nftstorage = new NFTStorage({ token: process.env.NFT_STORAGE_KEY });
+  const uploadFile = async (file: File) => {
+    //setUploadingStatus("Uploading the file to AWS S3");
+    const certificationHash = await nftstorage.storeBlob(file);
+    console.log(certificationHash)
+    return certificationHash
+  };
 
 
   const connectBtn = () => {
@@ -70,16 +71,24 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
     }
   }
 
-  const onChangeFileUpload = (file: File | null, setFunction: Function, name: string) => {
+
+  const onChangeFileUpload = async (file: File | null, setFunction: Function, name: string) => {
     if (!file) {
       setFunction('')
       return
     }
 
     //This might cause a memory leak
-    setFunction(URL.createObjectURL(file))
-    // setFunction(file)
-    // newImage(name, file)
+    var blob = file.slice(0, file.size, 'image/png');
+    let fileToUpload = new File([blob], file.name, {
+      type: file.type,
+    });
+    console.log("Test")
+    const up = await uploadFile(file)
+    console.log(up)
+
+    setFunction("https://s3.us-west-2.amazonaws.com/novusys-pfps/" + fileToUpload.name)
+
 
   }
 
@@ -130,16 +139,17 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
                   multiple
                   type="file"
                   className={styles['hide']}
-                  onChange={(event) =>
+                  onChange={async (event) =>
                     //@ts-ignore
-                    onChangeFileUpload(event.target.files[0] || null, setNewImage, "logo")
+                    await onChangeFileUpload(event.target.files[0] || null, setNewImage, "logo")
                   }
                 />
                 {
                   newImage === "" ?
-                    <label htmlFor="contained-button-file">
-                      <Edit viewBox="0 0 24 24" />
-                    </label> :
+                    <></> :
+                    // <label htmlFor="contained-button-file">
+                    //   <Edit viewBox="0 0 24 24" />
+                    // </label> :
                     <div onClick={() => { setNewImage("") }}>
                       <Close viewBox="0 0 24 24" />
                     </div>
@@ -200,11 +210,11 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
                   isConnected ?
 
                     <div className={styles['social__prof']}>
-                      <img src='./logos/social/ens.png' className={styles['social__logo']}/>
+                      <img src='./logos/social/ens.png' className={styles['social__logo']} />
                       {profile.ens}
                     </div> : <></>}
                 <div className={styles['social__prof']}>
-                <img src='./logos/social/discord.png' className={styles['social__logo']}/>
+                  <img src='./logos/social/discord.png' className={styles['social__logo']} />
                   {
                     edit == "discord" ? <TextField id="standard-basic" label="Discord" variant="standard" value={profile.discord} onChange={(event) => updateProfile('discord', event.target.value)} onKeyDown={(event) => {
                       if (event.key == 'Enter') {
@@ -221,7 +231,7 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
                   </div>
                 </div>
                 <div className={styles['social__prof']}>
-                <img src='./logos/social/twitter.png' className={styles['social__logo']}/>
+                  <img src='./logos/social/twitter.png' className={styles['social__logo']} />
                   {
                     edit == "twitter" ? <TextField id="standard-basic" label="Twitter" variant="standard" value={profile.twitter} onChange={(event) => updateProfile('twitter', event.target.value)} onKeyDown={(event) => {
                       if (event.key == 'Enter') {
@@ -237,7 +247,7 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
                   </div>
                 </div>
                 <div className={styles['social__prof']}>
-                <img src='./logos/social/reddit.png' className={styles['social__logo']}/>
+                  <img src='./logos/social/reddit.png' className={styles['social__logo']} />
                   {
                     edit == "reddit" ? <TextField id="standard-basic" label="Reddit" variant="standard" value={profile.reddit} onChange={(event) => updateProfile('reddit', event.target.value)} onKeyDown={(event) => {
                       if (event.key == 'Enter') {
@@ -254,7 +264,7 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
                   </div>
                 </div>
                 <div className={styles['social__prof']}>
-                <img src='./logos/social/medium.png' className={styles['social__logo']}/>
+                  <img src='./logos/social/medium.png' className={styles['social__logo']} />
                   {
                     edit == "medium" ? <TextField id="standard-basic" label="Medium" variant="standard" value={profile.medium} onChange={(event) => updateProfile('medium', event.target.value)} onKeyDown={(event) => {
                       if (event.key == 'Enter') {
@@ -270,7 +280,7 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
                   </div>
                 </div>
                 <div className={styles['social__prof']}>
-                <img src='./logos/social/instagram.webp' className={styles['social__logo']}/>
+                  <img src='./logos/social/instagram.webp' className={styles['social__logo']} />
                   {
                     edit == "instagram" ? <TextField id="standard-basic" label="Instagram" variant="standard" value={profile.instagram} onChange={(event) => updateProfile('instagram', event.target.value)} onKeyDown={(event) => {
                       if (event.key == 'Enter') {

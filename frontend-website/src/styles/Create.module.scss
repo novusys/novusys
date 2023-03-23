@@ -38,3 +38,18 @@
     background-position: right center; /* change the direction of the change here */
   }
 }
+
+.error__container{
+  display: flex;
+  flex-direction: column;
+  color: red;
+  font-weight: bold;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  padding-top: 30px;
+}
+
+.submit__container{
+  height: 80vh;
+}
