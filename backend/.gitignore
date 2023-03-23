@@ -1,22 +1,50 @@
 # compiled output
 /dist
-/node_modules
 
-# Logs
-logs
-*.log
+# dependencies
+node_modules/
+/.pnp
+.pnp.js
+.env
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 lerna-debug.log*
+
+# local env files
+.env*.local
 
 # OS
 .DS_Store
 
+# vercel
+.vercel
+
 # Tests
 /coverage
 /.nyc_output
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
 # IDEs and editors
 /.idea

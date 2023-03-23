@@ -44,6 +44,19 @@ $ npm install -g @nestjs/cli
 $ npm install prisma --save-dev
 $ npm install @prisma/client
 $ npm install -g typescript
+$ npm install --save @nestjs/swagger
+```
+## Generation Steps
+```
+## Prisma code generation
+$ npx nest generate module prisma
+$ npx nest generate service prisma
+
+## Database migration
+$ npx prisma migrate dev --name init
+
+## Generates Prisma Client CRUD operations
+$ prisma generate  
 ```
 
 ## Running the app
@@ -58,9 +71,6 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 
-# migration
-$ npx prisma migrate dev --name init
-$ prisma generate  # Generates Prisma Client CRUD operations
 ```
 
 ## Test
@@ -74,6 +84,38 @@ $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
+
+# test GraphQL
+
+mutation createAccount {
+  createAccount(data:{user_id:"3",address:"addr3",user_name:"user3",account_type:"account type",avatar_url:"url",account_settings:"settings",secondary_address:"secondary",activity:""}){
+    count
+  }
+}
+mutation createWallet{
+  createWallet(data:{address:"addr",chain_id:111,abi:"abi",owner_id:1,contract_settings:"",gas_saved:222}){
+    count
+  }
+}
+query Wallet1 {
+  Wallet(id:1) { owner_id,address,chain_id,abi,contract_settings,gas_saved,__typename}
+}
+query Wallets {
+  Wallets { id,owner_id,address,chain_id,abi,contract_settings,gas_saved,__typename}
+}
+query Accounts {
+  Accounts { id, user_id,address,user_name,account_type,avatar_url,account_settings,secondary_address,activity}
+}
+
+mutation createSigner {
+  createSigner(data:{signer_id:1,authorized_id:7}) {
+    count
+  }
+}
+
+query Signers {
+  Signers { id,signer_id,authorized_id }
+}
 
 # test AWS RDS
 $ psql -h novusys-dev.cky9ffqjqe5i.us-east-2.rds.amazonaws.com -U postgres

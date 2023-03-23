@@ -34,9 +34,9 @@ export default function App() {
   // Pass this to child components to be able to reflect conditional render changes
   // This is the alternative to routing (render certain page components based on these states)
   const handleLogin = async () => {
-    // Here instead of parsing a boolean input we would set the login state based on the results of the auth0 login
-    // So we would wait for a message from background.js of whether auth0 login was successful or not
-    // For testing purposes it is set manually
+    // We wait for a message from background.js of whether auth0 login was successful or not
+    // The background.js script would also likely be responsible for setting chrome session storage to allow for
+    // persistent login while the browser is still open.
     setLandingAction("login");
     chrome.runtime.sendMessage({ loginAuth0: true });
     chrome.runtime.onMessage.addListener(async function (message, sender) {

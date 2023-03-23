@@ -9,6 +9,10 @@ generator client {
 //   output = "../.gen"
 // }
 
+generator resolver {
+  provider = "prisma-generator-nestjs-nx-crud"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -16,7 +20,7 @@ datasource db {
 
 model Account {
   /// Account ID
-  id Int @id @unique
+  id Int @default(autoincrement()) @id @unique
 
   /// User ID (auth0)
   user_id String @unique
@@ -31,10 +35,10 @@ model Account {
   account_type String 
 
   /// User Avatar Image URL
-  avatar_url String 
+  avatar_url String?
 
   /// Account Settings
-  account_settings  Json? 
+  account_settings  String?
 
   /// Secondary Address
   secondary_address String 
@@ -42,27 +46,30 @@ model Account {
   /// Wallets
   wallets Wallet[] 
 
-  /// Signers
-  signers Signer[] @relation("Signers")
+  /// Signer Accounts
+  signers Signer[] @relation(name: "Authorized")
+
+  /// Accounts Authorized to Sign
+  authorized Signer[] @relation(name: "Signer")
 
   /// Activity
   activity String[] 
-
-  signer Signer? @relation("SignerAccount") // prisma forces this opposite relation field for what should be one-way relationships (see prisma issue #2018)
 }
 
 model Signer {
-  id Int @id @unique
+  /// ID
+  id Int @default(autoincrement()) @id @unique 
 
-  signer Account @relation(name: "SignerAccount", fields: [signer_id], references: [id])
-  signer_id Int @unique
+  signer Account @relation(name: "Signer", fields: [signer_id], references: [id])
+  signer_id Int
 
-  authorized Account[] @relation("Signers")
+  authorized Account @relation(name: "Authorized", fields: [authorized_id], references: [id])
+  authorized_id Int
 }
 
 model Currency {
   /// Currency ID
-  id Int @id @unique 
+  id Int @default(autoincrement()) @id @unique 
 
   /// UUID
   uuid String @unique 
@@ -84,7 +91,7 @@ model Currency {
 
 model CurrencyInformation {
   /// Currency ID
-  id Int @id @unique 
+  id Int @default(autoincrement()) @id @unique 
 
   /// Name
   name String 
@@ -102,7 +109,7 @@ model CurrencyInformation {
 
 model Wallet {
   /// Wallet id
-  id Int @id @unique
+  id Int @default(autoincrement()) @id @unique
 
   /// Wallet Address (blockchain)
   address String @unique
@@ -135,7 +142,7 @@ model Wallet {
 
 model Nft {
   /// ID
-  id Int @id @unique
+  id Int @default(autoincrement()) @id @unique
 
   /// UUID
   uuid String @unique
@@ -155,7 +162,7 @@ model Nft {
 
 model NftInformation {
   /// NFT ID
-  id Int @id @unique
+  id Int @default(autoincrement()) @id @unique
 
   /// Name
   name String 
@@ -177,7 +184,7 @@ model NftInformation {
 
 model Transaction {
   /// Transaction ID
-  id Int @id @unique
+  id Int @default(autoincrement()) @id @unique
 
   /// Transaction Hash
   hash String @unique
@@ -189,7 +196,7 @@ model Transaction {
   type Int 
 
   /// Contract Settings
-  contract_settings  Json? 
+  contract_settings  String? 
 
   /// Currency
   currency_information CurrencyInformation @relation(name: "TransactionToCurrencyInformation", fields: [currency_id], references: [id])
