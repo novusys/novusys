@@ -7,6 +7,8 @@ import Wallet from "../Wallet/Wallet";
 import Login from "../Login/Login";
 import PendingLogin from "../PendingLogin/PendingLogin";
 
+import Signature from "../Signature/Signature";
+
 export default function App() {
   /**
    * Idea is to use Chrome cookies to detect different states of the extension
@@ -92,6 +94,7 @@ export default function App() {
 
   // Return the page to render into the layout based on wallet state
   const renderState = () => {
+    return <Signature />;
     if (walletInit) {
       if (loggedIn) {
         return <Wallet handleLogout={handleLogout} resetWallet={resetWallet} setLanding={handleLanding} />;
