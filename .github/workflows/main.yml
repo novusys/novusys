@@ -56,6 +56,6 @@ jobs:
             cd backend &&
             npm install &&
             npm run build &&
-            killall node &&
+            killall node
             nohup npm run start:dev 2>&1 > ~/novusys.log &
           '
