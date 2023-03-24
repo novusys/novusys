@@ -5,9 +5,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator resolver {
-  provider = "prisma-generator-nestjs-nx-crud"
-}
+// generator resolver {
+//   provider = "prisma-generator-nestjs-nx-crud"
+// }
 
 datasource db {
   provider = "postgresql"

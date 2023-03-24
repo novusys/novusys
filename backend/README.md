@@ -1,30 +1,6 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Novusys backend
 
 ## Installation
 
@@ -34,7 +10,7 @@ $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bas
 $ nvm install node # for Ubuntu 22.04
 # $ nvm install 16.19.1 # for Ubuntu 18.04
 $ npm i
-# copy .env with current login credentials
+# copy .env with postgres credentials
 ```
 ## Generation Steps
 ```
@@ -76,6 +52,24 @@ $ npm run test:e2e
 $ npm run test:cov
 
 # test GraphQL
+mutation createCurrencyInformation {
+  # createCurrencyInformation(data:{name:"Etherium Mainnet",ticker:"ETH",chain_id:1}) {
+  #   count
+  # }
+  # createCurrencyInformation(data:{name:"Goerli",ticker:"ETH",chain_id:5}) {
+  #   count
+  # }
+  # createCurrencyInformation(data:{name:"Polygon Mainnet",ticker:"MATIC",chain_id:137}) {
+  #   count
+  # }
+  # createCurrencyInformation(data:{name:"Optimism",ticker:"ETH",chain_id:10}) {
+  #   count
+  # }
+  createCurrencyInformation(data:{name:"Gnosis",ticker:"xDAI",chain_id:100}) {
+    count
+  }
+}
+
 
 mutation createAccount {
   createAccount(data:{user_id:"3",address:"addr3",user_name:"user3",account_type:"account type",avatar_url:"url",account_settings:"settings",secondary_address:"secondary",activity:""}){
@@ -185,14 +179,10 @@ novusys-dev=> quit
 
 ## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- Author - 
+- Website - 
+- Twitter - 
 
 ## License
-
-Nest is [MIT licensed](LICENSE).

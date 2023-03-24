@@ -51,7 +51,7 @@ export default function Signers() {
 
     return (
       <>
-        <td>
+        <td className={styles["avatar__container"]}>
           <img src={item.avatar} className={styles["account__avatar"]} alt="" />
         </td>
         <td>{item.address}</td>

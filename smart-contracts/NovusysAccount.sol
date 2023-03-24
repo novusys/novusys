@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import "../core/BaseAccount.sol";
+import "./BaseAccount.sol";
 
 /**
   * minimal account.
@@ -37,6 +37,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
 
     mapping(address => bool) private recoveryVoters;
     Counters.Counter private totalVoters;
+    bool private votersUninitialized;
 
     struct RecoveryProposal {
         address recoveryAddress;
@@ -66,6 +67,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
     event RecoveryProposed(address indexed recoveryAddress);
     event RecoveryExecuted(address indexed recoveryAddress);
     event RecoveryVoted(address indexed voter);
+    event VotersInitialized(address[] indexed voters);
     event AddVoterProposed(address indexed voter);
     event VoterAdded(address indexed voter);
     event AddVoterVetoed(address indexed voter);
@@ -179,12 +181,14 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
 
     function _initialize(address anOwner) internal virtual {
         owner = anOwner;
+        paused = false;
+        votersUninitialized = true;
         emit SimpleAccountInitialized(_entryPoint, owner);
     }
 
-    // Require the function call went through EntryPoint or owner
+    // Require the function call went through EntryPoint or owner or loopback
     function _requireFromEntryPointOrOwner() internal view {
-        require(msg.sender == address(entryPoint()) || msg.sender == owner, "account: not Owner or EntryPoint");
+        require(msg.sender == address(this) || msg.sender == address(entryPoint()) || msg.sender == owner, "account: not Owner or EntryPoint");
     }
 
     // Require the function call went through EntryPoint or voter
@@ -244,6 +248,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
             recoveryProposal.recoveryAddress = recoveryAddress;
             recoveryProposal.proposalTime = block.timestamp;
             delete recoveryProposal.votes;
+            
             emit RecoveryProposed(recoveryAddress);
             return;
         }
@@ -252,6 +257,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
             if(recoveryProposal.votes.length * 2 >= totalVoters.current()){
                 //Transfer address to new address
                 owner = recoveryProposal.recoveryAddress;
+                
                 //Reset proposal
                 recoveryProposal.recoveryAddress = address(0);
                 recoveryProposal.proposalTime = 0;
@@ -267,8 +273,26 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
         require(!paused, "Wallet paused");
         _requireFromEntryPointOrVoter();
         require(!checkAlreadyVoted(recoveryProposal.votes, voter), "Voter already voted");
+
         recoveryProposal.votes.push(voter);
+
         emit RecoveryVoted(voter);
+    }
+
+    function initializeVoters(address[] memory voters) external {
+        require(!paused, "Wallet paused");
+        _requireFromEntryPointOrOwner();
+        require(votersUninitialized, "Voters already initialized");
+        require(voters.length > 0, "https://youtu.be/JqdDrYuefEQ?t=2");
+        
+        for(uint256 i = 0; i < voters.length; i++){
+            require(voters[i] != address(0), "Zero address is not a valid voter address");
+            recoveryVoters[voters[i]] = true;
+            totalVoters.increment();
+        }
+
+        votersUninitialized = false;
+        emit VotersInitialized(voters);
     }
 
     function addRecoveryVoter(address voter) external {
@@ -276,6 +300,12 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
         _requireFromEntryPointOrOwner();
         require(!recoveryVoters[voter], "Recovery voter already registered");
         require(voter != owner, "Wallet owner cannot be a recovery voter");
+        require(voter != address(0), "Zero address is not a valid voter address");
+
+        //Initialize voters if uninitialized
+        if(votersUninitialized){
+            votersUninitialized = false;
+        }
 
         //Check if proposal has been vetoed
         if(addVoterProposal.vetos.length * 2 >= totalVoters.current()){
@@ -294,10 +324,12 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
                 //Add voter to registery
                 recoveryVoters[voter] = true;
                 totalVoters.increment();
+                
                 //Reset proposal
                 addVoterProposal.voterAddress = address(0);
                 addVoterProposal.proposalTime = 0;
                 delete addVoterProposal.vetos;
+
                 emit VoterAdded(voter);
                 return;
             }
@@ -306,6 +338,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
                 addVoterProposal.voterAddress = voter;
                 addVoterProposal.proposalTime = block.timestamp;
                 delete addVoterProposal.vetos;
+
                 emit AddVoterProposed(voter);
                 return;
             }
@@ -318,7 +351,9 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
         require(!paused, "Wallet paused");
         _requireFromEntryPointOrVoter();
         require(!checkAlreadyVoted(addVoterProposal.vetos, voter), "Voter already vetoed");
+        
         addVoterProposal.vetos.push(voter);
+        
         emit AddVoterVetoed(voter);
     }
 
@@ -333,6 +368,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
             removeVoterProposal.voterAddress = voter;
             removeVoterProposal.proposalTime = block.timestamp;
             delete removeVoterProposal.vetos;
+            
             emit RemoveVoterProposed(voter);
             return;
         }
@@ -343,10 +379,13 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
                 //Remove voter from registery
                 delete recoveryVoters[voter];
                 totalVoters.decrement();
+                
                 //Reset proposal
                 removeVoterProposal.voterAddress = address(0);
                 removeVoterProposal.proposalTime = 0;
                 delete removeVoterProposal.vetos;
+
+                emit VoterRemoved(voter);
                 return;
             }
             else{
@@ -354,6 +393,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
                 removeVoterProposal.voterAddress = voter;
                 removeVoterProposal.proposalTime = block.timestamp;
                 delete removeVoterProposal.vetos;
+                
                 emit RemoveVoterProposed(voter);
                 return;
             }
@@ -365,7 +405,9 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
         require(!paused, "Wallet paused");
         _requireFromEntryPointOrVoter();
         require(!checkAlreadyVoted(removeVoterProposal.vetos, voter), "Voter already vetoed");
+        
         removeVoterProposal.vetos.push(voter);
+        
         emit RemoveVoterVetoed(voter);
     }
 
