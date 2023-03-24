@@ -14,7 +14,5 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '19.x'
-      - run: cd backend
-      - run: pwd
-      - run: npm install
-      - run: npm run build --if-present
+      - run: cd backend; npm install
+      - run: cd backend; npm run build --if-present
