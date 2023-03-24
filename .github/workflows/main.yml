@@ -16,5 +16,5 @@ jobs:
           node-version: '19.x'
       - run: cd backend
       - run: pwd
-      - run: npm i
+      - run: npm install
       - run: npm run build --if-present
