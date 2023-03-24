@@ -31,11 +31,11 @@ jobs:
 #          remote_path: /home/ubuntu/development
 #          remote_host: ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME }}
 #          remote_user: ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME }}
-#          remote_key: "${{ secrets.NOVUSYS_PRODUCTION_2_KEY }}"
+#          remote_key: "${{ secrets.NOVUSYS_PRODUCTION_2_PRIVATE_KEY }}"
 
       - name: Deploy in EC2
         env:
-            PRIVATE_KEY: "${{ secrets.NOVUSYS_PRODUCTION_2_KEY }}"
+            PRIVATE_KEY: "${{ secrets.NOVUSYS_PRODUCTION_2_PRIVATE_KEY }}"
             HOSTNAME : ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME }}
             USER_NAME : ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME }}
             
