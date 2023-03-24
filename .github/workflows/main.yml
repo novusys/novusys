@@ -49,5 +49,5 @@ jobs:
             git pull origin master &&
             cd backend &&
             npm install &&
-            npm run build --if-present
+            npm run build --if-present '
             
