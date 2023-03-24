@@ -35,9 +35,9 @@ jobs:
 
       - name: Deploy in EC2
         env:
-            PRIVATE_KEY: ${{ secrets.NOVUSYS_PRODUCTION_2_KEY  }}
-            HOSTNAME : ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME  }}
-            USER_NAME : ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME  }}
+            PRIVATE_KEY: "${{ secrets.NOVUSYS_PRODUCTION_2_KEY }}"
+            HOSTNAME : ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME }}
+            USER_NAME : ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME }}
             
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && 
