@@ -52,6 +52,24 @@ $ npm run test:e2e
 $ npm run test:cov
 
 # test GraphQL
+mutation createCurrencyInformation {
+  # createCurrencyInformation(data:{name:"Etherium Mainnet",ticker:"ETH",chain_id:1}) {
+  #   count
+  # }
+  # createCurrencyInformation(data:{name:"Goerli",ticker:"ETH",chain_id:5}) {
+  #   count
+  # }
+  # createCurrencyInformation(data:{name:"Polygon Mainnet",ticker:"MATIC",chain_id:137}) {
+  #   count
+  # }
+  # createCurrencyInformation(data:{name:"Optimism",ticker:"ETH",chain_id:10}) {
+  #   count
+  # }
+  createCurrencyInformation(data:{name:"Gnosis",ticker:"xDAI",chain_id:100}) {
+    count
+  }
+}
+
 
 mutation createAccount {
   createAccount(data:{user_id:"3",address:"addr3",user_name:"user3",account_type:"account type",avatar_url:"url",account_settings:"settings",secondary_address:"secondary",activity:""}){
