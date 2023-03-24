@@ -42,6 +42,7 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && 
           chmod 600 private_key.pem &&
+          pwd &&
           ls -l private_key.pem &&
           ssh -v -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
             cd development &&
