@@ -45,7 +45,7 @@ async function handleAuth0Login() {
     const storageExpiry = await chrome.storage.session.get("USER_TOKEN_EXPIRES_AT");
     const isExpired = storageExpiry.USER_TOKEN_EXPIRES_AT - new Date().getTime() <= 0;
     if (!isExpired) {
-      await chrome.storage.local.set({ NOVUSYS_LOGGED_IN: true });
+      await chrome.storage.session.set({ NOVUSYS_LOGGED_IN: true });
       return { status: 200, message: "novusys wallet valid access token still alive" };
     }
   }
@@ -107,7 +107,7 @@ async function handleAuth0Login() {
               await chrome.storage.session.set({ USER_ID_TOKEN: data.id_token });
               await chrome.storage.session.set({ USER_TOKEN_EXPIRES_AT: expires_at });
               await chrome.storage.local.set({ NOVUSYS_INIT: true });
-              await chrome.storage.local.set({ NOVUSYS_LOGGED_IN: true });
+              await chrome.storage.session.set({ NOVUSYS_LOGGED_IN: true });
               return { status: 200, message: "novusys wallet successfully authenticated" };
             })
             .catch((error) => {
@@ -142,7 +142,7 @@ async function handleAuth0Reset() {
   await chrome.storage.session.remove("USER_ID_TOKEN");
   await chrome.storage.session.remove("USER_TOKEN_EXPIRES_AT");
   await chrome.storage.local.remove("NOVUSYS_INIT");
-  await chrome.storage.local.remove("NOVUSYS_LOGGED_IN");
+  await chrome.storage.session.remove("NOVUSYS_LOGGED_IN");
   return { status: 200, message: `novusys wallet successfully reset` };
 }
 
@@ -150,7 +150,7 @@ async function handleAuth0Reset() {
 async function handleAuth0Logout() {
   return fetch(`https://${auth0_config.AUTH0_DOMAIN}/v2/logout`)
     .then(async (res) => {
-      await chrome.storage.local.set({ NOVUSYS_LOGGED_IN: false });
+      await chrome.storage.session.set({ NOVUSYS_LOGGED_IN: false });
       return { status: 200, message: `novusys wallet successfully logged out` };
     })
     .catch((error) => {
@@ -195,7 +195,8 @@ chrome.runtime.onMessage.addListener(async function (message) {
       chrome.runtime.sendMessage({ initInvalid: true });
     }
 
-    const loggedWrapper = await chrome.storage.local.get("NOVUSYS_LOGGED_IN");
+    const loggedWrapper = await chrome.storage.session.get("NOVUSYS_LOGGED_IN");
+    console.log("log wrapper", loggedWrapper);
     if (loggedWrapper && loggedWrapper.NOVUSYS_LOGGED_IN) {
       chrome.runtime.sendMessage({ isLoggedIn: true });
     } else {
