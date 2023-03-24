@@ -12,16 +12,16 @@ jobs:
       - name: Checkout main branch
         uses: actions/checkout@v3
       
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '19.x'
+#      - name: Use Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '19.x'
           
-      - name: Install and build
-        run: |
-          cd backend
-          npm install
-          npm run build --if-present
+#      - name: Install and build
+#        run: |
+#          cd backend
+#          npm install
+#          npm run build --if-present
 
 #      - name: Deploy to AWS EC2
 #        uses: burnett01/rsync-deployments@5.1
@@ -52,6 +52,7 @@ jobs:
             git reset --hard origin/main &&
             git pull origin main &&
             cd backend &&
+            echo $PATH &&
             npm install &&
             npm run build --if-present
           '        
