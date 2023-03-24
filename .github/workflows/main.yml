@@ -43,6 +43,8 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && 
           chmod 600 private_key.pem &&
+          echo "$PRISMA_ENV" > .env &&
+          scp -o StrictHostKeyChecking=no -i private_key.pem .env ${USER_NAME}@${HOSTNAME}:development/novusys/backend &&
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
             cd development/novusys &&
             export NVM_DIR=~/.nvm &&
@@ -53,7 +55,7 @@ jobs:
             git pull origin main &&
             cd backend &&
             npm install &&
-            npm run build
-          ' &&
-          echo "$PRISMA_ENV" > .env &&
-          scp -o StrictHostKeyChecking=no -i private_key.pem .env ${USER_NAME}@${HOSTNAME}:development/novusys/backend
+            npm run build &&
+            killall node &&
+            npm run start:dev 2>&1 > ~/novusys.log &
+          '
