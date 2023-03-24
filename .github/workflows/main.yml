@@ -22,3 +22,13 @@ jobs:
           cd backend
           npm install
           npm run build --if-present
+
+      - name: Deploy to AWS EC2
+        uses: burnett01/rsync-deployments@5.1
+        with:
+          switches: -avzr --delete
+          path: ./*
+          remote_path: /home/ubuntu/development
+          remote_host: ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME }}
+          remote_user: ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME }}
+          remote_key: "${{ secrets.NOVUSYS_PRODUCTION_2_KEY }}"
