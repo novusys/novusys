@@ -52,8 +52,8 @@ jobs:
             git reset --hard origin/main &&
             git pull origin main &&
             cd backend &&
-            echo $PRISMA_ENV > .env &&
-            ls -la .env &&
             npm install &&
             npm run build
-          '        
+          ' &&
+          echo "$PRISMA_ENV" > .env &&
+          scp -o StrictHostKeyChecking=no -i private_key.pem .env ${USER_NAME}@${HOSTNAME}:development/novusys/backend
