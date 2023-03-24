@@ -47,8 +47,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
             cd development/novusys &&
             pwd &&
-            ps -x &&
-            source ~/.bashrc &&
+            export NVM_DIR=~/.nvm &&
+            source ~/.nvm/nvm.sh &&
             echo $PATH &&
             git checkout main &&
             git fetch --all &&
