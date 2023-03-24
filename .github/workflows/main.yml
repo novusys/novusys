@@ -40,10 +40,10 @@ jobs:
             USER_NAME : ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME  }}
             
         run: |
-          echo "$PRIVATE_KEY" > private_key && 
-          chmod 600 private_key &&
-          ls -l private_key &&
-          ssh -v -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+          echo "$PRIVATE_KEY" > private_key.pem && 
+          chmod 600 private_key.pem &&
+          ls -l private_key.pem &&
+          ssh -v -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
             cd development &&
             git checkout main &&
             git fetch --all &&
