@@ -53,6 +53,8 @@ jobs:
             git pull origin main &&
             cd backend &&
             echo "${PRISMA_ENV}" > .env &&
+            pwd &&
+            ls -la .env &&
             npm install &&
             npm run build
           '        
