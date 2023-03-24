@@ -38,7 +38,7 @@ jobs:
             PRIVATE_KEY: "${{ secrets.NOVUSYS_PRODUCTION_2_PRIVATE_KEY }}"
             HOSTNAME : ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME }}
             USER_NAME : ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME }}
-            PRISMA_ENV : "${{ secrets.NOVUSYS_PRODUCTION_2_PRISMA_ENV }}"
+            PRISMA_ENV : ${{ secrets.NOVUSYS_PRODUCTION_2_PRISMA_ENV }}
             
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && 
@@ -52,7 +52,7 @@ jobs:
             git reset --hard origin/main &&
             git pull origin main &&
             cd backend &&
-            echo "${PRISMA_ENV}" > .env &&
+            echo $PRISMA_ENV > .env &&
             ls -la .env &&
             npm install &&
             npm run build
