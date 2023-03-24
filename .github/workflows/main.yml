@@ -14,9 +14,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '19.x'
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        run: pwd
-        run: ls -l
-        run: npm i
-        run: npm run build --if-present
+      - run: cd backend
+      - run: pwd
+      - run: npm i
+      - run: npm run build --if-present
