@@ -40,7 +40,9 @@ jobs:
             USER_NAME : ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME  }}
             
         run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          echo "$PRIVATE_KEY" > private_key && 
+          chmod 600 private_key &&
+          ls -l private_key &&
           ssh -v -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
             cd development &&
             git checkout main &&
@@ -49,5 +51,5 @@ jobs:
             git pull origin master &&
             cd backend &&
             npm install &&
-            npm run build --if-present '
-            
+            npm run build --if-present
+          '        
