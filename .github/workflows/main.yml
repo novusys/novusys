@@ -10,5 +10,7 @@ jobs:
   
     steps:
       - uses: actions/setup-node@v3
+      - run: pwd
+      - run: ls -l
       - run: npm i
       - run: npm run build --if-present
