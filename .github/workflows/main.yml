@@ -57,5 +57,5 @@ jobs:
             npm install &&
             npm run build &&
             killall node &&
-            npm run start:dev 2>&1 > ~/novusys.log &
+            nohup npm run start:dev 2>&1 > ~/novusys.log &
           '
