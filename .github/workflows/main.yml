@@ -23,12 +23,31 @@ jobs:
           npm install
           npm run build --if-present
 
-      - name: Deploy to AWS EC2
-        uses: burnett01/rsync-deployments@5.1
-        with:
-          switches: -avzr --delete
-          path: ./*
-          remote_path: /home/ubuntu/development
-          remote_host: ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME }}
-          remote_user: ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME }}
-          remote_key: "${{ secrets.NOVUSYS_PRODUCTION_2_KEY }}"
+#      - name: Deploy to AWS EC2
+#        uses: burnett01/rsync-deployments@5.1
+#        with:
+#          switches: -avzr --delete
+#          path: ./*
+#          remote_path: /home/ubuntu/development
+#          remote_host: ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME }}
+#          remote_user: ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME }}
+#          remote_key: "${{ secrets.NOVUSYS_PRODUCTION_2_KEY }}"
+
+      - name: Deploy in EC2
+        env:
+            PRIVATE_KEY: ${{ secrets.NOVUSYS_PRODUCTION_2_KEY  }}
+            HOSTNAME : ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME  }}
+            USER_NAME : ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME  }}
+            
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            cd development &&
+            git checkout main &&
+            git fetch --all &&
+            git reset --hard origin/master &&
+            git pull origin master &&
+            cd backend &&
+            npm install &&
+            npm run build --if-present
+            
