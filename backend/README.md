@@ -10,7 +10,7 @@ $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bas
 $ nvm install node # for Ubuntu 22.04
 # $ nvm install 16.19.1 # for Ubuntu 18.04
 $ npm i
-# copy .env with current login credentials
+# copy .env with postgres credentials
 ```
 ## Generation Steps
 ```
