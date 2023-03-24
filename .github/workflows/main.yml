@@ -21,4 +21,4 @@ jobs:
         run: |
           cd backend
           npm install
-          nm run build --if-present
+          npm run build --if-present
