@@ -9,10 +9,16 @@ jobs:
     runs-on: ubuntu-latest
   
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+      
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '19.x'
-      - run: cd backend; npm install
-      - run: cd backend; npm run build --if-present
+          
+      - name: Install and build
+        run: |
+          cd backend
+          npm install
+          nm run build --if-present
