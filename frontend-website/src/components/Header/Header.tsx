@@ -7,10 +7,12 @@ import DarkMode from '@material-design-icons/svg/outlined/dark_mode.svg'
 import { useUser } from '@auth0/nextjs-auth0/client';
 import ThemeToggle from '../ThemeToggle/ThemeToggle'
 import ProfileChip from '../Chips/ProfileChip/ProfileChip'
-
+import { useAAInterface } from '@/api/aaInterface'
+import { ethers } from 'ethers'
 
 export default function Header() {
-
+  console.log(ethers.utils.parseEther("0.01")._hex)
+  const {sendTxn} = useAAInterface()
   const { user, error, isLoading } = useUser();
 
   if (isLoading) return <div>Loading...</div>;
@@ -58,7 +60,9 @@ export default function Header() {
             {/* <ButtonOutline text='Launch a Wallet' onClick={() => { window.location.href = '/create' }} /> */}
             <ThemeToggle/>
           </div>
-
+          <div onClick={()=>{sendTxn(user.sub, "0x6d06Eb861809551087F5b37272f36ceF459C5338", ethers.utils.parseEther("0.01")._hex, "0x")}}>
+            launch api
+          </div>
         </div>
       }
 

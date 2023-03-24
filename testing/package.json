@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@account-abstraction/sdk": "^0.5.0",
+    "buffer": "^6.0.3",
+    "dotenv": "^16.0.3",
+    "fetch": "^1.1.0",
+    "node-fetch": "^2.6.9"
+  }
+}
