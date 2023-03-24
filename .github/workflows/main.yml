@@ -44,8 +44,9 @@ jobs:
           chmod 600 private_key.pem &&
           pwd &&
           ls -l private_key.pem &&
-          ssh -v -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
-            cd development &&
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
+            cd development/novusys &&
+            pwd &
             git checkout main &&
             git fetch --all &&
             git reset --hard origin/master &&
