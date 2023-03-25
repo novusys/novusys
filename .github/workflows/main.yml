@@ -61,5 +61,5 @@ jobs:
             cd ../frontend-website &&
             npm i &&
             npm run build &&
-            (nohup npm start > ~/novusys-front-end.log 2> ~/novusys-front-end.err < /dev/null &)
+            (nohup npm run start > ~/novusys-front-end.log 2> ~/novusys-front-end.err < /dev/null &)
           '
