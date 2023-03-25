@@ -17,7 +17,7 @@ const ProfileChip: React.FC<ChainProps> = ({ name, logo, onClick }) => {
   return (
     <div className={styles['out__container']} >
       <div className={styles['user__container']}>
-        <img src={user?.picture} className={styles['user__logo']} />
+        <img src={user?.picture == null? undefined: user.picture} className={styles['user__logo']} />
         <div className={styles['right__container']} >
           <div className={styles['nickname']}>
             {user?.nickname}

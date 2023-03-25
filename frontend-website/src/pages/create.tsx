@@ -101,7 +101,7 @@ function Create() {
   const renderSubmitChain = () => {
     return chains.map((c, index)=>{
       return (
-        <ChainLaunch cid={c} key={index}/>
+        <ChainLaunch custodial={keyManagement} cid={c} key={index}/>
       )
     })
   }
@@ -109,6 +109,7 @@ function Create() {
   const submitLaunch = () => {
     const errors = validateInput()
     if (errors.length != 0) {
+      //@ts-ignore
       setErrorList(errors)
       return
     }

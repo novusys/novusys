@@ -56,13 +56,13 @@ export default function Header() {
             Launch a Wallet
           </div>
           <div className={styles['signup__container']}>
-            <ProfileChip name={''} logo={''} onClick={undefined}/>
+            <ProfileChip name={''} logo={''} onClick={()=>{}}/>
             {/* <ButtonOutline text='Launch a Wallet' onClick={() => { window.location.href = '/create' }} /> */}
             <ThemeToggle/>
           </div>
-          <div onClick={()=>{sendTxn(user.sub, "0x6d06Eb861809551087F5b37272f36ceF459C5338", ethers.utils.parseEther("0.01")._hex, "0x")}}>
+          {/* <div onClick={()=>{sendTxn(user.sub, "0x6d06Eb861809551087F5b37272f36ceF459C5338", ethers.utils.parseEther("0.01")._hex, "0x")}}>
             launch api
-          </div>
+          </div> */}
         </div>
       }
 

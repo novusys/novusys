@@ -2,7 +2,6 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from './RecoverySigners.module.scss'
-import ButtonOutline from '../../Buttons/ButtonOutline/ButtonOutline'
 import { useConfig } from '@/api/config'
 import ChainChip from '@/components/Chips/ChainChip/ChainChip'
 import BlurPaper from '@/layouts/Papers/BlurPaper/BlurPaper'
@@ -21,7 +20,7 @@ import { FormControl, InputLabel } from '@mui/material'
 
 interface RecoverySigner {
   name: string
-  type: "email" | "address"
+  type: string
   value: string
 }
 
@@ -43,6 +42,7 @@ const RecoverySigners: React.FC<RecoverySignersProps> = ({ recoverySigners, setR
 
   const updateSigner = (index: number, id: string, value: string) => {
     const update: Array<RecoverySigner> = [...recoverySigners]
+    //@ts-ignore
     update[index][id] = value
     setRecoverySigners(update)
   }

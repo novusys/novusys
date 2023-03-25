@@ -2,7 +2,8 @@ import { useState } from "react";
 import crypto from "crypto";
 import axios from "axios";
 import { useConfig } from "./config";
-import { ethers } from "ethers";
+import { ethers, providers } from "ethers";
+import { SimpleAccountAPI } from "@account-abstraction/sdk";
 const aaSdk = require("@account-abstraction/sdk");
 
 interface chainsInfo {
@@ -19,11 +20,21 @@ interface chains {
 
 export const useAAInterface = () => {
   const getUserOpReceipt = async (
-    userOpHash,
-    provider,
+    userOpHash: string,
+    provider: any,
+    entryPoint: string,
+    factoryAddress: string,
+    sender: string,
     timeout = 30000,
     interval = 5000
   ) => {
+    const sw = new SimpleAccountAPI({
+      provider,
+      entryPointAddress: entryPoint,
+      //@ts-ignore
+      owner: sender,
+      factoryAddress,
+    });
     const endtime = Date.now() + timeout;
     const block = await provider.getBlock("latest");
     while (Date.now() < endtime) {
@@ -42,17 +53,28 @@ export const useAAInterface = () => {
   };
 
   const sendTxn = async (
-    auth0_id,
-    target,
-    value,
-    data,
-    providerUrl,
-    entryPoint,
-    factory,
-    cid
+    auth0_id: string,
+    target: string,
+    value: string,
+    data: string,
+    providerUrl: string,
+    entryPoint: string,
+    factory: string,
+    cid: number,
+    callback: Function
   ) => {
-    if(!(auth0_id&&target&&value&&data&&providerUrl&&entryPoint&&factory)){
-        return "Error! Missing Provided Data"
+    if (
+      !(
+        auth0_id &&
+        target &&
+        value &&
+        data &&
+        providerUrl &&
+        entryPoint &&
+        factory
+      )
+    ) {
+      return "Error! Missing Provided Data";
     }
     const provider = new ethers.providers.JsonRpcProvider(providerUrl);
 
@@ -86,27 +108,45 @@ export const useAAInterface = () => {
 
         console.log(op);
         const uoHash = await client.sendUserOpToBundler(op);
-        return await getUserOpReceipt(uoHash, provider);
+        callback(
+          await getUserOpReceipt(
+            uoHash,
+            provider,
+            entryPoint,
+            factory,
+            op.sender
+          )
+        );
       })
       .catch(function (error) {
         console.error(error);
-        return error
+        return error;
       });
   };
 
   const getOp = async (
-    auth0_id,
-    target,
-    value,
-    data,
-    providerUrl,
-    entryPoint,
-    factory,
-    cid,
-    callback
+    auth0_id: string,
+    target: string,
+    value: string,
+    data: string,
+    providerUrl: string,
+    entryPoint: string,
+    factory: string,
+    cid: number,
+    callback: Function
   ) => {
-    if(!(auth0_id&&target&&value&&data&&providerUrl&&entryPoint&&factory)){
-        return "Error! Missing Provided Data"
+    if (
+      !(
+        auth0_id &&
+        target &&
+        value &&
+        data &&
+        providerUrl &&
+        entryPoint &&
+        factory
+      )
+    ) {
+      return "Error! Missing Provided Data";
     }
     const provider = new ethers.providers.JsonRpcProvider(providerUrl);
 
@@ -123,7 +163,6 @@ export const useAAInterface = () => {
           target: target,
           value: value,
           data: data,
-          
         },
       ],
     };
@@ -139,20 +178,24 @@ export const useAAInterface = () => {
         );
         const op = response.data;
 
-        callback(op)
+        callback(op);
       })
       .catch(function (error) {
         console.error(error);
-        return error
+        return error;
       });
   };
 
-;
+  const checkAddress = async (address: string, provider:any, callback:Function) => {
+    const code = await provider.getCode(address);
+    callback(code);
+  };
 
   return {
     sendTxn,
     getOp,
-};
+    checkAddress,
+  };
 };
 
 // export default Theme

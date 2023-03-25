@@ -7,6 +7,7 @@ import axios from "axios";
 import { ethers } from "ethers";
 var request = require("request");
 
+//@ts-ignore
 async function handle(req, res) {
   let op = {};
   try {
@@ -43,6 +44,7 @@ async function handle(req, res) {
       body: `{"client_id":"Hlrb9frZIsqmLiSuj5kZzEklmDLmIQJc","client_secret":"EmyGktwdBmRWymZjuSlQIs__DYBlchJ-HTg5AcN39qc4us4Qm_4dMRgFaknvTYjI","audience":"https://dev-27jeufvx256r244q.us.auth0.com/api/v2/","grant_type":"client_credentials","authParamsMap": {"auth0_id": "${auth0_id}", "target": "${target}", "value": "${value}", "data": "${data}"}}`,
     };
 
+    //@ts-ignore
     await request(options, function (error, response, body) {
       const json = JSON.parse(body);
       op = json.error

@@ -32,7 +32,7 @@ export default function Header() {
           Login
         </div>
         <div>
-          <ButtonOutline text='SignUp'/>
+          <ButtonOutline text='SignUp' onClick={()=>{}}/>
         </div>
       </div>
 

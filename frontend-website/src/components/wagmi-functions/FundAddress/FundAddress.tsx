@@ -1,5 +1,6 @@
 import { parseEther } from "ethers/lib/utils.js";
 import * as React from "react";
+import { useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import {
   useNetwork,
@@ -38,8 +39,15 @@ const FundAddress: React.FC<SendTransactionProps> = ({ value, address, setConfir
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
   });
-  console.log(chains)
-  console.log(isLoading || !sendTransaction)
+  // console.log(data)
+  // console.log(chains)
+  // console.log(isLoading || !sendTransaction)
+
+  useEffect(() => {
+    if(isSuccess){
+      setConfirm()
+    }
+  }, [isSuccess])
   return (
     <form
       onSubmit={(e) => {
@@ -61,14 +69,14 @@ const FundAddress: React.FC<SendTransactionProps> = ({ value, address, setConfir
         {isLoading ? "Sending..." : "Send"}
 
       </button> */}
-      {isSuccess && (
+      {/* {isSuccess && (
         <div>
           Successfully sent {amount} ether to {to}
           <div>
             <a href={`https://etherscan.io/tx/${data?.hash}`}>Etherscan</a>
           </div>
         </div>
-      )}
+      )} */}
     </form>
   );
 }

@@ -2,7 +2,6 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from './SecurityFeatures.module.scss'
-import ButtonOutline from '../../Buttons/ButtonOutline/ButtonOutline'
 import { useConfig } from '@/api/config'
 import ChainChip from '@/components/Chips/ChainChip/ChainChip'
 import BlurPaper from '@/layouts/Papers/BlurPaper/BlurPaper'
@@ -56,6 +55,7 @@ const SecurityFeatures: React.FC<SecurityFeaturesProps> = ({ securityFeatures, s
   console.log(securityFeatures)
   const updateFeatures = (feature: keyof Features, prop: keyof Savings | keyof BalanceMultisig, value: any) => {
     const update: Features = JSON.parse(JSON.stringify(securityFeatures))
+    //@ts-ignore
     update[feature][prop] = value
     setSecurityFeatures(update)
   }

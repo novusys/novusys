@@ -1,8 +1,4 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
 import styles from './ChainSelect.module.scss'
-import ButtonOutline from '../Buttons/ButtonOutline/ButtonOutline'
 import { useConfig } from '@/api/config'
 import ChainChip from '@/components/Chips/ChainChip/ChainChip'
 

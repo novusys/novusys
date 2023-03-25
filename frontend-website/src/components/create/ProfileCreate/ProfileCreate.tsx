@@ -50,12 +50,12 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
 
   const [edit, setEdit] = useState("")
   const [newImage, setNewImage] = useState("")
-  const nftstorage = new NFTStorage({ token: process.env.NFT_STORAGE_KEY });
+  // const nftstorage = new NFTStorage({ token: process.env.NFT_STORAGE_KEY });
   const uploadFile = async (file: File) => {
     //setUploadingStatus("Uploading the file to AWS S3");
-    const certificationHash = await nftstorage.storeBlob(file);
-    console.log(certificationHash)
-    return certificationHash
+    // const certificationHash = await nftstorage.storeBlob(file);
+    // console.log(certificationHash)
+    // return certificationHash
   };
 
 
@@ -112,7 +112,8 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
     </>)
   } else {
     if (profile.display_name == "") {
-      updateProfile("display_name", user.given_name + " " + user.family_name)
+      //@ts-ignore
+      updateProfile("display_name", user.given_name == undefined || user.family_name == undefined? user?.email : user.given_name + " " + user.family_name)
     }
 
   }
@@ -132,7 +133,7 @@ const ProfileCreate: React.FC<ProfileCreateProps> = ({ profile, setProfile }) =>
             <div className={styles['left__container']}>
               <div className={styles['pfp__container']}>
 
-                <img src={newImage === "" ? user?.picture : newImage} alt={user.nickname} className={styles['pfp']} />
+                <img src={user?.picture == null? './avatar.png': user?.picture} alt={"pfp"} className={styles['pfp']} />
                 <input
                   accept="image/*"
                   id="contained-button-file"
