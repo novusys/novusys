@@ -64,7 +64,6 @@ async function fetchUserInfo() {
   })
     .then((response) => response.json())
     .then(async (data) => {
-      console.log(data);
       await chrome.storage.session.set({ USER_DATA: data });
       return { status: 200, message: `novusys wallet successfully fetched user info` };
     })

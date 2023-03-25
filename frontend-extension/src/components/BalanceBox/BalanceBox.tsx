@@ -12,7 +12,6 @@ const BalanceBox: React.FC<BoxProps> = (props: BoxProps) => {
   const [name, setName] = useState("Wallet 1");
 
   useEffect(() => {
-    console.log(user);
     setAvatar(user.avatar);
     setName(user.name);
   }, [user]);

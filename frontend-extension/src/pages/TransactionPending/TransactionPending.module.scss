@@ -63,19 +63,17 @@
 }
 
 .chain__container {
-  margin-left: auto;
-  background-color: white;
-  border: 3px solid white;
   color: blue;
-  padding: 0.3rem 0.5rem 0.3rem 0.5rem;
-  border-radius: 2rem;
+  border-radius: 1rem;
+  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
 }
 
 .txn__container {
-  width: 90%;
+  width: 85%;
   height: 100%;
+  margin-bottom: 2rem;
   border-radius: 1rem;
-  padding: 1rem;
+  padding: 1.5rem;
   font-size: 1rem;
   background-color: rgba(255, 255, 255, 0.6);
 }
@@ -86,16 +84,17 @@
   flex-direction: row;
   font-weight: 700;
   font-size: 1.2rem;
+  margin-bottom: 20px;
 }
 
 .status__title {
-  margin-right: 10px;
+  margin-right: 8px;
   font-weight: 500;
   font-size: 1.2rem;
 }
 
 .details__title {
-  margin: 0 20px 10px 0;
+  margin-bottom: 10px;
   font-weight: 500;
   font-size: 1.2rem;
 }
@@ -116,13 +115,15 @@
   align-items: flex-start;
 }
 
-.txn__hash__container {
+.txn__detail__container {
   display: flex;
   max-width: fit-content;
   flex-direction: row;
+  align-items: center;
+  margin-bottom: 5px;
 }
 
-.txn__hash__title {
+.txn__detail__title {
   margin-right: 10px;
   font-weight: 500;
   font-size: 1.2rem;
@@ -132,10 +133,11 @@
   cursor: pointer;
   background-color: transparent;
   color: black;
-  border: 2px solid black;
-  border-radius: 1.5rem;
+  border: none;
+  text-decoration: underline;
+  font-size: 1.1rem;
   font-weight: 700;
-  padding: 0.2rem;
+  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
 }
 
 .details__body {
@@ -155,19 +157,12 @@
 
 .action__button {
   max-width: fit-content;
-  padding: 0.8rem;
+  margin-left: auto;
   border-radius: 2rem;
   background-color: transparent;
-  border: 3px solid black;
+  border: none;
   color: black;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 2rem;
   cursor: pointer;
-  margin: 0 10px 0 10px;
-}
-
-.action__button:hover {
-  border: 3px solid white;
-  background-color: white;
-  filter: drop-shadow(0 1mm 1mm rgba(0, 0, 0, 0.65));
 }

@@ -5,6 +5,8 @@ import { ethers } from "ethers";
 import { HttpRpcClient, SimpleAccountAPI } from "@account-abstraction/sdk";
 import auth0_config from "../../scripts/auth0.json";
 import { LandingCtx } from "../MainPopup/Popup";
+import { UserCtx } from "../MainPopup/Popup";
+import { IoMdClose } from "react-icons/io";
 
 interface TxnPendingProps {
   req: any; // Signature target, value, data, provider, epAddr, factoryAddr
@@ -61,6 +63,30 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
   const [status, setStatus] = useState("Pending"); // Pending, Failed, Completed
   const [txnHash, setHash] = useState("...");
   const { landingAction, setLandingAction } = useContext(LandingCtx);
+  const user = useContext(UserCtx);
+  const [avatar, setAvatar] = useState("/images/defaultaccount.png");
+  const [name, setName] = useState("Wallet 1");
+
+  useEffect(() => {
+    console.log(user);
+    setAvatar(user.avatar);
+    setName(user.name);
+  }, [user]);
+
+  useEffect(() => {
+    sendTxn(props.req)
+      .then((res) => {
+        console.log(res);
+        if (res && res.status == 200) {
+          setStatus("Completed");
+        } else {
+          setStatus("Failed");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const getUserOpReceipt = async (
     userOpHash: string,
@@ -173,21 +199,6 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
       });
   }
 
-  useEffect(() => {
-    sendTxn(props.req)
-      .then((res) => {
-        console.log(res);
-        if (res && res.status == 200) {
-          setStatus("Completed");
-        } else {
-          setStatus("Failed");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
   const getStatus = () => {
     switch (status) {
       case "Pending":
@@ -203,11 +214,13 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
     return (
       <div className={styles["outer__container"]}>
         <div className={styles["user__container"]}>
-          <img className={styles["user__avatar"]} src={txn.walletAvatar} alt="" />
+          <img className={styles["user__avatar"]} src={avatar} alt="" />
           <div className={styles["account__details"]}>
-            <div>{txn.walletName}</div> <div>{txn.walletAddress}</div>
+            <div>{name}</div> <div>{txn.walletAddress}</div>
           </div>
-          <div className={styles["chain__container"]}>{txn.chainInfo.chain}</div>
+          <button onClick={() => setLandingAction("wallet")} className={styles["action__button"]}>
+            <IoMdClose />
+          </button>
         </div>
         <div className={styles["txn__container"]}>
           <div className={styles["txn__details"]}>
@@ -218,9 +231,12 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
             <div className={styles["txn__details"]}>
               <div className={styles["details__title"]}>Details:</div>
               <ul className={styles["details__body"]}>
-                <li></li>
-                <li className={styles["txn__hash__container"]}>
-                  <div className={styles["txn__hash__title"]}>Txn Hash:</div>
+                <li className={styles["txn__detail__container"]}>
+                  <div className={styles["txn__detail__title"]}>Chain:</div>
+                  <div className={styles["chain__container"]}>{txn.chainInfo.chain}</div>
+                </li>
+                <li className={styles["txn__detail__container"]}>
+                  <div className={styles["txn__detail__title"]}>Txn Hash:</div>
                   {txnHash == "..." ? (
                     <>{txnHash}</>
                   ) : (
@@ -237,11 +253,6 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
               </ul>
             </div>
           </div>
-        </div>
-        <div className={styles["txn__actionbar"]}>
-          <button onClick={() => setLandingAction("wallet")} className={styles["action__button"]}>
-            Close Transaction
-          </button>
         </div>
       </div>
     );

@@ -66,6 +66,7 @@ export default function App() {
       }
       if (message.isLoggedIn) {
         setLogin(true);
+        setLandingAction("wallet");
       } else if (message.isLoggedOut) {
         setLogin(false);
       }
