@@ -65,13 +65,6 @@
   
 }
 
-.signer__init{
-  color: var(--color-primary);
-  a {
-    text-decoration: underline;
-  }
-}
-
 @keyframes l {
   to {
     clip-path: inset(0 -1ch 0 0);

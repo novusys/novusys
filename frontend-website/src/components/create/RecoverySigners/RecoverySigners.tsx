@@ -20,8 +20,8 @@ import { FormControl, InputLabel } from '@mui/material'
 
 interface RecoverySigner {
   name: string
-  type: string
-  value: string
+  email: string
+  address: string
 }
 
 interface RecoverySignersProps {
@@ -60,13 +60,21 @@ const RecoverySigners: React.FC<RecoverySignersProps> = ({ recoverySigners, setR
             value={s.name}
             onChange={(event) => updateSigner(index, "name", event.target.value)}
           />
-          <FormControl variant="filled" sx={{ m: 1, width: '20ch' }}>
+          <TextField
+            label="Email"
+            id="filled-start-adornment"
+            sx={{ m: 1, width: '40ch' }}
+            variant="filled"
+            value={s.email}
+            onChange={(event) => updateSigner(index, "email", event.target.value)}
+          />
+          {/* <FormControl variant="filled" sx={{ m: 1, width: '20ch' }}>
             <InputLabel id="demo-simple-select-filled-label">Age</InputLabel>
             <Select
               labelId="demo-simple-select-filled-label"
               id="demo-simple-select-filled"
               value={s.type}
-              onChange={(event) => updateSigner(index, "type", event.target.value)}
+              onChange={(event) => updateSigner(index, "email", event.target.value)}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -74,14 +82,14 @@ const RecoverySigners: React.FC<RecoverySignersProps> = ({ recoverySigners, setR
               <MenuItem value={"email"}>Email</MenuItem>
               <MenuItem value={"address"}>Address</MenuItem>
             </Select>
-          </FormControl>
+          </FormControl> */}
           <TextField
-            label={s.type != "address" ? "Email" : "Address"}
+            label={"Address"}
             id="filled-start-adornment"
             sx={{ m: 1, width: '40ch' }}
             variant="filled"
             value={s.value}
-            onChange={(event) => updateSigner(index, "value", event.target.value)}
+            onChange={(event) => updateSigner(index, "address", event.target.value)}
           />
 
         </div>)

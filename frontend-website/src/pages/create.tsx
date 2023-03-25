@@ -21,6 +21,13 @@ import { withPageAuthRequired } from '@auth0/nextjs-auth0'
 import { useUser } from '@auth0/nextjs-auth0/client'
 import { useAccount } from 'wagmi'
 import ChainLaunch from '@/components/Launch/ChainLaunch/ChainLaunch'
+import { ethers } from 'ethers'
+
+interface RecoverySigner {
+  name: string
+  email: string
+  address: string
+}
 
 
 function Create() {
@@ -34,7 +41,7 @@ function Create() {
   const [keyManagement, setKeyManagement] = useState("cust")
   const [publicKey, setPublicKey] = useState("")
 
-  const [recoverySigners, setRecoverySigners] = useState([{ name: "", type: "email", value: "" }])
+  const [recoverySigners, setRecoverySigners] = useState([{ name: "", email: "", address: "" }])
 
   const [securityFeatures, setSecurityFeatures] = useState({
     balance_multisig: {
@@ -65,6 +72,14 @@ function Create() {
 
   const [errorList, setErrorList] = useState([])
 
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   const validateInput = () => {
     const errors: Array<string> = []
     if (chains.length == 0) {
@@ -77,6 +92,12 @@ function Create() {
       if (new Set(Object.values(recoverySigners[i])).has("")) {
         errors.push("Please fill out all Recovery Signer Fields")
         break
+      }
+      if (!validateEmail(recoverySigners[i].email)) {
+        errors.push("Enter a Valid Email for: " + recoverySigners[i].name)
+      }
+      if (!ethers.utils.isAddress(recoverySigners[i].address)) {
+        errors.push("Enter a Valid Address for: " + recoverySigners[i].name)
       }
     }
     if (securityFeatures['balance_multisig']['enabled'] && (securityFeatures['balance_multisig']['value'] <= 0 || securityFeatures['balance_multisig']['address'] == "")) {
@@ -98,10 +119,10 @@ function Create() {
     })
   }
 
-  const renderSubmitChain = () => {
-    return chains.map((c, index)=>{
+  const renderSubmitChain = (signers: Array<RecoverySigner>) => {
+    return chains.map((c, index) => {
       return (
-        <ChainLaunch custodial={keyManagement} cid={c} key={index}/>
+        <ChainLaunch recoverySigners={signers} custodial={keyManagement} cid={c} key={index} />
       )
     })
   }
@@ -160,7 +181,7 @@ function Create() {
           </div>
           <BluredContainer>
             <div className={styles['submit__container']}>
-              {renderSubmitChain()}
+              {renderSubmitChain(recoverySigners)}
             </div>
           </BluredContainer>
 
