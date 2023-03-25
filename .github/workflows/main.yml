@@ -1,5 +1,7 @@
 name: Deploy Novusys
 
+concurrency: deployment
+
 on:
   push:
     branches: [ main ]
