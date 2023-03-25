@@ -41,7 +41,10 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial }) => {
     ethers.utils.parseEther("0.01")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => {
       setUsrAddress(op.sender)
       console.log(op.sender)
-      checkAddress(usrAddress, provider, (v: string) => { setAlreadyDeployed(v) })
+      if (usrAddress != ""){
+        checkAddress(usrAddress, provider, (v: string) => { setAlreadyDeployed(v) })
+      }
+      
     })
   const txn = () => {
     //@ts-ignore

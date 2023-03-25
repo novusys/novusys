@@ -13,6 +13,8 @@ export const getEns = () => {
     const profile = await ENSInstance.getProfile(
       address
     );
+
+    console.log(profile)
     
     callback(profile);
   };
