@@ -18,7 +18,7 @@ interface ChainLaunchProps {
 
 const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial }) => {
   const { chains } = useConfig()
-  const { sendTxn, getOp, checkAddress } = useAAInterface()
+  const { sendTxn, getOp, checkAddress, waitTransaction } = useAAInterface()
   const { user, error } = useUser();
   const { address, isConnected } = useAccount()
   const { connect } = useConnect({
@@ -35,36 +35,48 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial }) => {
 
   const [alreadyDeployed, setAlreadyDeployed] = useState("0x")
 
+  console.log(provider)
 
 
   //@ts-ignore
-  const op = () => getOp(user?.sub, address != ""? address: "0x6d06Eb861809551087F5b37272f36ceF459C5338",
+  const op = () => getOp(user?.sub, address != "" ? address : "0x6d06Eb861809551087F5b37272f36ceF459C5338",
     ethers.utils.parseEther("0.01")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => {
       setUsrAddress(op.sender)
       console.log(op.sender)
-      if (usrAddress != ""){
+      if (usrAddress != "") {
         checkAddress(usrAddress, provider, (v: string) => { setAlreadyDeployed(v) })
       }
-      
+
     })
   const txn = () => {
     //@ts-ignore
-    sendTxn(user?.sub, address != ""? address: "0x6d06Eb861809551087F5b37272f36ceF459C5338",
-      ethers.utils.parseEther("0.01")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (tx: string) => {
+    sendTxn(user?.sub, address != "" ? address : "0x6d06Eb861809551087F5b37272f36ceF459C5338",
+      ethers.utils.parseEther("0.01")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, setStatus, (tx: string) => {
         if (tx != null) {
           console.log(tx)
           setTransaction(tx)
+          waitTransaction(tx, provider, (r: any) => {
+            if (r) {
+              setStatus('success')
+            } else {
+              setStatus('fail')
+            }
+          })
           setStatus('launching')
         }
-      })
+      }, provider)
   }
 
   useEffect(() => {
     op()
-    
+
   }, [address])
 
-  
+  // useEffect(() => {
+
+  // }, [transaction])
+
+
 
   return (
     <div className={styles['out__container']}>
@@ -72,7 +84,7 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial }) => {
         <img src={chains[cid].logo} className={styles['chain__logo']} />
         {chains[cid].chain}
       </div>
-      <div className={styles['middle__container']}>
+      <div className={styles['middle__container']} onClick={() => { window.open(chains[cid].explorer + "address/" + usrAddress, "_blank") }}>
         {
           chains[cid].pm ? <>Loading... </> :
             <>{usrAddress}</>
@@ -89,9 +101,31 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial }) => {
                 </div> :
                   <></>
               }
+
+              {
+                status == 'processing' ? <div className={styles['status__blurb__loading']}>
+                  Processing Txn....
+                </div> :
+                  <></>
+              }
+              {status == "fail" ?
+                <div className={styles['status__blurb']} onClick={() => window.open(chains[cid].explorer + "tx/" + transaction, "_blank")}>
+                  {/* {transaction.slice(0, 5) + "..." + transaction.slice(50,)} */}
+                  Failed
+                </div> :
+                <></>
+              }
+              {status == "success" ?
+                <div className={styles['status__blurb']} onClick={() => window.open(chains[cid].explorer + "tx/" + transaction, "_blank")}>
+                  {/* {transaction.slice(0, 5) + "..." + transaction.slice(50,)} */}
+                  Success!
+                </div> :
+                <></>
+              }
               {status == "launching" ?
                 <div className={styles['status__blurb']} onClick={() => window.open(chains[cid].explorer + "tx/" + transaction, "_blank")}>
-                  {transaction.slice(0, 5) + "..." + transaction.slice(50,)}
+                  {/* {transaction.slice(0, 5) + "..." + transaction.slice(50,)} */}
+                  View on BlockScan
                 </div> :
                 <></>
               }
@@ -104,7 +138,7 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial }) => {
                     }}>
                       {
                         usrAddress == "" ? <>Loading... </> :
-                          <FundAddress cid={cid} value={chains[cid].launchPrice} address={usrAddress} setConfirm={() => { setStatus("launch contract") }} />
+                          <FundAddress explorer={chains[cid].explorer} cid={cid} value={chains[cid].launchPrice} address={usrAddress} setConfirm={() => { setStatus("launch contract") }} />
                       }
 
                       {/* Prefund Address */}

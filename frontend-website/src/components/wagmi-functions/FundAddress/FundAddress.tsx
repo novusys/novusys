@@ -15,9 +15,10 @@ interface SendTransactionProps {
   address: string
   setConfirm: Function
   cid: number
+  explorer: string
 }
 
-const FundAddress: React.FC<SendTransactionProps> = ({ value, address, setConfirm, cid }) => {
+const FundAddress: React.FC<SendTransactionProps> = ({ value, address, setConfirm, cid, explorer }) => {
   const [to, setTo] = React.useState(address);
   const [debouncedTo] = useDebounce(to, 500);
 
@@ -44,40 +45,31 @@ const FundAddress: React.FC<SendTransactionProps> = ({ value, address, setConfir
   // console.log(isLoading || !sendTransaction)
 
   useEffect(() => {
-    if(isSuccess){
+    if (isSuccess) {
       setConfirm()
     }
   }, [isSuccess])
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        switchNetwork?.(cid)
-        // sendTransaction?.();
-      }}
-    >
+    <>
       {
         chain != null ? chain.id != cid ? <div onClick={() => switchNetwork?.(cid)}>
           Switch Network
-        </div> : <div onClick={() => sendTransaction?.()}>
-          Prefund Address
-        </div> : <></>
-      }
-
-
-      {/* <button disabled={isLoading || !to || !amount}>
-        {isLoading ? "Sending..." : "Send"}
-
-      </button> */}
-      {/* {isSuccess && (
-        <div>
-          Successfully sent {amount} ether to {to}
-          <div>
-            <a href={`https://etherscan.io/tx/${data?.hash}`}>Etherscan</a>
+        </div> : isLoading ?
+          <div onClick={() => window.open(explorer + "tx/" + data?.hash, "_blank")}>
+            Sending Funds...
           </div>
-        </div>
-      )} */}
-    </form>
+          :
+
+          <div onClick={() => sendTransaction?.()}>
+            Prefund Address
+          </div> : <></>
+      }
+    </>
+
+
+
+
+    // </form>
   );
 }
 

@@ -45,6 +45,7 @@ export const useAAInterface = () => {
         Math.max(0, block.number - 100)
       );
       if (events.length > 0) {
+        console.log(events[0])
         return events[0].transactionHash;
       }
       await new Promise((resolve) => setTimeout(resolve, interval));
@@ -61,7 +62,9 @@ export const useAAInterface = () => {
     entryPoint: string,
     factory: string,
     cid: number,
-    callback: Function
+    setStatus: Function,
+    callback: Function,
+    providerRpc: any,
   ) => {
     if (
       !(
@@ -76,6 +79,7 @@ export const useAAInterface = () => {
     ) {
       return "Error! Missing Provided Data";
     }
+    setStatus("processing");
     const provider = new ethers.providers.JsonRpcProvider(providerUrl);
 
     const options = {
@@ -94,7 +98,6 @@ export const useAAInterface = () => {
           provider: providerUrl,
           epAddr: entryPoint,
           factoryAddr: factory,
-
         },
       ],
     };
@@ -102,12 +105,8 @@ export const useAAInterface = () => {
       .request(options)
       .then(async function (response) {
         console.log(response.data);
-        const chainId = await provider.getNetwork().then((net) => net.chainId);
-        const client = await new aaSdk.HttpRpcClient(
-          "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071",
-          "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-          chainId
-        );
+        const chainId = cid
+        const client = await new aaSdk.HttpRpcClient(providerUrl, entryPoint, chainId);
         const op = response.data;
 
         console.log(op);
@@ -115,7 +114,7 @@ export const useAAInterface = () => {
         callback(
           await getUserOpReceipt(
             uoHash,
-            provider,
+            providerRpc,
             entryPoint,
             factory,
             op.sender
@@ -170,7 +169,6 @@ export const useAAInterface = () => {
           provider: providerUrl,
           epAddr: entryPoint,
           factoryAddr: factory,
-
         },
       ],
     };
@@ -180,8 +178,8 @@ export const useAAInterface = () => {
         console.log(response.data);
         const chainId = await provider.getNetwork().then((net) => net.chainId);
         const client = await new aaSdk.HttpRpcClient(
-          "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071",
-          "0x0576a174D229E3cFA37253523E645A78A0C91B57",
+          providerUrl,
+          entryPoint,
           chainId
         );
         const op = response.data;
@@ -194,15 +192,30 @@ export const useAAInterface = () => {
       });
   };
 
-  const checkAddress = async (address: string, provider:any, callback:Function) => {
+  const checkAddress = async (
+    address: string,
+    provider: any,
+    callback: Function
+  ) => {
     const code = await provider.getCode(address);
     callback(code);
   };
+
+  const waitTransaction = async (
+    hash: string,
+    provider: any,
+    callback: Function
+  ) => {
+    console.log("HASH",hash)
+    const receipt = await provider.waitForTransaction(hash)
+    callback(receipt)
+  }
 
   return {
     sendTxn,
     getOp,
     checkAddress,
+    waitTransaction,
   };
 };
 
