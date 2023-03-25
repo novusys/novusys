@@ -10,6 +10,7 @@ interface chainsInfo {
   entryPoint: string;
   test: boolean;
   pm: boolean,
+  launchPrice: string
 }
 
 interface chains {
@@ -28,6 +29,7 @@ export const useConfig = () => {
       factory: "",
       test: false,
       pm: false,
+      launchPrice: ".1",
     },
     137: {
       chain: "Polygon",
@@ -39,6 +41,7 @@ export const useConfig = () => {
       factory: "",
       test: false,
       pm: false,
+      launchPrice: ".1",
     },
     10: {
       chain: "Optimism",
@@ -50,6 +53,7 @@ export const useConfig = () => {
       factory: "",
       test: false,
       pm: false,
+      launchPrice: ".1",
     },
     324: {
       chain: "zKSync Era",
@@ -61,6 +65,7 @@ export const useConfig = () => {
       factory: "",
       test: false,
       pm: false,
+      launchPrice: ".1",
     },
     5: {
       chain: "Ethereum Goerli",
@@ -72,6 +77,7 @@ export const useConfig = () => {
       bundler: "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071",
       test: true,
       pm: false,
+      launchPrice: ".1",
     },
     420: {
       chain: "Optimism Goerli",
@@ -83,6 +89,7 @@ export const useConfig = () => {
       factory: "",
       test: true,
       pm: false,
+      launchPrice: ".1",
     },
     80001: {
       chain: "Polygon Mumbai",
@@ -94,6 +101,7 @@ export const useConfig = () => {
       factory: "",
       test: true,
       pm: false,
+      launchPrice: ".1",
     },
     280: {
       chain: "zKSync Era Testnet",
@@ -105,6 +113,7 @@ export const useConfig = () => {
       factory: "",
       test: true,
       pm: false,
+      launchPrice: ".1",
     },
   };
 
