@@ -58,4 +58,8 @@ jobs:
             npm run build &&
             killall node
             (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &)
+            cd ../frontend-website &&
+            npm i &&
+            npm run build &&
+            (nohup npm start > ~/novusys-front-end.log 2> ~/novusys-front-end.err < /dev/null &)
           '
