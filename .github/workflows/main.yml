@@ -59,10 +59,12 @@ jobs:
             cd backend &&
             npm install &&
             npm run build &&
-            killall node
-            (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &)
             cd ../frontend-website &&
-            npm i &&
+            npm install &&
             npm run build &&
+            killall node
+            cd ../backend
+            (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &)
+            cd ../frontend-website
             (nohup npm run start > ~/novusys-front-end.log 2> ~/novusys-front-end.err < /dev/null &)
           '
