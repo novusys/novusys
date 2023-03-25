@@ -1,0 +1,21 @@
+export class CurrencyInformation {
+  /**
+   * Currency ID
+   */
+  id: ID;
+
+  /**
+   * Name
+   */
+  name: String;
+
+  /**
+   * Ticker
+   */
+  ticker: String;
+
+  /**
+   * Chain ID
+   */
+  chain_id: Int;
+}

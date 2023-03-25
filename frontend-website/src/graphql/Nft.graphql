@@ -1,0 +1,23 @@
+import { NftInformation } from "./NftInformation";
+
+export class Nft {
+  /**
+   * ID
+   */
+  id: ID;
+
+  /**
+   * UUID
+   */
+  uuid: String!;
+
+  /**
+   * Address
+   */
+  address: String!;
+
+  /**
+   * NFT Information
+   */
+  nft_information: NftInformation;
+}

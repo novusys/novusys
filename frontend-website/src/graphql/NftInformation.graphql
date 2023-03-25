@@ -1,0 +1,28 @@
+import { CurrencyInformation } from "./CurrencyInformation";
+
+export class NftInformation {
+  /**
+   * NFT ID
+   */
+  id: ID;
+
+  /**
+   * Name
+   */
+  name: String!;
+
+  /**
+   * Chain ID
+   */
+  chain_id: Int!;
+
+  /**
+   * Currency Information
+   */
+  currency_information: CurrencyInformation!;
+
+  /**
+   * Count
+   */
+  currency_count: Int!;
+}

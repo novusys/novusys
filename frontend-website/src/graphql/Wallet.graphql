@@ -1,0 +1,55 @@
+import { Currency } from "./Currency";
+import { Nft } from "./Nft";
+import { Transaction } from "./Transaction";
+
+export class Wallet {
+  /**
+   * Wallet id
+   */
+  id: ID;
+
+  /**
+   * Wallet Address (blockchain)
+   */
+  address: String!;
+
+  /**
+   * Chain ID
+   */
+  chain_id: Int!;
+
+  /**
+   * ABI
+   */
+  abi: String!;
+
+  /**
+   * Owner User ID
+   */
+  owner_id: Int!;
+
+  /**
+   * Contract settings
+   */
+  contract_settings: String!;
+
+  /**
+   * Transactions
+   */
+  transaction: [Transaction]!;
+
+  /**
+   * Gas Saved (gwei)
+   */
+  gas_saved: Int!;
+
+  /**
+   * Currency Holdings
+   */
+  currency_holdings: [Currency]!;
+
+  /**
+   * NFT Holdings
+   */
+  nft_holdings: [Nft]!;
+}

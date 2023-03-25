@@ -1,0 +1,59 @@
+import { Signer } from "./Signer";
+import { Wallet } from "./Wallet";
+
+export class Account {
+  /**
+   * Account ID
+   */
+  id: ID;
+
+  /**
+   * User ID (auth0)
+   */
+  user_id: String;
+
+  /**
+   * Account Address
+   */
+  address: String!;
+
+  /**
+   * User Name
+   */
+  user_name: String;
+
+  /**
+   * Account Type
+   */
+  account_type: String!;
+
+  /**
+   * User Avatar Image URL
+   */
+  avatar_url: String!;
+
+  /**
+   * Account Settings
+   */
+  account_settings: String!;
+
+  /**
+   * Secondary Address
+   */
+  secondary_address: String!;
+
+  /**
+   * Wallets
+   */
+  wallets: [Wallet]!;
+
+  /**
+   * Signer Accounts
+   */
+  signers: [Signer]!;
+
+  /**
+   * Activity
+   */
+  activity: [String]!;
+}

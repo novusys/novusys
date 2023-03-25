@@ -1,0 +1,12 @@
+import { Account } from "./Account";
+
+export class Signer {
+  /**
+   * ID
+   */
+  id: ID;
+
+  signer: Account;
+
+  authorized: Account;
+}

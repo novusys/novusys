@@ -1,0 +1,42 @@
+import { Nft } from "./Nft";
+import { Wallet } from "./Wallet";
+import { Currency } from "./Currency";
+
+export class Transaction {
+  /**
+   * Transaction ID
+   */
+  id: ID;
+
+  /**
+   * Transaction Hash
+   */
+  hash: String!;
+
+  /**
+   * Chain ID
+   */
+  chain_id: Int!;
+
+  wallet: Wallet!;
+
+  /**
+   * Type
+   */
+  type: Int!;
+
+  /**
+   * Contract Settings
+   */
+  contract_settings: String!;
+
+  /**
+   * Currency
+   */
+  currency: [Currency]!;
+
+  /**
+   * NFTs
+   */
+  nfts: [Nft]!;
+}
