@@ -1,5 +1,7 @@
 name: Deploy Novusys
 
+concurrency: deployment
+
 on:
   push:
     branches: [ main ]
@@ -39,12 +41,15 @@ jobs:
             HOSTNAME : ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME }}
             USER_NAME : ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME }}
             PRISMA_ENV : ${{ secrets.NOVUSYS_PRODUCTION_2_PRISMA_ENV }}
+            FRONTEND_WEBSITE_ENV : ${{ secrets.NOVUSYS_PRODUCTION_2_FRONTEND_WEBSITE_ENV }}
             
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && 
           chmod 600 private_key.pem &&
-          echo "$PRISMA_ENV" > .env &&
-          scp -o StrictHostKeyChecking=no -i private_key.pem .env ${USER_NAME}@${HOSTNAME}:development/novusys/backend &&
+          echo "$PRISMA_ENV" > backend.env &&
+          scp -o StrictHostKeyChecking=no -i private_key.pem backend.env ${USER_NAME}@${HOSTNAME}:development/novusys/backend/.env &&
+          echo "$FRONTEND_WEBSITE_ENV" > frontend-website.env &&
+          scp -o StrictHostKeyChecking=no -i private_key.pem frontend-website.env ${USER_NAME}@${HOSTNAME}:development/novusys/frontend-website/.env &&
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
             cd development/novusys &&
             export NVM_DIR=~/.nvm &&
@@ -54,8 +59,22 @@ jobs:
             git reset --hard origin/main &&
             git pull origin main &&
             cd backend &&
+            echo "--- Installing backend dependencies" &&
             npm install &&
+            echo "--- Building backend" &&
             npm run build &&
-            killall node
-            (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &)
+            cd ../frontend-website &&
+            echo "--- Installing frontend-website dependencies" &&
+            npm install &&
+            echo "--- Building frontend-website" &&
+            npm run build &&
+            echo "--- Terminating Node.js" &&
+            killall -q node &&
+            cd ../backend &&
+            echo "--- Starting backend" &&
+            (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &) &&
+            cd ../frontend-website &&
+            echo "--- Starting frontend-website" &&
+            sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000 &&
+            (nohup npm run start > ~/novusys-front-end.log 2> ~/novusys-front-end.err < /dev/null &)
           '
