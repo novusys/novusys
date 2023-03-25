@@ -54,8 +54,21 @@ jobs:
             git reset --hard origin/main &&
             git pull origin main &&
             cd backend &&
+            echo "Installing backend dependencies" &&
             npm install &&
+            echo "Building backend" &&
             npm run build &&
-            killall node
-            (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &)
+            cd ../frontend-website &&
+            echo "Installing frontend-website dependencies" &&
+            npm install &&
+            echo "Building frontend-website" &&
+            npm run build &&
+            echo "Terminating Node.js" &&
+            killall -q node &&
+            cd ../backend &&
+            echo "Starting backend" &&
+            (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &) &&
+            cd ../frontend-website &&
+            echo "Starting frontend-website" &&
+            (nohup npm run start > ~/novusys-front-end.log 2> ~/novusys-front-end.err < /dev/null &)
           '
