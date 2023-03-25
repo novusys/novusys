@@ -91,6 +91,10 @@ export const useAAInterface = () => {
           target: target,
           value: value,
           data: data,
+          provider: providerUrl,
+          epAddr: entryPoint,
+          factoryAddr: factory,
+
         },
       ],
     };
@@ -163,6 +167,10 @@ export const useAAInterface = () => {
           target: target,
           value: value,
           data: data,
+          provider: providerUrl,
+          epAddr: entryPoint,
+          factoryAddr: factory,
+
         },
       ],
     };

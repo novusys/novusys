@@ -16,6 +16,10 @@ async function handle(req, res) {
     const target = req.body[0].target;
     const value = req.body[0].value;
     const data = req.body[0].data;
+    const provider = req.body[0].provider;
+    const entryPoint = req.body[0].epAddr;
+    const factory = req.body[0].factoryAddr;
+
     // var options = {
     //   method: "POST",
     //   url: "https://dev-27jeufvx256r244q.us.auth0.com/oauth/token",
@@ -41,11 +45,13 @@ async function handle(req, res) {
       method: "POST",
       url: "https://dev-27jeufvx256r244q.us.auth0.com/oauth/token",
       headers: { "content-type": "application/json" },
-      body: `{"client_id":"Hlrb9frZIsqmLiSuj5kZzEklmDLmIQJc","client_secret":"EmyGktwdBmRWymZjuSlQIs__DYBlchJ-HTg5AcN39qc4us4Qm_4dMRgFaknvTYjI","audience":"https://dev-27jeufvx256r244q.us.auth0.com/api/v2/","grant_type":"client_credentials","authParamsMap": {"auth0_id": "${auth0_id}", "target": "${target}", "value": "${value}", "data": "${data}"}}`,
+      body: `{"client_id":"Hlrb9frZIsqmLiSuj5kZzEklmDLmIQJc","client_secret":"EmyGktwdBmRWymZjuSlQIs__DYBlchJ-HTg5AcN39qc4us4Qm_4dMRgFaknvTYjI","audience":"https://dev-27jeufvx256r244q.us.auth0.com/api/v2/","grant_type":"client_credentials","authParamsMap": {"auth0_id": "${auth0_id}", "target": "${target}", "value": "${value}", "data": "${data}", "provider": "${provider}", "epAddr": "${entryPoint}", "factoryAddr":"${factory}"}}`,
     };
 
     //@ts-ignore
     await request(options, function (error, response, body) {
+      // console.log(body, response)
+      console.log(body, error)
       const json = JSON.parse(body);
       op = json.error
       console.log(op)

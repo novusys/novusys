@@ -10,7 +10,7 @@ import { parseEther } from 'ethers/lib/utils.js'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import FundAddress from '@/components/wagmi-functions/FundAddress/FundAddress'
 import { P } from '@wagmi/core/dist/index-35b6525c'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 interface ChainLaunchProps {
   cid: number
   custodial: string
@@ -36,8 +36,9 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial }) => {
   const [alreadyDeployed, setAlreadyDeployed] = useState("0x")
 
 
+
   //@ts-ignore
-  const op = () => getOp(user?.sub, "0x6d06Eb861809551087F5b37272f36ceF459C5338",
+  const op = () => getOp(user?.sub, address != ""? address: "0x6d06Eb861809551087F5b37272f36ceF459C5338",
     ethers.utils.parseEther("0.01")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => {
       setUsrAddress(op.sender)
       console.log(op.sender)
@@ -48,7 +49,7 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial }) => {
     })
   const txn = () => {
     //@ts-ignore
-    sendTxn(user?.sub, "0x6d06Eb861809551087F5b37272f36ceF459C5338",
+    sendTxn(user?.sub, address != ""? address: "0x6d06Eb861809551087F5b37272f36ceF459C5338",
       ethers.utils.parseEther("0.01")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (tx: string) => {
         if (tx != null) {
           console.log(tx)
@@ -58,7 +59,12 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial }) => {
       })
   }
 
-  op()
+  useEffect(() => {
+    op()
+    
+  }, [address])
+
+  
 
   return (
     <div className={styles['out__container']}>
