@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext, createContext, useEffect } from "react";
 import "./Popup.css";
 
 import ExtensionLayout from "../../layouts/ExtensionLayout/ExtensionLayout";
@@ -8,6 +8,23 @@ import Login from "../Login/Login";
 import PendingLogin from "../PendingLogin/PendingLogin";
 
 import Signature from "../Signature/Signature";
+import TxnPending from "../TransactionPending/TransactionPending";
+import Transfer from "../Transfer/Transfer";
+
+interface UserContextValues {
+  auth0id: string;
+  name: string;
+  avatar: string;
+  email: string;
+}
+
+const LandingCtx = createContext({ landingAction: "signup", setLandingAction: (state: string) => {} });
+const UserCtx = createContext<UserContextValues>({
+  auth0id: "1",
+  name: "Account 1",
+  avatar: "/images/defaultaccount.png",
+  email: "example@email.com",
+});
 
 export default function App() {
   /**
@@ -31,35 +48,62 @@ export default function App() {
   // These states would be set after checking chrome session storage and is set by background.js auth0 flow
   const [loggedIn, setLogin] = useState(false); // Tracks login state
   const [walletInit, setInit] = useState(false); // Tracks if a wallet has been init on extension
-  const [landingAction, setLandingAction] = useState("abort"); // Tracks if Create Wallet was called from Landing
-
-  chrome.runtime.sendMessage({ checkState: true });
-  chrome.runtime.onMessage.addListener(async function (message) {
-    if (message.initValid) {
-      setInit(true);
-    } else if (message.initInvalid) {
-      setInit(false);
-    }
-    if (message.isLoggedIn) {
-      setLogin(true);
-    } else if (message.isLoggedOut) {
-      setLogin(false);
-    }
+  const [landingAction, setLandingAction] = useState("signup");
+  const [user, setUser] = useState({
+    auth0id: "1",
+    name: "Account 1",
+    avatar: "/images/defaultaccount.png",
+    email: "example@email.com",
   });
+
+  useEffect(() => {
+    chrome.runtime.sendMessage({ checkState: true });
+    chrome.runtime.onMessage.addListener(async function (message) {
+      if (message.initValid) {
+        setInit(true);
+      } else if (message.initInvalid) {
+        setInit(false);
+      }
+      if (message.isLoggedIn) {
+        setLogin(true);
+        setLandingAction("wallet");
+      } else if (message.isLoggedOut) {
+        setLogin(false);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    async function fetchUser() {
+      const userWrapper = await chrome.storage.session.get("USER_DATA");
+      const data = userWrapper.USER_DATA;
+      return { auth0id: data.sub, name: data.nickname, avatar: data.picture, email: data.email };
+    }
+
+    fetchUser()
+      .then((res) => {
+        setUser(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [loggedIn]);
 
   const handleLogin = async () => {
     // We wait for a message from background.js of whether auth0 login was successful or not
     // The background.js script is responsible for setting chrome session storage to allow for
     // persistent login while the browser is still open.
+    setLandingAction("loginPending");
     chrome.runtime.sendMessage({ loginAuth0: true });
     chrome.runtime.onMessage.addListener(async function (message) {
       if (message.loginSuccess) {
         setLogin(true);
         setInit(true);
+        setLandingAction("wallet");
       } else if (message.loginFailed) {
-        setLandingAction("abort");
         setLogin(false);
         setInit(false);
+        setLandingAction("abort");
       }
     });
   };
@@ -68,15 +112,10 @@ export default function App() {
     chrome.runtime.sendMessage({ logoutAuth0: true });
     chrome.runtime.onMessage.addListener(async function (message) {
       if (message.logoutSuccess) {
+        setLandingAction("abort");
         setLogin(false);
       }
     });
-  };
-
-  // Called from Landing page to update wallet status
-  // Upon successful create/import set states and show wallet
-  const handleLanding = (action: string) => {
-    setLandingAction(action);
   };
 
   // Active means a wallet is instantiated for extension via login auth0
@@ -89,22 +128,44 @@ export default function App() {
     setLandingAction("abort");
   };
 
+  // useContext is being used to pass down the setLandingAction to child pages
+  // These child pages will utilize the context to update the landingAction string
+  // This landingAction string dictates which page to render in the main popup
+  // Much easier than having to constantly pass down the function as a prop
   const renderState = () => {
     if (walletInit) {
-      if (loggedIn) {
-        return <Wallet handleLogout={handleLogout} resetWallet={resetWallet} setLanding={handleLanding} />;
-      } else {
-        return <Login resetWallet={resetWallet} setLogin={handleLogin} setLanding={handleLanding} />;
+      switch (landingAction) {
+        case "transfer":
+          return <Transfer />;
+        case "wallet":
+          if (loggedIn) {
+            return <Wallet handleLogout={handleLogout} />;
+          } else {
+            return <Login resetWallet={resetWallet} setLogin={handleLogin} />;
+          }
+        case "loginPending":
+          return <PendingLogin auth0PopUp={false} />;
+        default:
+          return <Login resetWallet={resetWallet} setLogin={handleLogin} />;
       }
     } else {
       switch (landingAction) {
-        case "login":
-          return <PendingLogin handleLogin={handleLogin} setLanding={handleLanding} resetWallet={resetWallet} />;
+        case "loginPending":
+          return <PendingLogin auth0PopUp={true} />;
         default:
-          return <Landing handleLogin={handleLogin} setLanding={handleLanding} />;
+          return <Landing handleLogin={handleLogin} />;
       }
     }
   };
 
-  return <ExtensionLayout>{renderState()}</ExtensionLayout>;
+  return (
+    <UserCtx.Provider value={user}>
+      <ExtensionLayout>
+        <LandingCtx.Provider value={{ landingAction, setLandingAction }}>{renderState()}</LandingCtx.Provider>
+      </ExtensionLayout>
+    </UserCtx.Provider>
+  );
 }
+
+export { LandingCtx };
+export { UserCtx };

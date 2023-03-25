@@ -1,5 +1,6 @@
 import auth0_config from "./auth0.json";
 import { Buffer } from "buffer";
+import { ethers } from "ethers";
 
 // Used to generate a random 'state' to reduce vulnerability to CSRF attacks
 // Passed into the code challenge options and checked after getting code
@@ -35,24 +36,54 @@ async function sha256(buffer) {
   return await self.crypto.subtle.digest("SHA-256", bytes);
 }
 
-// Get Auth0 Access Token
-// https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#example-post-to-token-url
-// By default access tokens have a 24 hour lifetime but that can be changed
-async function handleAuth0Login() {
-  // Before re-running access token oauth flow, check if there is already a valid access token in storage
+async function checkAccessToken() {
   const storageToken = await chrome.storage.session.get("USER_ACCESS_TOKEN");
   if (storageToken && storageToken.USER_ACCESS_TOKEN) {
     const storageExpiry = await chrome.storage.session.get("USER_TOKEN_EXPIRES_AT");
     const isExpired = storageExpiry.USER_TOKEN_EXPIRES_AT - new Date().getTime() <= 0;
-    if (!isExpired) {
-      await chrome.storage.session.set({ NOVUSYS_LOGGED_IN: true });
-      return { status: 200, message: "novusys wallet valid access token still alive" };
+    if (isExpired) {
+      return { status: 401, messsage: "novusys wallet access token expired" };
+    } else {
+      return { status: 200, message: "novusys wallet valid access token found" };
     }
+  } else {
+    return { status: 404, messsage: "novusys wallet access token not found" };
+  }
+}
+
+// Calls the auth0 /userinfo endpoint and assumes access token has been set
+async function fetchUserInfo() {
+  if ((await checkAccessToken()).status != 200) {
+    return { status: 401, message: "novusys wallet could not fetch user info without valid access token" };
+  }
+
+  const storageToken = await chrome.storage.session.get("USER_ACCESS_TOKEN");
+  return fetch(`https://${auth0_config.AUTH0_DOMAIN}/userinfo`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${storageToken.USER_ACCESS_TOKEN}` },
+  })
+    .then((response) => response.json())
+    .then(async (data) => {
+      await chrome.storage.session.set({ USER_DATA: data });
+      return { status: 200, message: `novusys wallet successfully fetched user info` };
+    })
+    .catch((error) => {
+      return { status: 401, message: `novusys wallet ${error}` };
+    });
+}
+
+// Get Auth0 Access Token
+// https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#example-post-to-token-url
+async function handleAuth0Login() {
+  // Before re-running access token oauth flow, check if there is already a valid access token in storage
+  if ((await checkAccessToken()).status == 200) {
+    setTimeout(async () => {
+      await fetchUserInfo();
+      return { status: 200, message: "novusys wallet access token still alive" };
+    }, 1000);
   }
   const redirectUrl = chrome.identity.getRedirectURL();
 
-  // Create the code_verifier needed for auth0
-  // The logic below will create a Sha256 code challenge and use it to create the code_verifier
   // https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#create-code-verifier
   const state = generateShortUUID();
   const inputBytes = getRandomBytes();
@@ -66,17 +97,16 @@ async function handleAuth0Login() {
     client_id: auth0_config.AUTH0_CLIENT_ID,
     redirect_uri: redirectUrl,
     audience: auth0_config.AUTH0_AUDIENCE,
-    scope: "offline_access openid profile email",
-    state,
+    scope: "openid profile email",
+    state: state,
   };
   /**
    * Here we are creating a call to Chrome's identity framework in order to generate a code
-   * This code will be used to then generate an Auth0 token
-   * We would then likely store this access token within chrome.session.storage (need to double check docs for security)
-   * By doing this we are able to keep the user logged in while the session is open (when browser is closed redo login)
+   * This code will be used to then generate an Auth0 access token
    */
   let queryString = new URLSearchParams(options).toString();
   let url = `https://${auth0_config.AUTH0_DOMAIN}/authorize?${queryString}`;
+
   return chrome.identity
     .launchWebAuthFlow({
       url,
@@ -85,18 +115,18 @@ async function handleAuth0Login() {
     .then((resultUrl) => {
       if (resultUrl) {
         const code = getParameterByName("code", resultUrl);
-        const state_received = getParameterByName("state", resultUrl);
-        if (state_received == state && code) {
+        const stateReceived = getParameterByName("state", resultUrl);
+        if (code && stateReceived == state) {
           return fetch(`https://${auth0_config.AUTH0_DOMAIN}/oauth/token`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              redirect_uri: redirectUrl,
               grant_type: "authorization_code",
               client_id: auth0_config.AUTH0_CLIENT_ID,
               code_verifier: codeVerifier,
-              code,
-              scope: "offline_access openid profile email",
+              code: code,
+              redirect_uri: redirectUrl,
+              scope: "openid profile email",
             }),
           })
             .then((response) => response.json())
@@ -108,6 +138,10 @@ async function handleAuth0Login() {
               await chrome.storage.session.set({ USER_TOKEN_EXPIRES_AT: expires_at });
               await chrome.storage.local.set({ NOVUSYS_INIT: true });
               await chrome.storage.session.set({ NOVUSYS_LOGGED_IN: true });
+
+              // Run if user info is needed
+              await fetchUserInfo();
+
               return { status: 200, message: "novusys wallet successfully authenticated" };
             })
             .catch((error) => {
@@ -124,6 +158,7 @@ async function handleAuth0Login() {
       }
     })
     .catch((error) => {
+      console.log(error);
       return { status: 400, message: "novusys wallet User cancelled auth0 request" };
     });
 }
@@ -196,7 +231,6 @@ chrome.runtime.onMessage.addListener(async function (message) {
     }
 
     const loggedWrapper = await chrome.storage.session.get("NOVUSYS_LOGGED_IN");
-    console.log("log wrapper", loggedWrapper);
     if (loggedWrapper && loggedWrapper.NOVUSYS_LOGGED_IN) {
       chrome.runtime.sendMessage({ isLoggedIn: true });
     } else {

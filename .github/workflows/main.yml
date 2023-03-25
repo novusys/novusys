@@ -69,7 +69,7 @@ jobs:
             echo "--- Building frontend-website" &&
             npm run build &&
             echo "--- Terminating Node.js" &&
-            killall -q node &&
+            killall -q node || true &&
             cd ../backend &&
             echo "--- Starting backend" &&
             (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &) &&

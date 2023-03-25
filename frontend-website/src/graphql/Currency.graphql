@@ -1,0 +1,28 @@
+import { CurrencyInformation } from "./CurrencyInformation";
+
+export class Currency {
+  /**
+   * Currency ID
+   */
+  id: ID;
+
+  /**
+   * UUID
+   */
+  uuid: String!;
+
+  /**
+   * Address
+   */
+  address: String!;
+
+  /**
+   * Currency Information
+   */
+  currency_information: CurrencyInformation;
+
+  /**
+   * Count
+   */
+  count: Int;
+}
