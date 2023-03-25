@@ -1,21 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import styles from "./Header.module.scss";
 import { FiLogOut, FiInfo, FiArrowLeft } from "react-icons/fi";
 import ChainSwitcher from "../ChainSwitcher/ChainSwitcher";
+import { LandingCtx } from "../../pages/MainPopup/Popup";
 
 interface HeaderProps {
   showTools: boolean;
   handleLogout?: () => void;
-  resetWallet?: () => void;
-  setLanding: (action: string) => void;
 }
 
 const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
+  const { landingAction, setLandingAction } = useContext(LandingCtx);
   const handleLogoutClick: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement> = (e) => {
     props.handleLogout?.();
-  };
-  const handleResetClick: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement> = (e) => {
-    props.resetWallet?.();
   };
   return (
     <div className={styles["main__container"]}>
@@ -32,7 +29,7 @@ const Header: React.FC<HeaderProps> = (props: HeaderProps) => {
         </>
       ) : (
         <>
-          <button onClick={() => props.setLanding("abort")} className={styles["left__button"]}>
+          <button onClick={() => setLandingAction("abort")} className={styles["left__button"]}>
             <FiArrowLeft />
           </button>
           <img src="logos/novusys-logo.png" className={styles["landing__logo"]} alt="" />

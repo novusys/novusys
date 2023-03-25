@@ -1,0 +1,13 @@
+diff --git a/node_modules/buffer/index.js b/node_modules/buffer/index.js
+index 7a0e9c2..d6db576 100644
+--- a/node_modules/buffer/index.js
++++ b/node_modules/buffer/index.js
+@@ -7,7 +7,7 @@
+ /* eslint-disable no-proto */
+ 
+ 'use strict'
+-
++globalThis.Buffer = Buffer
+ const base64 = require('base64-js')
+ const ieee754 = require('ieee754')
+ const customInspectSymbol =

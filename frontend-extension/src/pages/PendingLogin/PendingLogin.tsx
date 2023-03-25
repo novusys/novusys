@@ -3,16 +3,15 @@ import styles from "./PendingLogin.module.scss";
 import Header from "../../components/Header/Header";
 
 interface PendingLoginProps {
-  handleLogin: () => void;
-  resetWallet: () => void;
-  setLanding: (action: string) => void;
+  auth0PopUp: boolean;
 }
 
 const PendingLogin: React.FC<PendingLoginProps> = (props: PendingLoginProps) => {
   return (
     <>
-      <Header showTools={false} setLanding={props.setLanding} />
-      <div className={styles["main__container"]}>Complete login through Auth0 Portal</div>
+      <div className={styles["main__container"]}>
+        {props.auth0PopUp ? <div>Complete login through Auth0 Portal</div> : <div>Logging in...</div>}
+      </div>
     </>
   );
 };

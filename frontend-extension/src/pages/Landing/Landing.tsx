@@ -1,19 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import styles from "./Landing.module.scss";
+import { LandingCtx } from "../MainPopup/Popup";
 
 interface LandingProps {
-  setLanding: (action: string) => void;
   handleLogin: () => void;
 }
 
 const Landing: React.FC<LandingProps> = (props: LandingProps) => {
-  // This page would conditionally render the create / import pages depending on action
-  // See Create/CreateWallet.tsx and Import/Import
+  const { landingAction, setLandingAction } = useContext(LandingCtx);
 
   return (
     <div className={styles["main__container"]}>
       <img src="logos/novusys-logo.png" className={styles["main__logo"]} alt="" />
-      <button onClick={() => props.setLanding("create")} className={styles["action__button"]}>
+      <button onClick={() => setLandingAction("signup")} className={styles["action__button"]}>
         Sign Up
       </button>
       <button onClick={() => props.handleLogin()} className={styles["action__button"]}>
