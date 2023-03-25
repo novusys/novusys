@@ -1,7 +1,5 @@
 name: Deploy Novusys
 
-concurrency: deployment
-
 on:
   push:
     branches: [ main ]
@@ -41,15 +39,12 @@ jobs:
             HOSTNAME : ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME }}
             USER_NAME : ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME }}
             PRISMA_ENV : ${{ secrets.NOVUSYS_PRODUCTION_2_PRISMA_ENV }}
-            FRONTEND_WEBSITE_ENV : "${{ secrets.NOVUSYS_PRODUCTION_2_FRONTEND_WEBSITE_ENV }}"
             
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && 
           chmod 600 private_key.pem &&
-          echo "$PRISMA_ENV" > backend.env &&
-          scp -o StrictHostKeyChecking=no -i private_key.pem backend.env ${USER_NAME}@${HOSTNAME}:development/novusys/backend/.env &&
-          echo "$FRONTEND_WEBSITE_ENV" > frontend-website.env &&
-          scp -o StrictHostKeyChecking=no -i private_key.pem frontend-website.env ${USER_NAME}@${HOSTNAME}:development/novusys/frontend-website/.env &&
+          echo "$PRISMA_ENV" > .env &&
+          scp -o StrictHostKeyChecking=no -i private_key.pem .env ${USER_NAME}@${HOSTNAME}:development/novusys/backend &&
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${USER_NAME}@${HOSTNAME} '
             cd development/novusys &&
             export NVM_DIR=~/.nvm &&
@@ -61,15 +56,6 @@ jobs:
             cd backend &&
             npm install &&
             npm run build &&
-            killall node &&
-            (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &) &&
-#            cd ../frontend-website &&
-#            npm install &&
-#            npm run build &&
-#            killall node &&
-#            cd ../backend &&
-#            (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &) &&
-#            cd ../frontend-website &&
-#            (nohup npm run start > ~/novusys-front-end.log 2> ~/novusys-front-end.err < /dev/null &)
-             pwd
+            killall node
+            (nohup npm run start:dev > ~/novusys.log 2> ~/novusys.err < /dev/null &)
           '
