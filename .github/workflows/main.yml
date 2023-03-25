@@ -41,7 +41,7 @@ jobs:
             HOSTNAME : ${{ secrets.NOVUSYS_PRODUCTION_2_HOSTNAME }}
             USER_NAME : ${{ secrets.NOVUSYS_PRODUCTION_2_USERNAME }}
             PRISMA_ENV : ${{ secrets.NOVUSYS_PRODUCTION_2_PRISMA_ENV }}
-            FRONTEND_WEBSITE_ENV : ${{ secrets.NOVUSYS_PRODUCTION_2_FRONTEND_WEBSITE_ENV }}
+            FRONTEND_WEBSITE_ENV : "${{ secrets.NOVUSYS_PRODUCTION_2_FRONTEND_WEBSITE_ENV }}"
             
         run: |
           echo "$PRIVATE_KEY" > private_key.pem && 
