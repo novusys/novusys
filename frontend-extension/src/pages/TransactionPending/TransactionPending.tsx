@@ -179,8 +179,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
             return { status: 400, message: "novusys wallet error while fetching hash", txnHash: hash };
           } else {
             setHash(hash);
-            console.log("got hash", hash);
-            return await fetchTxn(hash)
+            return await fetchTxn(hash, provider)
               .then((res) => {
                 return res;
               })
@@ -196,10 +195,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
       });
   }
 
-  async function fetchTxn(hash: string) {
-    const rpcURL = "https://eth-goerli.g.alchemy.com/v2/m3R-aaa3X67lEKyNjQu3aL6Zg2x-4gJX";
-    const provider = new ethers.providers.JsonRpcProvider(rpcURL);
-
+  async function fetchTxn(hash: string, provider: any) {
     const tx = await provider.getTransaction(hash);
 
     if (!tx) {
@@ -209,7 +205,6 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
     let receipt = await provider.getTransactionReceipt(hash);
 
     while (!receipt || receipt.status === null) {
-      console.log(receipt);
       // wait for the next block to be mined
       await provider.waitForTransaction(hash);
 
@@ -223,8 +218,6 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
     }
     setBlockNum(receipt.blockNumber.toString());
     setConfirmations(receipt.confirmations.toString());
-    const url = props.details.chainInfo.explorer + "tx/" + txnHash;
-    console.log(url);
     return { status: 200, message: "novusys wallet txn completed", txnHash: hash, data: receipt };
   }
 
@@ -241,7 +234,6 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
 
   function handleExplorerClick() {
     const url = props.details.chainInfo.explorer + "tx/" + txnHash;
-    console.log(url);
     chrome.tabs.create({ url: url });
   }
 

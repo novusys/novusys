@@ -94,6 +94,12 @@ export default function App() {
       .catch((err) => {
         console.log(err);
       });
+
+    chrome.runtime.onMessage.addListener(async function (message) {
+      if (message.type == "NOVUSYS_TRANSFER") {
+        setLandingAction("transfer");
+      }
+    });
   }, [loggedIn]);
 
   const handleLogin = async () => {

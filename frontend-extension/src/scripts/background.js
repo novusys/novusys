@@ -257,4 +257,27 @@ chrome.runtime.onMessage.addListener(async function (message) {
   // }
 });
 
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+  if (message.type === "EXTERNAL_SITE") {
+    console.log("Message received from content script: ", message.data);
+    sendResponse({ myResponse: "Hello from background script" });
+    try {
+      chrome.windows.create(
+        {
+          focused: true,
+          width: 357,
+          height: 600,
+          type: "popup",
+          url: "popup.html",
+        },
+        () => {
+          console.log("Popup Opened");
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+});
+
 export {};

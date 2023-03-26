@@ -16,10 +16,6 @@ const BalanceBox: React.FC<BoxProps> = (props: BoxProps) => {
     setName(user.name);
   }, [user]);
 
-  function handleTransferClick() {
-    chrome.runtime.sendMessage({ transferPopup: true });
-  }
-
   return (
     <div className={styles["main__container"]}>
       <div className={styles["profile__container"]}>
