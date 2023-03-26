@@ -124,6 +124,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
   // Grabs the request params from the background service worker
   async function getTxnFromStorage() {
     const txn = await chrome.storage.session.get("CURRENT_TXN");
+    console.log(txn);
     if (!txn || !txn.CURRENT_TXN) return { status: 404, message: "novusys wallet could not find pending transaction" };
 
     await chrome.storage.session.remove("CURRENT_TXN");

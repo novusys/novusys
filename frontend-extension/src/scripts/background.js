@@ -263,7 +263,6 @@ chrome.runtime.onMessageExternal.addListener(async (message, sender, sendRespons
     }
 
     const amount = txn.body.value.toString();
-    console.log(amount);
 
     // TODO: ask site for the func name or parse it from hash + contract?
     const details = {

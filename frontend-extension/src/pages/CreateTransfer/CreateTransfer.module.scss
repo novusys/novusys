@@ -4,29 +4,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 500;
   line-height: 1.5;
-}
-
-.transfer__header {
-  width: 100%;
-  height: 10vh;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: auto;
-  padding: 0.7rem;
-  font-size: 1.3rem;
-  font-weight: 700;
-  background-color: rgba(255, 255, 255, 0.7);
-}
-
-.header__logo {
-  width: 36px;
-  height: 36px;
-  margin-right: 10px;
 }
 
 .outer__container {
@@ -36,6 +16,17 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+}
+
+.logo__container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header__logo {
+  width: 36px;
+  height: 36px;
+  margin-right: 10px;
 }
 
 .user__container {
@@ -63,55 +54,64 @@
 }
 
 .chain__container {
-  margin-left: auto;
-  background-color: white;
-  border: 3px solid white;
-  color: blue;
-  padding: 0.3rem 0.5rem 0.3rem 0.5rem;
-  border-radius: 2rem;
-}
-
-.origin__container {
   width: 100%;
-  padding: 1rem 1rem 0.5rem 1rem;
+  align-items: center;
+  margin: 20px 0 20px 0;
 }
 
-.origin__name {
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
-.origin__avatar {
-  width: 75px;
-  height: 75px;
-  border-radius: 50%;
-}
-
-.message__container {
-  height: 220px;
+.form__container {
+  height: 100%;
   width: 85%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   border-radius: 1.5rem;
-  padding: 1.5rem;
-  overflow-y: auto;
+  padding: 1.3rem;
   background-color: rgba(255, 255, 255, 0.6);
 }
 
-.message__title {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.message__warning {
+.form__title {
   width: 100%;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin-bottom: 10px;
+}
+
+.form__item {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 30px;
+  font-weight: 600;
+}
+
+.form__item__title {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.form__textfield {
+  background-color: transparent;
+  border: none;
+  border: 3px solid black;
+  border-radius: 1.2rem;
+  outline: none;
+  color: black;
+  margin-left: 10px;
+  padding: 0.5rem;
+}
+
+.form__check {
+  transform: scale(2);
+  padding: 10px;
+  background-color: transparent;
+  outline: none;
+  margin-left: 20px;
+  cursor: pointer;
 }
 
 .transfer__actionbar {

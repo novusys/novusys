@@ -5,7 +5,10 @@ import { chains } from "../chains";
 import { LandingCtx } from "../MainPopup/Popup";
 import { UserCtx } from "../MainPopup/Popup";
 
-interface TransferProps {}
+interface TransferProps {
+  inputTxn?: any;
+  inputDetails?: any;
+}
 
 // todo: edit fields
 type Details = {
@@ -31,45 +34,37 @@ const Transfer: React.FC<TransferProps> = (props: TransferProps) => {
   const user = useContext(UserCtx);
   const [avatar, setAvatar] = useState("/images/defaultaccount.png");
   const [name, setName] = useState("Wallet 1");
+  const [details, setDetails] = useState({
+    chainInfo: chains[5],
+    originName: "novusys",
+    originAddress: "0x45d0f...7ca5ECD",
+    originAvatar: "/logos/novusys-leaf.png",
+    target: "",
+    message: ``,
+    txnValue: "",
+  });
+
+  useEffect(() => {
+    getTxnFromStorage()
+      .then((res) => {
+        if (res && res.status == 200) {
+          setDetails(res.data.details);
+        }
+      })
+      .catch((err) => {
+        console.log("err while getting txn from storage", err);
+      });
+  }, []);
 
   useEffect(() => {
     setAvatar(user.avatar);
     setName(user.name);
   }, [user]);
 
-  // TODO: Parse form to extract transfer details
-  const txn = {
-    body: {
-      cid: 5,
-      target: "0xc0f70D98eC6aD9767d49341dB57674F1E2305B87",
-      value: ethers.utils.parseEther("0.01")._hex,
-      data: "0x",
-      provider: "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071",
-      epAddr: "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-      factoryAddr: "0x2bC52aEd814Ee695c9FD7B7EB4F8B9821E710ceF",
-      withPm: true,
-    },
-  };
-  const amount = "0.01 GoerliETH";
-  // Build a Details
-  const details: Details = {
-    chainInfo: chains[5],
-    walletName: "Account 1",
-    walletAddress: "0x89py...09py",
-    walletAvatar: "images/punk2924.png",
-    originName: "novusys",
-    originAddress: "0x45d0f...7ca5ECD",
-    originAvatar: "/logos/novusys-leaf.png",
-    target: txn.body.target,
-    message: `Transfer ${amount} to ${abbrev(txn.body.target)}`,
-    txnValue: txn.body.value,
-  };
-
   // The idea is to transition to a pending screen upon 'Confirm' click
   const handleTransfer = async (transfer: boolean) => {
     if (transfer) {
       // Proceed to the TxnPending page
-      await chrome.storage.session.set({ CURRENT_TXN: { req: txn, details: details } });
       setLandingAction("pendingTransaction");
     } else {
       await chrome.storage.session.remove("CURRENT_TXN");
@@ -77,6 +72,13 @@ const Transfer: React.FC<TransferProps> = (props: TransferProps) => {
       setLandingAction("wallet");
     }
   };
+  // Grabs the request params from the background service worker
+  async function getTxnFromStorage() {
+    const txn = await chrome.storage.session.get("CURRENT_TXN");
+    if (!txn || !txn.CURRENT_TXN) return { status: 404, message: "novusys wallet could not find pending transaction" };
+
+    return { status: 200, message: "novusys wallet found txn to process", data: txn.CURRENT_TXN };
+  }
 
   const renderState = () => {
     return (
@@ -85,14 +87,13 @@ const Transfer: React.FC<TransferProps> = (props: TransferProps) => {
           <div className={styles["user__container"]}>
             <img className={styles["user__avatar"]} src={avatar} alt="" />
             <div className={styles["account__details"]}>
-              <div>{name}</div> <div>{details.walletAddress}</div>
+              <div>{name}</div> <div>{"0x89py...09py"}</div>
             </div>
             <div className={styles["chain__container"]}>{details.chainInfo.chain}</div>
           </div>
           <div className={styles["origin__container"]}>
             <img className={styles["origin__avatar"]} src={details.originAvatar} alt="" />
             <div className={styles["origin__name"]}>{details.originName}</div>
-            <div>{details.originAddress}</div>
           </div>
           <div className={styles["message__warning"]}>Transfer</div>
           <div className={styles["message__container"]}>
