@@ -1,4 +1,25 @@
 ![](https://i.imgur.com/i6jKHVH.png)
+
+![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/yoshisada/novusys/main.yml?branch=main)
+
+## Prerequisites
+
+- Nest.js
+- Prisma
+- GraphQL
+- Apollo Server 4
+
+## Deployment
+
+https://github.com/novusys/novusys/blob/main/.github/workflows/main.yml
+| Key Name                                   | Key Description         |
+| ------------------------------------------ | ----------------------- |
+| NOVUSYS_PRODUCTION_2_FRONTEND_WEBSITE_ENV  | Front-end URL           |
+| NOVUSYS_PRODUCTION_2_PRISMA_ENV            | AWS RDS Database URL    |
+| NOVUSYS_PRODUCTION_2_HOSTNAME              | AWS EC2 host name       |
+| NOVUSYS_PRODUCTION_2_PRIVATE_KEY           | AWS EC2 SSH private key |
+| NOVUSYS_PRODUCTION_2_USERNAME              | AWS EC2 SSH user name   |
+ 
 ## Goal
 The goal of Novusys is to provide an end-to-end Web3 wallet solution (ERC-4337). Newcomers to Web3 often find the onboarding process to be onerous. Requiring them to setup a crypto wallet, safeguard their private keys, and create an account with an exchange to fund their account. By abstracting wallet creation, funding, and management we can provide a frictionless Web3 experience. We aim to bridge the gap between Web2 and Web3 by allowing users to interact with blockchain in a familiar way.
 
