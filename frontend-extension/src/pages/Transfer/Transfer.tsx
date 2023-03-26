@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import styles from "./Transfer.module.scss";
 import { ethers } from "ethers";
-import TxnPending from "../TransactionPending/TransactionPending";
 import { chains } from "../chains";
 import { LandingCtx } from "../MainPopup/Popup";
 import { UserCtx } from "../MainPopup/Popup";
@@ -28,7 +27,6 @@ function abbrev(str: string) {
 }
 
 const Transfer: React.FC<TransferProps> = (props: TransferProps) => {
-  const [transferSent, setSent] = useState(false);
   const { landingAction, setLandingAction } = useContext(LandingCtx);
   const user = useContext(UserCtx);
   const [avatar, setAvatar] = useState("/images/defaultaccount.png");
@@ -40,19 +38,21 @@ const Transfer: React.FC<TransferProps> = (props: TransferProps) => {
   }, [user]);
 
   // TODO: Parse form to extract transfer details
-  const example = {
+  const txn = {
     body: {
+      cid: 5,
       target: "0xc0f70D98eC6aD9767d49341dB57674F1E2305B87",
       value: ethers.utils.parseEther("0.01")._hex,
       data: "0x",
       provider: "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071",
       epAddr: "0x0576a174D229E3cFA37253523E645A78A0C91B57",
       factoryAddr: "0x2bC52aEd814Ee695c9FD7B7EB4F8B9821E710ceF",
+      withPm: true,
     },
   };
   const amount = "0.01 GoerliETH";
   // Build a Details
-  const transfer: Details = {
+  const details: Details = {
     chainInfo: chains[5],
     walletName: "Account 1",
     walletAddress: "0x89py...09py",
@@ -60,50 +60,51 @@ const Transfer: React.FC<TransferProps> = (props: TransferProps) => {
     originName: "novusys",
     originAddress: "0x45d0f...7ca5ECD",
     originAvatar: "/logos/novusys-leaf.png",
-    target: example.body.target,
-    message: `Transfer ${amount} to ${abbrev(example.body.target)}`,
-    txnValue: example.body.value,
+    target: txn.body.target,
+    message: `Transfer ${amount} to ${abbrev(txn.body.target)}`,
+    txnValue: txn.body.value,
   };
 
-  // The idea is to transition to a pending screen upon 'Sign' click
-  const handleSig = (transfer: boolean) => {
+  // The idea is to transition to a pending screen upon 'Confirm' click
+  const handleTransfer = async (transfer: boolean) => {
     if (transfer) {
       // Proceed to the TxnPending page
-      setSent(true);
+      await chrome.storage.session.set({ CURRENT_TXN: { req: txn, details: details } });
+      setLandingAction("pendingTransaction");
     } else {
+      await chrome.storage.session.remove("CURRENT_TXN");
+      await chrome.storage.session.remove("EXTERNAL_OVERRIDE");
       setLandingAction("wallet");
     }
   };
 
   const renderState = () => {
-    return transferSent ? (
-      <TxnPending req={example} details={transfer} />
-    ) : (
+    return (
       <div className={styles["main__container"]}>
         <div className={styles["outer__container"]}>
           <div className={styles["user__container"]}>
             <img className={styles["user__avatar"]} src={avatar} alt="" />
             <div className={styles["account__details"]}>
-              <div>{name}</div> <div>{transfer.walletAddress}</div>
+              <div>{name}</div> <div>{details.walletAddress}</div>
             </div>
-            <div className={styles["chain__container"]}>{transfer.chainInfo.chain}</div>
+            <div className={styles["chain__container"]}>{details.chainInfo.chain}</div>
           </div>
           <div className={styles["origin__container"]}>
-            <img className={styles["origin__avatar"]} src={transfer.originAvatar} alt="" />
-            <div className={styles["origin__name"]}>{transfer.originName}</div>
-            <div>{transfer.originAddress}</div>
+            <img className={styles["origin__avatar"]} src={details.originAvatar} alt="" />
+            <div className={styles["origin__name"]}>{details.originName}</div>
+            <div>{details.originAddress}</div>
           </div>
           <div className={styles["message__warning"]}>Transfer</div>
           <div className={styles["message__container"]}>
             <div className={styles["message__title"]}>Message:</div>
-            <div>{transfer.message}</div>
+            <div>{details.message}</div>
           </div>
         </div>
         <div className={styles["transfer__actionbar"]}>
-          <button onClick={() => handleSig(false)} className={styles["action__button"]}>
+          <button onClick={() => handleTransfer(false)} className={styles["action__button"]}>
             Cancel
           </button>
-          <button onClick={() => handleSig(true)} className={styles["action__button"] + " " + styles["transfer__button"]}>
+          <button onClick={() => handleTransfer(true)} className={styles["action__button"] + " " + styles["transfer__button"]}>
             Confirm
           </button>
         </div>

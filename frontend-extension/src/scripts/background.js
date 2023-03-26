@@ -1,6 +1,7 @@
 import auth0_config from "./auth0.json";
 import { Buffer } from "buffer";
 import { ethers } from "ethers";
+import { chains } from "./chains";
 
 // Used to generate a random 'state' to reduce vulnerability to CSRF attacks
 // Passed into the code challenge options and checked after getting code
@@ -34,6 +35,12 @@ function getParameterByName(name, url = self.location.href) {
 async function sha256(buffer) {
   let bytes = new TextEncoder().encode(buffer);
   return await self.crypto.subtle.digest("SHA-256", bytes);
+}
+
+function abbrev(str) {
+  if (!str.length) return "";
+  if (str.slice(0, 2) != "0x") return str;
+  return str.slice(0, 6) + "..." + str.slice(str.length - 4, str.length);
 }
 
 async function checkAccessToken() {
@@ -237,30 +244,40 @@ chrome.runtime.onMessage.addListener(async function (message) {
       chrome.runtime.sendMessage({ isLoggedOut: true });
     }
   }
-  // else if (message.transferPopup) {
-  //   try {
-  //     chrome.windows.create(
-  //       {
-  //         focused: true,
-  //         width: 357,
-  //         height: 600,
-  //         type: "popup",
-  //         url: "transfer.html",
-  //         top: 0,
-  //         left: 0,
-  //       },
-  //       () => {}
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
 });
 
-chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-  if (message.type === "EXTERNAL_SITE") {
-    console.log("Message received from content script: ", message.data);
-    sendResponse({ myResponse: "Hello from background script" });
+chrome.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
+  if (message.type === "EXTERNAL_SITE_TRANSFER") {
+    const checkList = ["cid", "target", "value", "data", "provider", "epAddr", "factoryAddr", "withPm"];
+    const txn = message.data;
+    if (!txn) {
+      sendResponse({ message: "Please send a data payload" });
+      return;
+    }
+
+    for (const check of checkList) {
+      if (!Object.hasOwn(txn.body, check)) {
+        sendResponse({ message: "Txn missing param(s)", error: `${check} is missing from data payload` });
+        return;
+      }
+    }
+
+    const amount = txn.body.value.toString();
+    console.log(amount);
+
+    // TODO: ask site for the func name or parse it from hash + contract?
+    const details = {
+      chainInfo: chains[txn.body.cid],
+      originName: "novusys",
+      originAddress: "0x45d0f...7ca5ECD",
+      originAvatar: "/logos/novusys-leaf.png",
+      target: txn.body.target,
+      message: `Transfer ${amount} to ${abbrev(txn.body.target)}`,
+      txnValue: txn.body.value,
+    };
+    console.log("Received transfer txn request ", txn);
+    await chrome.storage.session.set({ CURRENT_TXN: { req: txn, details: details } });
+    await chrome.storage.session.set({ EXTERNAL_OVERRIDE: "transfer" });
     try {
       chrome.windows.create(
         {
@@ -272,6 +289,11 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
         },
         () => {
           console.log("Popup Opened");
+          chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+            if (message.walletShown) {
+              chrome.runtime.sendMessage({ externalTransfer: true });
+            }
+          });
         }
       );
     } catch (error) {
