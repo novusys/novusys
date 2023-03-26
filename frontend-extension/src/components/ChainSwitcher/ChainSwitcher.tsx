@@ -53,6 +53,7 @@ export default function ChainSwitcher() {
     { chainID: 1, name: "Ethereum Mainnet", address: "", icon: "" },
     { chainID: 137, name: "Polygon Mainnet", address: "", icon: "" },
     { chainID: 10, name: "Optimism", address: "", icon: "" },
+    { chainID: 5, name: "Goerli Testnet", address: "", icon: "" },
   ];
 
   return (

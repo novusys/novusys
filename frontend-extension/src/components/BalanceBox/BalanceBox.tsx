@@ -55,7 +55,7 @@ const BalanceBox: React.FC<BoxProps> = (props: BoxProps) => {
 
       <div className={styles["action__container"]}>
         <button className={styles["action__button"]}>Pause</button>
-        <button onClick={() => setLandingAction("transfer")} className={styles["action__button"]}>
+        <button onClick={() => setLandingAction("createTransfer")} className={styles["action__button"]}>
           Transfer
         </button>
         <button className={styles["action__button"]}>Sign</button>

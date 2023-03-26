@@ -10,6 +10,7 @@ import PendingLogin from "../PendingLogin/PendingLogin";
 import Signature from "../Signature/Signature";
 import TxnPending from "../TransactionPending/TransactionPending";
 import Transfer from "../Transfer/Transfer";
+import CreateTransfer from "../CreateTransfer/CreateTransfer";
 
 interface UserContextValues {
   auth0id: string;
@@ -151,6 +152,8 @@ export default function App() {
           return <TxnPending />;
         case "transfer":
           return <Transfer />;
+        case "createTransfer":
+          return <CreateTransfer />;
         case "wallet":
           if (loggedIn) {
             return <Wallet handleLogout={handleLogout} />;
