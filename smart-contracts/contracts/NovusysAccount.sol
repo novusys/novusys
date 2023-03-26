@@ -220,6 +220,11 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
         require(msg.sender == address(entryPoint()) || recoveryVoters[msg.sender], "account: not Voter or EntryPoint");
     }
 
+    // Require the function call went through EntryPoint, voter, owner or loopback
+    function _requireFromEntryPointVoterOrOwner() internal view {
+        require(msg.sender == address(entryPoint()) || recoveryVoters[msg.sender] || msg.sender == address(this) || msg.sender == owner, "account: not Voter or EntryPoint");
+    }
+
     /// implement template method of BaseAccount
     function _validateAndUpdateNonce(UserOperation calldata userOp) internal override {
         require(_nonce++ == userOp.nonce, "account: invalid nonce");
@@ -266,7 +271,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
 
     function recoverWallet(address recoveryAddress) external {
         require(!lockdown, "Wallet in lockdown");
-        _requireFromEntryPointOrOwner();
+        _requireFromEntryPointVoterOrOwner();
         require(recoveryAddress != address(0), "Recovery to zero address not allowed");
 
         //Check if proposal time has elapsed
