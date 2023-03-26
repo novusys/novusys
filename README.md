@@ -54,3 +54,4 @@ https://github.com/novusys/novusys/blob/main/.github/workflows/main.yml
 | NOVUSYS_PRODUCTION_2_USERNAME              | AWS EC2 SSH user name   |
  
 # Contact
+email: novusys.scaling.ethereum@gmail.com
