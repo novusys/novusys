@@ -19,6 +19,9 @@ async function handle(req, res) {
     const provider = req.body[0].provider;
     const entryPoint = req.body[0].epAddr;
     const factory = req.body[0].factoryAddr;
+    const withPm = req.body[0].withPm;
+    const paymasterAddress = req.body[0].paymasterAddress;
+    const cid = req.body[0].cid
 
     // var options = {
     //   method: "POST",
@@ -45,7 +48,7 @@ async function handle(req, res) {
       method: "POST",
       url: "https://dev-27jeufvx256r244q.us.auth0.com/oauth/token",
       headers: { "content-type": "application/json" },
-      body: `{"client_id":"Hlrb9frZIsqmLiSuj5kZzEklmDLmIQJc","client_secret":"EmyGktwdBmRWymZjuSlQIs__DYBlchJ-HTg5AcN39qc4us4Qm_4dMRgFaknvTYjI","audience":"https://dev-27jeufvx256r244q.us.auth0.com/api/v2/","grant_type":"client_credentials","authParamsMap": {"auth0_id": "${auth0_id}", "target": "${target}", "value": "${value}", "data": "${data}", "provider": "${provider}", "epAddr": "${entryPoint}", "factoryAddr":"${factory}"}}`,
+      body: `{"client_id":"Hlrb9frZIsqmLiSuj5kZzEklmDLmIQJc","client_secret":"EmyGktwdBmRWymZjuSlQIs__DYBlchJ-HTg5AcN39qc4us4Qm_4dMRgFaknvTYjI","audience":"https://dev-27jeufvx256r244q.us.auth0.com/api/v2/","grant_type":"client_credentials","authParamsMap": {"auth0_id": "${auth0_id}", "target": "${target}", "value": "${value}", "data": "${data}", "provider": "${provider}", "epAddr": "${entryPoint}", "factoryAddr":"${factory}", "withPm":"${withPm}", "paymasterAddress": "${paymasterAddress}", "cid": "${cid}"}}`,
     };
 
     //@ts-ignore

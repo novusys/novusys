@@ -3,7 +3,7 @@ import crypto from "crypto";
 import axios from "axios";
 import { useConfig } from "./config";
 import { BigNumber, ethers, providers } from "ethers";
-import { SimpleAccountAPI } from "@account-abstraction/sdk";
+import { SimpleAccountAPI, wrapProvider } from "@account-abstraction/sdk";
 import { walletAbi } from "@/abis/walletAbi";
 const aaSdk = require("@account-abstraction/sdk");
 
@@ -65,7 +65,11 @@ export const useAAInterface = () => {
     cid: number,
     setStatus: Function,
     callback: Function,
-    providerRpc: any
+    providerRpc: any,
+    walletAddress: string,
+    cust: string,
+    withPm: boolean,
+    paymasterAddress: string,
   ) => {
     if (
       !(
@@ -80,57 +84,113 @@ export const useAAInterface = () => {
     ) {
       return "Error! Missing Provided Data";
     }
-    setStatus("processing");
+
     const provider = new ethers.providers.JsonRpcProvider(providerUrl);
-
-    const options = {
-      method: "POST",
-      url: "/api/sign/sign",
-      params: { "api-version": "3.0" },
-      headers: {
-        "content-type": "application/json",
-      },
-      data: [
-        {
-          auth0_id: auth0_id,
-          target: target,
-          value: value,
-          data: data,
-          provider: providerUrl,
-          epAddr: entryPoint,
-          factoryAddr: factory,
+    if (cust == "cust") {
+      setStatus("processing");
+      const options = {
+        method: "POST",
+        url: "/api/sign/sign",
+        params: { "api-version": "3.0" },
+        headers: {
+          "content-type": "application/json",
         },
-      ],
-    };
-    axios
-      .request(options)
-      .then(async function (response) {
-        console.log(response.data);
-        const chainId = cid;
-        const client = await new aaSdk.HttpRpcClient(
-          providerUrl,
-          entryPoint,
-          chainId
-        );
-        const op = response.data;
-
-        console.log(op);
-        const uoHash = await client.sendUserOpToBundler(op);
-        callback(
-          await getUserOpReceipt(
-            uoHash,
-            providerRpc,
+        data: [
+          {
+            auth0_id: auth0_id,
+            target: target,
+            value: value,
+            data: data,
+            provider: providerUrl,
+            epAddr: entryPoint,
+            factoryAddr: factory,
+            paymasterAddress: paymasterAddress,
+            withPm: withPm,
+            cid: cid
+          },
+        ],
+      };
+      axios
+        .request(options)
+        .then(async function (response) {
+          console.log(response.data);
+          const chainId = cid;
+          const client = await new aaSdk.HttpRpcClient(
+            providerUrl,
             entryPoint,
-            factory,
-            op.sender
-          )
-        );
-      })
-      .catch(function (error) {
-        console.error(error);
-        return error;
-      });
+            chainId
+          );
+          const op = response.data;
+
+          console.log(op);
+          const uoHash = await client.sendUserOpToBundler(op);
+          callback(
+            await getUserOpReceipt(
+              uoHash,
+              providerRpc,
+              entryPoint,
+              factory,
+              op.sender
+            )
+          );
+        })
+        .catch(function (error) {
+          console.error(error);
+          return error;
+        });
+    } else {
+      console.log("test");
+      // createSignedOpNonc(
+      //   walletAddress,
+      //   target,
+      //   value,
+      //   data,
+      //   provider,
+      //   entryPoint,
+      //   factory,
+      //   providerUrl
+      // );
+    }
   };
+
+  // const createSignedOpNonc = async (
+  //   address,
+  //   target,
+  //   value,
+  //   data,
+  //   provider,
+  //   epAddr,
+  //   factoryAddr,
+  //   bundler
+  // ) => {
+  //   const config = {
+  //     chainId: await provider.getNetwork().then((net) => net.chainId),
+  //     entryPointAddress: epAddr,
+  //     bundlerUrl: bundler,
+  //   };
+  //   const aaProvider = await wrapProvider(provider, config, provider.getSigner());
+    
+  //   const wProvider = () => {
+
+  //   }
+
+  //   const walletAPI = new aaSdk.BaseAccountAPI({
+  //     provider: provider,
+  //     entryPointAddress: epAddr,
+  //     owner: aaProvider,
+  //     factoryAddress: factoryAddr,
+  //   });
+  //   console.log(await walletAPI.getAccountInitCode());
+
+  //   const txnInfo = {
+  //     // auth0_id: auth0_id,
+  //     target: target,
+  //     value: value,
+  //     data: data,
+  //   };
+  //   // console.log("Test")
+  //   // console.log(await walletAPI.createUnsignedUserOp(txnInfo));
+  // };
 
   const approveSigners = async (
     auth0_id: string,
@@ -143,7 +203,9 @@ export const useAAInterface = () => {
     cid: number,
     callback: Function,
     providerRpc: any,
-    signers: any
+    signers: any,
+    withPm: boolean,
+    paymasterAddress: string,
   ) => {
     if (
       !(
@@ -163,11 +225,9 @@ export const useAAInterface = () => {
     const walletContract = new ethers.Contract(target, walletAbi, provider);
     const encodedData = walletContract.interface.encodeFunctionData(
       "initializeVoters",
-      [
-        signers,
-      ]
+      [signers]
     );
-    console.log(encodedData)
+    console.log(encodedData);
     // setStatus("processing");
     // const provider = new ethers.providers.JsonRpcProvider(providerUrl);
 
@@ -187,6 +247,9 @@ export const useAAInterface = () => {
           provider: providerUrl,
           epAddr: entryPoint,
           factoryAddr: factory,
+          paymasterAddress: paymasterAddress,
+          withPm: withPm,
+          cid: cid
         },
       ],
     };
@@ -194,8 +257,12 @@ export const useAAInterface = () => {
       .request(options)
       .then(async function (response) {
         console.log(response.data);
-        const chainId = cid
-        const client = await new aaSdk.HttpRpcClient(providerUrl, entryPoint, chainId);
+        const chainId = cid;
+        const client = await new aaSdk.HttpRpcClient(
+          providerUrl,
+          entryPoint,
+          chainId
+        );
         const op = response.data;
 
         console.log(op);
@@ -307,7 +374,7 @@ export const useAAInterface = () => {
     getOp,
     checkAddress,
     waitTransaction,
-    approveSigners
+    approveSigners,
   };
 };
 

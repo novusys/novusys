@@ -12,6 +12,7 @@ interface chainsInfo {
   pm: boolean,
   launchPrice: string
   explorer: string
+  paymasterAddress: string
 }
 
 interface chains {
@@ -32,6 +33,7 @@ export const useConfig = () => {
       test: false,
       pm: false,
       launchPrice: ".1",
+      paymasterAddress: "",
     },
     137: {
       chain: "Polygon",
@@ -45,6 +47,7 @@ export const useConfig = () => {
       test: false,
       pm: false,
       launchPrice: ".1",
+      paymasterAddress: "",
     },
     10: {
       chain: "Optimism",
@@ -58,6 +61,7 @@ export const useConfig = () => {
       test: false,
       pm: false,
       launchPrice: ".1",
+      paymasterAddress: "",
     },
     324: {
       chain: "zKSync Era",
@@ -71,6 +75,7 @@ export const useConfig = () => {
       test: false,
       pm: false,
       launchPrice: ".1",
+      paymasterAddress: "",
     },
     5: {
       chain: "Ethereum Goerli",
@@ -82,8 +87,9 @@ export const useConfig = () => {
       factory: "0x2bC52aEd814Ee695c9FD7B7EB4F8B9821E710ceF",
       bundler: "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071",
       test: true,
-      pm: false,
-      launchPrice: ".1",
+      pm: true,
+      launchPrice: ".15",
+      paymasterAddress: "0xxx",
     },
     420: {
       chain: "Optimism Goerli",
@@ -97,6 +103,7 @@ export const useConfig = () => {
       test: true,
       pm: false,
       launchPrice: ".1",
+      paymasterAddress: "",
     },
     80001: {
       chain: "Polygon Mumbai",
@@ -110,6 +117,7 @@ export const useConfig = () => {
       test: true,
       pm: false,
       launchPrice: ".1",
+      paymasterAddress: "",
     },
     280: {
       chain: "zKSync Era Testnet",
@@ -123,6 +131,7 @@ export const useConfig = () => {
       test: true,
       pm: false,
       launchPrice: ".1",
+      paymasterAddress: "",
     },
   };
 

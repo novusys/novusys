@@ -47,7 +47,7 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
 
   const [initTxn, setInitTxn] = useState("")
   const addressesList = recoverySigners.map(a => a.address);
-  // console.log(provider)
+ console.log(provider)
 
 
 
@@ -56,6 +56,9 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
     ethers.utils.parseEther("0.01")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => {
       setUsrAddress(op.sender)
       console.log(op.sender)
+      if(chains[cid].paymasterAddress){
+        setStatus('launch contract')
+      }
 
 
     })
@@ -76,13 +79,17 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
           })
           setStatus('launching')
         }
-      }, provider)
+      }, provider, address, custodial, true, chains[cid].paymasterAddress)
   }
 
   const approveSigs = () => {
     console.log("approvesig")
-    approveSigners(user?.sub, usrAddress, ethers.utils.parseEther("0")._hex, chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => { setInitTxn(op) }, provider, addressesList)
+    approveSigners(user?.sub, usrAddress, ethers.utils.parseEther("0")._hex, chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => { setInitTxn(op) }, provider, addressesList, true, chains[cid].paymasterAddress)
   }
+
+  useEffect(()=>{
+    
+  },[])
 
   useEffect(() => {
     op()
@@ -111,7 +118,7 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
         </div>
         <div className={styles['middle__container']} onClick={() => { window.open(chains[cid].explorer + "address/" + usrAddress, "_blank") }}>
           {
-            chains[cid].pm ? <>Loading... </> :
+            // chains[cid].pm ? <>Loading... </> :
               <>{usrAddress}</>
           }
         </div>
@@ -121,7 +128,7 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
             <div className={styles['right__container']}>
               <BlurPaper>
                 {
-                  status == 'launch contract' ? <div className={styles['status__blurb']} onClick={custodial == "cust" ? () => { txn() } : () => { }}>
+                  status == 'launch contract' ? <div className={styles['status__blurb']} onClick={()=>txn()}>
                     Launch Contract
                   </div> :
                     <></>
