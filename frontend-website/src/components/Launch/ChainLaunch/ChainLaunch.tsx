@@ -11,7 +11,6 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 import FundAddress from '@/components/wagmi-functions/FundAddress/FundAddress'
 import { P } from '@wagmi/core/dist/index-35b6525c'
 import { useEffect, useState } from 'react'
-import SignersLaunch from '../SignersLaunch/SignersLaunch'
 
 interface RecoverySigner {
   name: string
@@ -24,11 +23,12 @@ interface ChainLaunchProps {
   cid: number
   custodial: string
   recoverySigners: Array<RecoverySigner>
+  securityFeatures: any
 }
 
-const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigners }) => {
+const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigners, securityFeatures }) => {
   const { chains } = useConfig()
-  const { sendTxn, getOp, checkAddress, waitTransaction, approveSigners } = useAAInterface()
+  const { sendTxn, getOp, checkAddress, waitTransaction, approveSigners, approveSavings, approvePauser } = useAAInterface()
   const { user, error } = useUser();
   const { address, isConnected } = useAccount()
   const { connect } = useConnect({
@@ -46,17 +46,19 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
   const [alreadyDeployed, setAlreadyDeployed] = useState("0x")
 
   const [initTxn, setInitTxn] = useState("")
+  const [initSavings, setSavingsTxn] = useState("")
+  const [initPauser, setPauserTxn] = useState("")
   const addressesList = recoverySigners.map(a => a.address);
- console.log(provider)
+  console.log(provider)
 
 
 
   //@ts-ignore
   const op = () => getOp(user?.sub, address != "" ? address : "0x6d06Eb861809551087F5b37272f36ceF459C5338",
-    ethers.utils.parseEther("0.01")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => {
+    ethers.utils.parseEther("0")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => {
       setUsrAddress(op.sender)
       console.log(op.sender)
-      if(chains[cid].paymasterAddress){
+      if (chains[cid].paymasterAddress) {
         setStatus('launch contract')
       }
 
@@ -65,31 +67,48 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
   const txn = () => {
     //@ts-ignore
     sendTxn(user?.sub, address != "" ? address : "0x6d06Eb861809551087F5b37272f36ceF459C5338",
-      ethers.utils.parseEther("0.01")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, setStatus, (tx: string) => {
+      ethers.utils.parseEther("0.00001")._hex, "0x", chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, setStatus, (tx: string) => {
         if (tx != null) {
           console.log(tx)
           setTransaction(tx)
-          waitTransaction(tx, provider, (r: any) => {
+          waitTransaction(tx, new ethers.providers.JsonRpcProvider(chains[cid].bundler), (r: any) => {
             if (r) {
               setStatus('success')
               approveSigs()
+              
+              
             } else {
               setStatus('fail')
             }
           })
           setStatus('launching')
         }
-      }, provider, address, custodial, true, chains[cid].paymasterAddress)
+      }, new ethers.providers.JsonRpcProvider(chains[cid].bundler), address, custodial, true, chains[cid].paymasterAddress)
   }
 
   const approveSigs = () => {
     console.log("approvesig")
-    approveSigners(user?.sub, usrAddress, ethers.utils.parseEther("0")._hex, chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => { setInitTxn(op) }, provider, addressesList, true, chains[cid].paymasterAddress)
+    //@ts-ignore
+    approveSigners(user?.sub, usrAddress, ethers.utils.parseEther("0")._hex, chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => { setInitTxn(op)
+      pauserSetup() }, new ethers.providers.JsonRpcProvider(chains[cid].bundler), addressesList, true, chains[cid].paymasterAddress)
   }
 
-  useEffect(()=>{
-    
-  },[])
+  const savingsSetup = () => {
+
+    if (securityFeatures['savings']['enabled']) {
+      console.log("savingsSetup")
+      //@ts-ignore
+      approveSavings(user?.sub, usrAddress, ethers.utils.parseEther("0")._hex, chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => { setSavingsTxn(op) }, new ethers.providers.JsonRpcProvider(chains[cid].bundler), securityFeatures['savings']['address'], securityFeatures['savings']['savings_percent'], true, chains[cid].paymasterAddress)
+    }
+
+  }
+
+  const pauserSetup = () => {
+    console.log("pauserSetup")
+    //@ts-ignore
+    approvePauser(user?.sub, usrAddress, ethers.utils.parseEther("0")._hex, chains[cid].bundler, chains[cid].entryPoint, chains[cid].factory, cid, (op: any) => { setPauserTxn(op)
+      savingsSetup() }, new ethers.providers.JsonRpcProvider(chains[cid].bundler), true, chains[cid].paymasterAddress)
+  }
 
   useEffect(() => {
     op()
@@ -98,7 +117,7 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
 
   useEffect(() => {
     if (usrAddress != "") {
-      checkAddress(usrAddress, provider, (v: string) => {
+      checkAddress(usrAddress, new ethers.providers.JsonRpcProvider(chains[cid].bundler), (v: string) => {
         setAlreadyDeployed(v)
         // if(v != "0x"){
         //   approveSigs()
@@ -119,7 +138,7 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
         <div className={styles['middle__container']} onClick={() => { window.open(chains[cid].explorer + "address/" + usrAddress, "_blank") }}>
           {
             // chains[cid].pm ? <>Loading... </> :
-              <>{usrAddress}</>
+            <>{usrAddress}</>
           }
         </div>
         {
@@ -128,7 +147,7 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
             <div className={styles['right__container']}>
               <BlurPaper>
                 {
-                  status == 'launch contract' ? <div className={styles['status__blurb']} onClick={()=>txn()}>
+                  status == 'launch contract' ? <div className={styles['status__blurb']} onClick={() => txn()}>
                     Launch Contract
                   </div> :
                     <></>
@@ -199,7 +218,13 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
 
       </div >
       {initTxn != "" ?
-        <div className={styles['signer__init']}> Signer Initalization Transaction: <a onClick={()=>{window.open(chains[cid].explorer+"tx/"+initTxn), "_blank"}}>{initTxn}</a></div> : <></>
+        <div className={styles['signer__init']}> Signer Initalization Transaction: <a onClick={() => { window.open(chains[cid].explorer + "tx/" + initTxn), "_blank" }}>{initTxn}</a></div> : <></>
+      }
+      {initSavings != "" ?
+        <div className={styles['signer__init']}>  Savings Initalization Transaction: <a onClick={() => { window.open(chains[cid].explorer + "tx/" + initTxn), "_blank" }}>{initTxn}</a></div> : <></>
+      }
+      {initPauser != "" ?
+        <div className={styles['signer__init']}>  Pauser Initalization Transaction: <a onClick={() => { window.open(chains[cid].explorer + "tx/" + initTxn), "_blank" }}>{initTxn}</a> With novusys admin address: 0x3C445B5174EED7a7f267cd37b87Fec13c59f4128</div> : <></>
       }
 
 

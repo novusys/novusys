@@ -11,7 +11,7 @@ import BluredContainer from '@/layouts/Containers/BluredContainer/BluredContaine
 import Description from '@/components/index/Description/Description'
 import LargeGap from '@/components/gaps/large/LargeGap'
 import { create } from 'domain'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ChainSelect from '@/components/create/ChainSelect/ChainSelect'
 import KeySelect from '@/components/create/KeySelect/KeySelect'
 import RecoverySigners from '@/components/create/RecoverySigners/RecoverySigners'
@@ -22,6 +22,7 @@ import { useUser } from '@auth0/nextjs-auth0/client'
 import { useAccount } from 'wagmi'
 import ChainLaunch from '@/components/Launch/ChainLaunch/ChainLaunch'
 import { ethers } from 'ethers'
+import axios from 'axios'
 
 interface RecoverySigner {
   name: string
@@ -31,6 +32,9 @@ interface RecoverySigner {
 
 
 function Create() {
+
+  const [userMetdata, setUserMetadata] = useState({})
+  
 
   const [submitting, setSubmitting] = useState(false)
 
@@ -43,6 +47,26 @@ function Create() {
 
   const [recoverySigners, setRecoverySigners] = useState([{ name: "", email: "", address: "" }])
 
+  // useEffect(() => {
+  //   if(user != null){
+  //     var options = {
+  //       method: "get",
+  //       url: `https://dev-27jeufvx256r244q.us.auth0.com/api/v2/users-by-email`,
+  //       params: {email: `${user.email}`},
+  //       headers: {authorization: `Bearer ${process.env.AUTH0_MANAGEMENT_API}`}
+  //     };
+    
+  //     //@ts-ignore
+  //     axios.request(options).then(function (response) {
+  //       setUserMetadata(response.data)
+  //       console.log(response.data)
+  //     }).catch(function (error) {
+  //       console.error(error);
+  //     });
+  //   }
+  // }, [user])
+  
+  
   const [securityFeatures, setSecurityFeatures] = useState({
     balance_multisig: {
       enabled: false,
@@ -104,7 +128,7 @@ function Create() {
       errors.push("Incorrect entries for multisig security features")
     }
 
-    if (securityFeatures['savings']['enabled'] && (securityFeatures['savings']['savings_percent'] <= 0 || securityFeatures['savings']['savings_percent'] > 100 || securityFeatures['balance_multisig']['address'] == "")) {
+    if (securityFeatures['savings']['enabled'] && (securityFeatures['savings']['savings_percent'] <= 0 || securityFeatures['savings']['savings_percent'] > 100 || !ethers.utils.isAddress(securityFeatures['savings']['address']))) {
       errors.push("Incorrect entries for multisig security features")
     }
 
@@ -122,7 +146,7 @@ function Create() {
   const renderSubmitChain = (signers: Array<RecoverySigner>) => {
     return chains.map((c, index) => {
       return (
-        <ChainLaunch recoverySigners={signers} custodial={keyManagement} cid={c} key={index} />
+        <ChainLaunch recoverySigners={signers} custodial={keyManagement} cid={c} key={index} securityFeatures = {securityFeatures}/>
       )
     })
   }

@@ -88,6 +88,7 @@ const RecoverySigners: React.FC<RecoverySignersProps> = ({ recoverySigners, setR
             id="filled-start-adornment"
             sx={{ m: 1, width: '40ch' }}
             variant="filled"
+            //@ts-ignore
             value={s.value}
             onChange={(event) => updateSigner(index, "address", event.target.value)}
           />

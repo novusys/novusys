@@ -71,12 +71,41 @@ export const walletAbi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: false, internalType: "uint8", name: "version", type: "uint8" },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "version",
+        type: "uint8",
+      },
     ],
     name: "Initialized",
     type: "event",
   },
-  { anonymous: false, inputs: [], name: "Pause", type: "event" },
+  {
+    anonymous: false,
+    inputs: [],
+    name: "Lockdown",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "lockdownAddress",
+        type: "address",
+      },
+    ],
+    name: "LockdownAddressSet",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [],
+    name: "LockdownLifted",
+    type: "event",
+  },
   {
     anonymous: false,
     inputs: [
@@ -147,6 +176,31 @@ export const walletAbi = [
     inputs: [
       {
         indexed: true,
+        internalType: "address",
+        name: "savingsAccount",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "savingsThreshold",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint8",
+        name: "savingsPercentage",
+        type: "uint8",
+      },
+    ],
+    name: "SavingsAccountSet",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
         internalType: "contract IEntryPoint",
         name: "entryPoint",
         type: "address",
@@ -161,7 +215,6 @@ export const walletAbi = [
     name: "SimpleAccountInitialized",
     type: "event",
   },
-  { anonymous: false, inputs: [], name: "Unpause", type: "event" },
   {
     anonymous: false,
     inputs: [
@@ -222,7 +275,13 @@ export const walletAbi = [
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "voter", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "voter",
+        type: "address",
+      },
+    ],
     name: "addRecoveryVoter",
     outputs: [],
     stateMutability: "nonpayable",
@@ -232,16 +291,32 @@ export const walletAbi = [
     inputs: [],
     name: "entryPoint",
     outputs: [
-      { internalType: "contract IEntryPoint", name: "", type: "address" },
+      {
+        internalType: "contract IEntryPoint",
+        name: "",
+        type: "address",
+      },
     ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      { internalType: "address", name: "dest", type: "address" },
-      { internalType: "uint256", name: "value", type: "uint256" },
-      { internalType: "bytes", name: "func", type: "bytes" },
+      {
+        internalType: "address",
+        name: "dest",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "func",
+        type: "bytes",
+      },
     ],
     name: "execute",
     outputs: [],
@@ -250,8 +325,16 @@ export const walletAbi = [
   },
   {
     inputs: [
-      { internalType: "address[]", name: "dest", type: "address[]" },
-      { internalType: "bytes[]", name: "func", type: "bytes[]" },
+      {
+        internalType: "address[]",
+        name: "dest",
+        type: "address[]",
+      },
+      {
+        internalType: "bytes[]",
+        name: "func",
+        type: "bytes[]",
+      },
     ],
     name: "executeBatch",
     outputs: [],
@@ -261,26 +344,50 @@ export const walletAbi = [
   {
     inputs: [],
     name: "getDeposit",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
-    name: "globalAdmin",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
+    name: "globalLockdownAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "anOwner", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "anOwner",
+        type: "address",
+      },
+    ],
     name: "initialize",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [{ internalType: "address[]", name: "voters", type: "address[]" }],
+    inputs: [
+      {
+        internalType: "address[]",
+        name: "voters",
+        type: "address[]",
+      },
+    ],
     name: "initializeVoters",
     outputs: [],
     stateMutability: "nonpayable",
@@ -288,42 +395,77 @@ export const walletAbi = [
   },
   {
     inputs: [],
-    name: "nonce",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "owner",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "pause",
+    name: "liftLockdown",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [],
-    name: "paused",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    name: "lockdown",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "lockdownWallet",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "nonce",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [],
     name: "proxiableUUID",
-    outputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
     stateMutability: "view",
     type: "function",
   },
   {
     inputs: [
-      { internalType: "address", name: "recoveryAddress", type: "address" },
+      {
+        internalType: "address",
+        name: "recoveryAddress",
+        type: "address",
+      },
     ],
     name: "recoverWallet",
     outputs: [],
@@ -331,22 +473,61 @@ export const walletAbi = [
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "voter", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "voter",
+        type: "address",
+      },
+    ],
     name: "removeRecoveryVoter",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [],
-    name: "unpause",
+    inputs: [
+      {
+        internalType: "address",
+        name: "lockdownAddress",
+        type: "address",
+      },
+    ],
+    name: "setGlobalLockdownAddress",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [
-      { internalType: "address", name: "newImplementation", type: "address" },
+      {
+        internalType: "address payable",
+        name: "_savingsAccount",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_savingsThreshold",
+        type: "uint256",
+      },
+      {
+        internalType: "uint8",
+        name: "_savingsPercentage",
+        type: "uint8",
+      },
+    ],
+    name: "setSavingsAccount",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newImplementation",
+        type: "address",
+      },
     ],
     name: "upgradeTo",
     outputs: [],
@@ -355,8 +536,16 @@ export const walletAbi = [
   },
   {
     inputs: [
-      { internalType: "address", name: "newImplementation", type: "address" },
-      { internalType: "bytes", name: "data", type: "bytes" },
+      {
+        internalType: "address",
+        name: "newImplementation",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
     ],
     name: "upgradeToAndCall",
     outputs: [],
@@ -367,11 +556,31 @@ export const walletAbi = [
     inputs: [
       {
         components: [
-          { internalType: "address", name: "sender", type: "address" },
-          { internalType: "uint256", name: "nonce", type: "uint256" },
-          { internalType: "bytes", name: "initCode", type: "bytes" },
-          { internalType: "bytes", name: "callData", type: "bytes" },
-          { internalType: "uint256", name: "callGasLimit", type: "uint256" },
+          {
+            internalType: "address",
+            name: "sender",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "nonce",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes",
+            name: "initCode",
+            type: "bytes",
+          },
+          {
+            internalType: "bytes",
+            name: "callData",
+            type: "bytes",
+          },
+          {
+            internalType: "uint256",
+            name: "callGasLimit",
+            type: "uint256",
+          },
           {
             internalType: "uint256",
             name: "verificationGasLimit",
@@ -382,45 +591,87 @@ export const walletAbi = [
             name: "preVerificationGas",
             type: "uint256",
           },
-          { internalType: "uint256", name: "maxFeePerGas", type: "uint256" },
+          {
+            internalType: "uint256",
+            name: "maxFeePerGas",
+            type: "uint256",
+          },
           {
             internalType: "uint256",
             name: "maxPriorityFeePerGas",
             type: "uint256",
           },
-          { internalType: "bytes", name: "paymasterAndData", type: "bytes" },
-          { internalType: "bytes", name: "signature", type: "bytes" },
+          {
+            internalType: "bytes",
+            name: "paymasterAndData",
+            type: "bytes",
+          },
+          {
+            internalType: "bytes",
+            name: "signature",
+            type: "bytes",
+          },
         ],
         internalType: "struct UserOperation",
         name: "userOp",
         type: "tuple",
       },
-      { internalType: "bytes32", name: "userOpHash", type: "bytes32" },
-      { internalType: "uint256", name: "missingAccountFunds", type: "uint256" },
+      {
+        internalType: "bytes32",
+        name: "userOpHash",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "missingAccountFunds",
+        type: "uint256",
+      },
     ],
     name: "validateUserOp",
     outputs: [
-      { internalType: "uint256", name: "validationData", type: "uint256" },
+      {
+        internalType: "uint256",
+        name: "validationData",
+        type: "uint256",
+      },
     ],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "voter", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "voter",
+        type: "address",
+      },
+    ],
     name: "vetoAddition",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "voter", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "voter",
+        type: "address",
+      },
+    ],
     name: "vetoRemoval",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [{ internalType: "address", name: "voter", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "voter",
+        type: "address",
+      },
+    ],
     name: "voteForRecovery",
     outputs: [],
     stateMutability: "nonpayable",
@@ -433,12 +684,19 @@ export const walletAbi = [
         name: "withdrawAddress",
         type: "address",
       },
-      { internalType: "uint256", name: "amount", type: "uint256" },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
     ],
     name: "withdrawDepositTo",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
-  { stateMutability: "payable", type: "receive" },
+  {
+    stateMutability: "payable",
+    type: "receive",
+  },
 ];

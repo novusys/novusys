@@ -69,7 +69,7 @@ export const useAAInterface = () => {
     walletAddress: string,
     cust: string,
     withPm: boolean,
-    paymasterAddress: string,
+    paymasterAddress: string
   ) => {
     if (
       !(
@@ -106,7 +106,7 @@ export const useAAInterface = () => {
             factoryAddr: factory,
             paymasterAddress: paymasterAddress,
             withPm: withPm,
-            cid: cid
+            cid: cid,
           },
         ],
       };
@@ -169,7 +169,7 @@ export const useAAInterface = () => {
   //     bundlerUrl: bundler,
   //   };
   //   const aaProvider = await wrapProvider(provider, config, provider.getSigner());
-    
+
   //   const wProvider = () => {
 
   //   }
@@ -205,7 +205,7 @@ export const useAAInterface = () => {
     providerRpc: any,
     signers: any,
     withPm: boolean,
-    paymasterAddress: string,
+    paymasterAddress: string
   ) => {
     if (
       !(
@@ -249,7 +249,7 @@ export const useAAInterface = () => {
           factoryAddr: factory,
           paymasterAddress: paymasterAddress,
           withPm: withPm,
-          cid: cid
+          cid: cid,
         },
       ],
     };
@@ -283,6 +283,191 @@ export const useAAInterface = () => {
         return error;
       });
   };
+
+  const approveSavings = async (
+    auth0_id: string,
+    target: string,
+    value: string,
+    // data: string,
+    providerUrl: string,
+    entryPoint: string,
+    factory: string,
+    cid: number,
+    callback: Function,
+    providerRpc: any,
+    savings: string,
+    percentage: number,
+    withPm: boolean,
+    paymasterAddress: string
+  ) => {
+    if (
+      !(
+        auth0_id &&
+        target &&
+        value &&
+        // data &&
+        providerUrl &&
+        entryPoint &&
+        factory
+      )
+    ) {
+      return "Error! Missing Provided Data";
+    }
+
+    const provider = new ethers.providers.JsonRpcProvider(providerUrl);
+    const walletContract = new ethers.Contract(target, walletAbi, provider);
+    const encodedData = walletContract.interface.encodeFunctionData(
+      "setSavingsAccount",
+      [savings, 5, percentage]
+    );
+    console.log(encodedData);
+    // setStatus("processing");
+    // const provider = new ethers.providers.JsonRpcProvider(providerUrl);
+
+    const options = {
+      method: "POST",
+      url: "/api/sign/sign",
+      params: { "api-version": "3.0" },
+      headers: {
+        "content-type": "application/json",
+      },
+      data: [
+        {
+          auth0_id: auth0_id,
+          target: target,
+          value: value,
+          data: encodedData,
+          provider: providerUrl,
+          epAddr: entryPoint,
+          factoryAddr: factory,
+          paymasterAddress: paymasterAddress,
+          withPm: withPm,
+          cid: cid,
+        },
+      ],
+    };
+    axios
+      .request(options)
+      .then(async function (response) {
+        console.log(response.data);
+        const chainId = cid;
+        const client = await new aaSdk.HttpRpcClient(
+          providerUrl,
+          entryPoint,
+          chainId
+        );
+        const op = response.data;
+
+        console.log(op);
+        //console.log(BigNumber.from(op.maxFeePerGas).mul(BigNumber.from(1.15)), op.maxFeePerGas)
+        const uoHash = await client.sendUserOpToBundler(op);
+        callback(
+          await getUserOpReceipt(
+            uoHash,
+            providerRpc,
+            entryPoint,
+            factory,
+            op.sender
+          )
+        );
+      })
+      .catch(function (error) {
+        console.error(error);
+        return error;
+      });
+  };
+
+  const approvePauser = async (
+    auth0_id: string,
+    target: string,
+    value: string,
+    // data: string,
+    providerUrl: string,
+    entryPoint: string,
+    factory: string,
+    cid: number,
+    callback: Function,
+    providerRpc: any,
+    withPm: boolean,
+    paymasterAddress: string
+  ) => {
+    if (
+      !(
+        auth0_id &&
+        target &&
+        value &&
+        // data &&
+        providerUrl &&
+        entryPoint &&
+        factory
+      )
+    ) {
+      return "Error! Missing Provided Data";
+    }
+
+    const provider = new ethers.providers.JsonRpcProvider(providerUrl);
+    const walletContract = new ethers.Contract(target, walletAbi, provider);
+    const encodedData = walletContract.interface.encodeFunctionData(
+      "setGlobalLockdownAddress",
+      ["0x3C445B5174EED7a7f267cd37b87Fec13c59f4128"]
+    );
+    console.log(encodedData);
+    // setStatus("processing");
+    // const provider = new ethers.providers.JsonRpcProvider(providerUrl);
+
+    const options = {
+      method: "POST",
+      url: "/api/sign/sign",
+      params: { "api-version": "3.0" },
+      headers: {
+        "content-type": "application/json",
+      },
+      data: [
+        {
+          auth0_id: auth0_id,
+          target: target,
+          value: value,
+          data: encodedData,
+          provider: providerUrl,
+          epAddr: entryPoint,
+          factoryAddr: factory,
+          paymasterAddress: paymasterAddress,
+          withPm: withPm,
+          cid: cid,
+        },
+      ],
+    };
+    axios
+      .request(options)
+      .then(async function (response) {
+        console.log(response.data);
+        const chainId = cid;
+        const client = await new aaSdk.HttpRpcClient(
+          providerUrl,
+          entryPoint,
+          chainId
+        );
+        const op = response.data;
+
+        console.log(op);
+        //console.log(BigNumber.from(op.maxFeePerGas).mul(BigNumber.from(1.15)), op.maxFeePerGas)
+        const uoHash = await client.sendUserOpToBundler(op);
+        callback(
+          await getUserOpReceipt(
+            uoHash,
+            providerRpc,
+            entryPoint,
+            factory,
+            op.sender
+          )
+        );
+      })
+      .catch(function (error) {
+        console.error(error);
+        return error;
+      });
+  };
+
 
   const getOp = async (
     auth0_id: string,
@@ -326,6 +511,9 @@ export const useAAInterface = () => {
           provider: providerUrl,
           epAddr: entryPoint,
           factoryAddr: factory,
+          paymasterAddress: "",
+          withPm: false,
+          cid: cid,
         },
       ],
     };
@@ -333,12 +521,12 @@ export const useAAInterface = () => {
       .request(options)
       .then(async function (response) {
         console.log(response.data);
-        const chainId = await provider.getNetwork().then((net) => net.chainId);
-        const client = await new aaSdk.HttpRpcClient(
-          providerUrl,
-          entryPoint,
-          chainId
-        );
+        const chainId = cid;
+        // const client = await new aaSdk.HttpRpcClient(
+        //   providerUrl,
+        //   entryPoint,
+        //   chainId
+        // );
         const op = response.data;
 
         callback(op);
@@ -375,6 +563,8 @@ export const useAAInterface = () => {
     checkAddress,
     waitTransaction,
     approveSigners,
+    approveSavings,
+    approvePauser,
   };
 };
 
