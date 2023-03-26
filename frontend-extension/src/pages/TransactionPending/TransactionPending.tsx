@@ -127,6 +127,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
     if (!txn || !txn.CURRENT_TXN) return { status: 404, message: "novusys wallet could not find pending transaction" };
 
     await chrome.storage.session.remove("CURRENT_TXN");
+    await chrome.storage.session.remove("EXTERNAL_OVERRIDE");
     return { status: 200, message: "novusys wallet found txn to process", data: txn.CURRENT_TXN };
   }
 

@@ -73,6 +73,7 @@ const Transfer: React.FC<TransferProps> = (props: TransferProps) => {
       setLandingAction("pendingTransaction");
     } else {
       await chrome.storage.session.remove("CURRENT_TXN");
+      await chrome.storage.session.remove("EXTERNAL_OVERRIDE");
       setLandingAction("wallet");
     }
   };

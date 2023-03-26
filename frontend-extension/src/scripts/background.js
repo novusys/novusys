@@ -248,26 +248,26 @@ chrome.runtime.onMessage.addListener(async function (message) {
 
 chrome.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
   if (message.type === "EXTERNAL_SITE_TRANSFER") {
-    // TODO: This would be sent by the external site
-    const txn = {
-      body: {
-        cid: 5,
-        target: "0xc0f70D98eC6aD9767d49341dB57674F1E2305B87",
-        value: ethers.utils.parseEther("0.01")._hex,
-        data: "0x",
-        provider: "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071",
-        epAddr: "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-        factoryAddr: "0x2bC52aEd814Ee695c9FD7B7EB4F8B9821E710ceF",
-        withPm: true,
-      },
-    };
-    const amount = ethers.utils.parseEther("0.01");
+    const checkList = ["cid", "target", "value", "data", "provider", "epAddr", "factoryAddr", "withPm"];
+    const txn = message.data;
+    if (!txn) {
+      sendResponse({ message: "Please send a data payload" });
+      return;
+    }
 
+    for (const check of checkList) {
+      if (!Object.hasOwn(txn.body, check)) {
+        sendResponse({ message: "Txn missing param(s)", error: `${check} is missing from data payload` });
+        return;
+      }
+    }
+
+    const amount = txn.body.value.toString();
+    console.log(amount);
+
+    // TODO: ask site for the func name or parse it from hash + contract?
     const details = {
       chainInfo: chains[txn.body.cid],
-      walletName: "Account 1",
-      walletAddress: "0x89py...09py",
-      walletAvatar: "images/punk2924.png",
       originName: "novusys",
       originAddress: "0x45d0f...7ca5ECD",
       originAvatar: "/logos/novusys-leaf.png",
