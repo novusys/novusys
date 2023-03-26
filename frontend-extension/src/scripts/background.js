@@ -237,6 +237,47 @@ chrome.runtime.onMessage.addListener(async function (message) {
       chrome.runtime.sendMessage({ isLoggedOut: true });
     }
   }
+  // else if (message.transferPopup) {
+  //   try {
+  //     chrome.windows.create(
+  //       {
+  //         focused: true,
+  //         width: 357,
+  //         height: 600,
+  //         type: "popup",
+  //         url: "transfer.html",
+  //         top: 0,
+  //         left: 0,
+  //       },
+  //       () => {}
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+});
+
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+  if (message.type === "EXTERNAL_SITE") {
+    console.log("Message received from content script: ", message.data);
+    sendResponse({ myResponse: "Hello from background script" });
+    try {
+      chrome.windows.create(
+        {
+          focused: true,
+          width: 357,
+          height: 600,
+          type: "popup",
+          url: "popup.html",
+        },
+        () => {
+          console.log("Popup Opened");
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
 });
 
 export {};

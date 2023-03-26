@@ -29,11 +29,15 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
     //explicit sizes of nonce, to fit a single storage cell with "owner"
     uint96 private _nonce;
     address public owner;
-    address public globalAdmin;
 
     IEntryPoint private immutable _entryPoint;
 
-    bool public paused = false;
+    address public globalLockdownAddress;
+    bool public lockdown = false;
+
+    address payable private savingsAccount;
+    uint256 private savingsThreshold;
+    uint8 private savingsPercentage;
 
     mapping(address => bool) private recoveryVoters;
     Counters.Counter private totalVoters;
@@ -62,8 +66,10 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
     RemoveVoterProposal private removeVoterProposal;
 
     event SimpleAccountInitialized(IEntryPoint indexed entryPoint, address indexed owner);
-    event Pause();
-    event Unpause();
+    event Lockdown();
+    event LockdownLifted();
+    event LockdownAddressSet(address indexed lockdownAddress);
+    event SavingsAccountSet(address indexed savingsAccount, uint256 savingsThreshold, uint8 savingsPercentage);
     event RecoveryProposed(address indexed recoveryAddress);
     event RecoveryExecuted(address indexed recoveryAddress);
     event RecoveryVoted(address indexed voter);
@@ -90,9 +96,12 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
         return _entryPoint;
     }
 
-
-    // solhint-disable-next-line no-empty-blocks
-    receive() external payable {}
+    //Savings account logic runs on ETH transfers in
+    receive() external payable {
+        if(savingsAccount != address(0) && msg.value > savingsThreshold){
+            savingsAccount.transfer(((msg.value * savingsPercentage) / 100));
+        }
+    }
 
     constructor(IEntryPoint anEntryPoint) {
         _entryPoint = anEntryPoint;
@@ -104,10 +113,10 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
         require(msg.sender == owner || msg.sender == address(this), "only owner");
     }
 
-    function checkGlobalAdminAllowedOps(UserOperation calldata op) internal pure returns (bool) {
+    function checkGlobalLockdownAllowedOps(UserOperation calldata op) internal pure returns (bool) {
         if (op.callData.length == 0) return false;
-        //Global admin can only call pause
-        return bytes4(op.callData) == this.pause.selector;
+        //Global lockdown address can only call lockdownWallet
+        return bytes4(op.callData) == this.lockdownWallet.selector;
     }
 
     function checkRecoveryVoterAllowedOps(UserOperation calldata op, address voter) internal pure returns (bool) {
@@ -134,26 +143,41 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
         return false;
     }
     
-
-    function pause() external {
-        require(!paused, "Wallet already paused");
+    function setGlobalLockdownAddress(address lockdownAddress) external {
+        require(!lockdown, "Wallet in lockdown");
         _requireFromEntryPointOrOwner();
-        paused = true;
-        emit Pause();
+        globalLockdownAddress = lockdownAddress;
+        emit LockdownAddressSet(lockdownAddress);
     }
 
-    function unpause() external {
-        require(paused, "Wallet not paused");
+    function lockdownWallet() external {
+        require(!lockdown, "Wallet already in lockdown");
         _requireFromEntryPointOrOwner();
-        paused = false;
-        emit Unpause();
+        lockdown = true;
+        emit Lockdown();
+    }
+
+    function liftLockdown() external {
+        require(lockdown, "Wallet not in lockdown");
+        _requireFromEntryPointOrOwner();
+        lockdown = false;
+        emit LockdownLifted();
+    }
+
+    function setSavingsAccount(address payable _savingsAccount, uint256 _savingsThreshold, uint8 _savingsPercentage) external {
+        _requireFromEntryPointOrOwner();
+        require(savingsPercentage <= 100, "Savings percentage must be between 0 and 100");
+        savingsAccount = _savingsAccount;
+        savingsThreshold = _savingsThreshold;
+        savingsPercentage = _savingsPercentage;
+        emit SavingsAccountSet(_savingsAccount, _savingsThreshold, _savingsPercentage);
     }
 
     /**
      * execute a transaction (called directly from owner, or by entryPoint)
      */
     function execute(address dest, uint256 value, bytes calldata func) external {
-        require(!paused, "Wallet paused");
+        require(!lockdown, "Wallet in lockdown");
         _requireFromEntryPointOrOwner();
         _call(dest, value, func);
     }
@@ -162,7 +186,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
      * execute a sequence of transactions
      */
     function executeBatch(address[] calldata dest, bytes[] calldata func) external {
-        require(!paused, "Wallet paused");
+        require(!lockdown, "Wallet in lockdown");
         _requireFromEntryPointOrOwner();
         require(dest.length == func.length, "wrong array lengths");
         for (uint256 i = 0; i < dest.length; i++) {
@@ -181,7 +205,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
 
     function _initialize(address anOwner) internal virtual {
         owner = anOwner;
-        paused = false;
+        lockdown = false;
         votersUninitialized = true;
         emit SimpleAccountInitialized(_entryPoint, owner);
     }
@@ -196,6 +220,11 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
         require(msg.sender == address(entryPoint()) || recoveryVoters[msg.sender], "account: not Voter or EntryPoint");
     }
 
+    // Require the function call went through EntryPoint, voter, owner or loopback
+    function _requireFromEntryPointVoterOrOwner() internal view {
+        require(msg.sender == address(entryPoint()) || recoveryVoters[msg.sender] || msg.sender == address(this) || msg.sender == owner, "account: not Voter or EntryPoint");
+    }
+
     /// implement template method of BaseAccount
     function _validateAndUpdateNonce(UserOperation calldata userOp) internal override {
         require(_nonce++ == userOp.nonce, "account: invalid nonce");
@@ -206,13 +235,16 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
     internal override virtual returns (uint256 validationData) {
         bytes32 hash = userOpHash.toEthSignedMessageHash();
         address signerAddress = hash.recover(userOp.signature);
-        if (signerAddress == owner){
+        if(signerAddress == address(0)){
+            return SIG_VALIDATION_FAILED;
+        }
+        else if (signerAddress == owner){
             return 0;
         }
         else if (recoveryVoters[signerAddress] && checkRecoveryVoterAllowedOps(userOp, signerAddress)){
             return 0;
         }
-        else if ((signerAddress == globalAdmin) && checkGlobalAdminAllowedOps(userOp)){
+        else if ((signerAddress == globalLockdownAddress) && checkGlobalLockdownAllowedOps(userOp)){
             return 0;
         }
         return SIG_VALIDATION_FAILED;
@@ -238,8 +270,8 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
     }
 
     function recoverWallet(address recoveryAddress) external {
-        require(!paused, "Wallet paused");
-        _requireFromEntryPointOrOwner();
+        require(!lockdown, "Wallet in lockdown");
+        _requireFromEntryPointVoterOrOwner();
         require(recoveryAddress != address(0), "Recovery to zero address not allowed");
 
         //Check if proposal time has elapsed
@@ -270,7 +302,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
     }
 
     function voteForRecovery(address voter) external{
-        require(!paused, "Wallet paused");
+        require(!lockdown, "Wallet in lockdown");
         _requireFromEntryPointOrVoter();
         require(!checkAlreadyVoted(recoveryProposal.votes, voter), "Voter already voted");
 
@@ -280,7 +312,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
     }
 
     function initializeVoters(address[] memory voters) external {
-        require(!paused, "Wallet paused");
+        require(!lockdown, "Wallet in lockdown");
         _requireFromEntryPointOrOwner();
         require(votersUninitialized, "Voters already initialized");
         require(voters.length > 0, "https://youtu.be/JqdDrYuefEQ?t=2");
@@ -296,7 +328,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
     }
 
     function addRecoveryVoter(address voter) external {
-        require(!paused, "Wallet paused");
+        require(!lockdown, "Wallet in lockdown");
         _requireFromEntryPointOrOwner();
         require(!recoveryVoters[voter], "Recovery voter already registered");
         require(voter != owner, "Wallet owner cannot be a recovery voter");
@@ -348,7 +380,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
 
 
     function vetoAddition(address voter) external{
-        require(!paused, "Wallet paused");
+        require(!lockdown, "Wallet in lockdown");
         _requireFromEntryPointOrVoter();
         require(!checkAlreadyVoted(addVoterProposal.vetos, voter), "Voter already vetoed");
         
@@ -358,7 +390,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
     }
 
     function removeRecoveryVoter(address voter) external {
-        require(!paused, "Wallet paused");
+        require(!lockdown, "Wallet in lockdown");
        _requireFromEntryPointOrOwner();
         require(recoveryVoters[voter], "Address is not a registered voter");
         
@@ -402,7 +434,7 @@ contract NovusysAccount is BaseAccount, UUPSUpgradeable, Initializable {
     }
 
     function vetoRemoval(address voter) external{
-        require(!paused, "Wallet paused");
+        require(!lockdown, "Wallet in lockdown");
         _requireFromEntryPointOrVoter();
         require(!checkAlreadyVoted(removeVoterProposal.vetos, voter), "Voter already vetoed");
         

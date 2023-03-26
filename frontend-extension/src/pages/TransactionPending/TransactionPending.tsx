@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import styles from "./TransactionPending.module.scss";
+import auth0_config from "../../scripts/auth0.json";
 import { Buffer } from "buffer";
 import { ethers } from "ethers";
 import { HttpRpcClient, SimpleAccountAPI } from "@account-abstraction/sdk";
-import auth0_config from "../../scripts/auth0.json";
 import { LandingCtx } from "../MainPopup/Popup";
 import { UserCtx } from "../MainPopup/Popup";
 import { IoMdClose } from "react-icons/io";
+import { chains } from "../chains";
 
 interface TxnPendingProps {
   req: any; // Signature target, value, data, provider, epAddr, factoryAddr
@@ -60,15 +61,18 @@ async function sha256(buffer: any) {
 }
 
 const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
-  const [status, setStatus] = useState("Pending"); // Pending, Failed, Completed
-  const [txnHash, setHash] = useState("...");
   const { landingAction, setLandingAction } = useContext(LandingCtx);
   const user = useContext(UserCtx);
+  const [status, setStatus] = useState("Pending"); // Pending, Failed, Completed
+  const [txnHash, setHash] = useState("...");
   const [avatar, setAvatar] = useState("/images/defaultaccount.png");
   const [name, setName] = useState("Wallet 1");
+  const [confirmations, setConfirmations] = useState("0");
+  const [chainName, setChainName] = useState("Loading...");
+  const [blockNum, setBlockNum] = useState("...");
 
   useEffect(() => {
-    console.log(user);
+    setChainName(props.details.chainInfo.chain);
     setAvatar(user.avatar);
     setName(user.name);
   }, [user]);
@@ -94,7 +98,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
     entryPoint: string,
     factoryAddress: string,
     sender: string,
-    timeout = 30000,
+    timeout = 60000,
     interval = 5000
   ) => {
     const sw = new SimpleAccountAPI({
@@ -171,11 +175,16 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
           const uoHash = await client.sendUserOpToBundler(op);
           const hash = await getUserOpReceipt(uoHash, provider, epAddr, factoryAddr, "0xc0f70D98eC6aD9767d49341dB57674F1E2305B87");
           if (!hash) {
-            setHash("error fetching hash");
+            setHash("err getting hash");
+            return { status: 400, message: "novusys wallet error while fetching hash", txnHash: hash };
           } else {
             setHash(hash);
+            return await fetchTxn(hash, provider)
+              .then((res) => {
+                return res;
+              })
+              .catch((err) => console.log(err));
           }
-          return { status: 200, message: "novusys wallet successfully sent txn", txnHash: hash };
         } catch (error) {
           return { status: 400, message: "novusys wallet error while sending txn", error: error, data: data };
         }
@@ -186,17 +195,30 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
       });
   }
 
-  async function fetchTxn(hash: string) {
-    const rpcURL = "https://eth-goerli.g.alchemy.com/v2/m3R-aaa3X67lEKyNjQu3aL6Zg2x-4gJX";
-    const provider = new ethers.providers.JsonRpcProvider(rpcURL);
-    await provider
-      .getTransaction(hash)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  async function fetchTxn(hash: string, provider: any) {
+    const tx = await provider.getTransaction(hash);
+
+    if (!tx) {
+      return { status: 400, message: "novusys wallet could not find txn with hash" };
+    }
+
+    let receipt = await provider.getTransactionReceipt(hash);
+
+    while (!receipt || receipt.status === null) {
+      // wait for the next block to be mined
+      await provider.waitForTransaction(hash);
+
+      // fetch the latest transaction receipt
+      receipt = await provider.getTransactionReceipt(hash);
+    }
+    console.log(receipt);
+
+    if (receipt.status === 0) {
+      return { status: 400, message: "novusys wallet txn failed" };
+    }
+    setBlockNum(receipt.blockNumber.toString());
+    setConfirmations(receipt.confirmations.toString());
+    return { status: 200, message: "novusys wallet txn completed", txnHash: hash, data: receipt };
   }
 
   const getStatus = () => {
@@ -209,6 +231,11 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
         return styles["txn__failed"];
     }
   };
+
+  function handleExplorerClick() {
+    const url = props.details.chainInfo.explorer + "tx/" + txnHash;
+    chrome.tabs.create({ url: url });
+  }
 
   const renderState = (req: any, txn: Details) => {
     return (
@@ -233,7 +260,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
               <ul className={styles["details__body"]}>
                 <li className={styles["txn__detail__container"]}>
                   <div className={styles["txn__detail__title"]}>Chain:</div>
-                  <div className={styles["chain__container"]}>{txn.chainInfo.chain}</div>
+                  <div className={styles["chain__container"]}>{chainName}</div>
                 </li>
                 <li className={styles["txn__detail__container"]}>
                   <div className={styles["txn__detail__title"]}>Txn Hash:</div>
@@ -250,9 +277,24 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
                     </button>
                   )}
                 </li>
+                <li className={styles["txn__detail__container"]}>
+                  <div className={styles["txn__detail__title"]}>Block Number:</div>
+                  <div className={styles["txn__detail__body"]}>{blockNum}</div>
+                </li>
+                <li className={styles["txn__detail__container"]}>
+                  <div className={styles["txn__detail__title"]}>Confirmations:</div>
+                  <div className={styles["txn__detail__body"]}>{confirmations}</div>
+                </li>
               </ul>
             </div>
           </div>
+          {txnHash == "..." ? null : (
+            <div className={styles["txn__actionbar"]}>
+              <button onClick={handleExplorerClick} className={styles["view__button"]}>
+                View on Explorer
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

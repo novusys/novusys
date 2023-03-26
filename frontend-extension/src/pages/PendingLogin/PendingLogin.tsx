@@ -8,11 +8,9 @@ interface PendingLoginProps {
 
 const PendingLogin: React.FC<PendingLoginProps> = (props: PendingLoginProps) => {
   return (
-    <>
-      <div className={styles["main__container"]}>
-        {props.auth0PopUp ? <div>Complete login through Auth0 Portal</div> : <div>Logging in...</div>}
-      </div>
-    </>
+    <div className={styles["main__container"]}>
+      {props.auth0PopUp ? <div>Complete login through Auth0 Portal</div> : <div>Logging in...</div>}
+    </div>
   );
 };
 

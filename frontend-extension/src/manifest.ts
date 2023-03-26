@@ -27,5 +27,8 @@ export default defineManifest({
       all_frames: true,
     },
   ],
-  permissions: ["identity", "storage"],
+  externally_connectable: {
+    matches: ["http://localhost:3000/*"],
+  },
+  permissions: ["identity", "storage", "tabs"],
 });
