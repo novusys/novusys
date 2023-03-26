@@ -16,6 +16,31 @@ const BalanceBox: React.FC<BoxProps> = (props: BoxProps) => {
     setName(user.name);
   }, [user]);
 
+  async function hasTxn() {
+    const txn = await chrome.storage.session.get("CURRENT_TXN");
+    if (!txn || !txn.CURRENT_TXN) return false;
+
+    return true;
+  }
+
+  useEffect(() => {
+    hasTxn()
+      .then((res) => {
+        if (res) {
+          console.log("RUNNING");
+          chrome.runtime.sendMessage({ walletShown: true });
+          chrome.runtime.onMessage.addListener(async function (message) {
+            if (message.externalTransfer) {
+              setLandingAction("transfer");
+            }
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <div className={styles["main__container"]}>
       <div className={styles["profile__container"]}>

@@ -1,6 +1,7 @@
 import auth0_config from "./auth0.json";
 import { Buffer } from "buffer";
 import { ethers } from "ethers";
+import { chains } from "./chains";
 
 // Used to generate a random 'state' to reduce vulnerability to CSRF attacks
 // Passed into the code challenge options and checked after getting code
@@ -34,6 +35,12 @@ function getParameterByName(name, url = self.location.href) {
 async function sha256(buffer) {
   let bytes = new TextEncoder().encode(buffer);
   return await self.crypto.subtle.digest("SHA-256", bytes);
+}
+
+function abbrev(str) {
+  if (!str.length) return "";
+  if (str.slice(0, 2) != "0x") return str;
+  return str.slice(0, 6) + "..." + str.slice(str.length - 4, str.length);
 }
 
 async function checkAccessToken() {
@@ -237,30 +244,40 @@ chrome.runtime.onMessage.addListener(async function (message) {
       chrome.runtime.sendMessage({ isLoggedOut: true });
     }
   }
-  // else if (message.transferPopup) {
-  //   try {
-  //     chrome.windows.create(
-  //       {
-  //         focused: true,
-  //         width: 357,
-  //         height: 600,
-  //         type: "popup",
-  //         url: "transfer.html",
-  //         top: 0,
-  //         left: 0,
-  //       },
-  //       () => {}
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
 });
 
-chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-  if (message.type === "EXTERNAL_SITE") {
-    console.log("Message received from content script: ", message.data);
-    sendResponse({ myResponse: "Hello from background script" });
+chrome.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
+  if (message.type === "EXTERNAL_SITE_TRANSFER") {
+    // TODO: This would be sent by the external site
+    const txn = {
+      body: {
+        cid: 5,
+        target: "0xc0f70D98eC6aD9767d49341dB57674F1E2305B87",
+        value: ethers.utils.parseEther("0.01")._hex,
+        data: "0x",
+        provider: "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071",
+        epAddr: "0x0576a174D229E3cFA37253523E645A78A0C91B57",
+        factoryAddr: "0x2bC52aEd814Ee695c9FD7B7EB4F8B9821E710ceF",
+        withPm: true,
+      },
+    };
+    const amount = ethers.utils.parseEther("0.01");
+
+    const details = {
+      chainInfo: chains[txn.body.cid],
+      walletName: "Account 1",
+      walletAddress: "0x89py...09py",
+      walletAvatar: "images/punk2924.png",
+      originName: "novusys",
+      originAddress: "0x45d0f...7ca5ECD",
+      originAvatar: "/logos/novusys-leaf.png",
+      target: txn.body.target,
+      message: `Transfer ${amount} to ${abbrev(txn.body.target)}`,
+      txnValue: txn.body.value,
+    };
+    console.log("Received transfer txn request ", txn);
+    await chrome.storage.session.set({ CURRENT_TXN: { req: txn, details: details } });
+    await chrome.storage.session.set({ EXTERNAL_OVERRIDE: "transfer" });
     try {
       chrome.windows.create(
         {
@@ -272,6 +289,11 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
         },
         () => {
           console.log("Popup Opened");
+          chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+            if (message.walletShown) {
+              chrome.runtime.sendMessage({ externalTransfer: true });
+            }
+          });
         }
       );
     } catch (error) {

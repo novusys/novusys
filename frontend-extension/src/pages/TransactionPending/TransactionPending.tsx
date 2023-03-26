@@ -9,22 +9,7 @@ import { UserCtx } from "../MainPopup/Popup";
 import { IoMdClose } from "react-icons/io";
 import { chains } from "../chains";
 
-interface TxnPendingProps {
-  req: any; // Signature target, value, data, provider, epAddr, factoryAddr
-  details: Details; // chain info, user wallet info, origin info for page details
-}
-
-type Details = {
-  chainInfo: any;
-  walletName: string;
-  walletAddress: string;
-  walletAvatar: string;
-  originName: string;
-  originAddress: string;
-  originAvatar?: string;
-  message: string;
-  txnValue: string;
-};
+interface TxnPendingProps {}
 
 function abbrev(str: string) {
   if (!str.length) return "";
@@ -70,25 +55,36 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
   const [confirmations, setConfirmations] = useState("0");
   const [chainName, setChainName] = useState("Loading...");
   const [blockNum, setBlockNum] = useState("...");
+  const [explorer, setExplorer] = useState("");
 
   useEffect(() => {
-    setChainName(props.details.chainInfo.chain);
     setAvatar(user.avatar);
     setName(user.name);
   }, [user]);
 
   useEffect(() => {
-    sendTxn(props.req)
+    getTxnFromStorage()
       .then((res) => {
-        console.log(res);
+        console.log("grabbing txn details from session storage", res);
         if (res && res.status == 200) {
-          setStatus("Completed");
-        } else {
-          setStatus("Failed");
+          setChainName(res.data.details.chainInfo.chain);
+          setExplorer(res.data.details.chainInfo.explorer);
+          sendTxn(res.data.req)
+            .then((res) => {
+              console.log(res);
+              if (res && res.status == 200) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((err) => {
+        console.log("err while getting txn from storage", err);
       });
   }, []);
 
@@ -125,7 +121,16 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
     return null;
   };
 
-  // Fetches txn details after pinging M2M auth0
+  // Grabs the request params from the background service worker
+  async function getTxnFromStorage() {
+    const txn = await chrome.storage.session.get("CURRENT_TXN");
+    if (!txn || !txn.CURRENT_TXN) return { status: 404, message: "novusys wallet could not find pending transaction" };
+
+    await chrome.storage.session.remove("CURRENT_TXN");
+    return { status: 200, message: "novusys wallet found txn to process", data: txn.CURRENT_TXN };
+  }
+
+  // Attemps to send txn after pinging M2M auth0 and parsing params
   async function sendTxn(req: any) {
     const inputBytes = getRandomBytes();
     const codeVerifier = buf2Base64(inputBytes);
@@ -195,6 +200,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
       });
   }
 
+  // Checks the status of a transaction using ethers v5 via the TransactionReceipt
   async function fetchTxn(hash: string, provider: any) {
     const tx = await provider.getTransaction(hash);
 
@@ -233,17 +239,17 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
   };
 
   function handleExplorerClick() {
-    const url = props.details.chainInfo.explorer + "tx/" + txnHash;
+    const url = explorer + "tx/" + txnHash;
     chrome.tabs.create({ url: url });
   }
 
-  const renderState = (req: any, txn: Details) => {
+  const renderState = () => {
     return (
       <div className={styles["outer__container"]}>
         <div className={styles["user__container"]}>
           <img className={styles["user__avatar"]} src={avatar} alt="" />
           <div className={styles["account__details"]}>
-            <div>{name}</div> <div>{txn.walletAddress}</div>
+            <div>{name}</div> <div>{"0x89py...09py"}</div>
           </div>
           <button onClick={() => setLandingAction("wallet")} className={styles["action__button"]}>
             <IoMdClose />
@@ -300,7 +306,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
     );
   };
 
-  return <div className={styles["main__container"]}>{renderState(props.req, props.details)}</div>;
+  return <div className={styles["main__container"]}>{renderState()}</div>;
 };
 
 export default TxnPending;

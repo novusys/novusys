@@ -94,12 +94,6 @@ export default function App() {
       .catch((err) => {
         console.log(err);
       });
-
-    chrome.runtime.onMessage.addListener(async function (message) {
-      if (message.type == "NOVUSYS_TRANSFER") {
-        setLandingAction("transfer");
-      }
-    });
   }, [loggedIn]);
 
   const handleLogin = async () => {
@@ -110,9 +104,14 @@ export default function App() {
     chrome.runtime.sendMessage({ loginAuth0: true });
     chrome.runtime.onMessage.addListener(async function (message) {
       if (message.loginSuccess) {
-        setLogin(true);
         setInit(true);
-        setLandingAction("wallet");
+        const hasOverride = await chrome.storage.session.get("EXTERNAL_OVERRIDE");
+        if (hasOverride && hasOverride.EXTERNAL_OVERRIDE) {
+          setLandingAction(hasOverride.EXTERNAL_OVERRIDE);
+        } else {
+          setLandingAction("wallet");
+        }
+        setLogin(true);
       } else if (message.loginFailed) {
         setLogin(false);
         setInit(false);
@@ -148,6 +147,8 @@ export default function App() {
   const renderState = () => {
     if (walletInit) {
       switch (landingAction) {
+        case "pendingTransaction":
+          return <TxnPending />;
         case "transfer":
           return <Transfer />;
         case "wallet":

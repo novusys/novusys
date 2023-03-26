@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styles from "./Signature.module.scss";
 import { ethers } from "ethers";
-import TxnPending from "../TransactionPending/TransactionPending";
 import { chains } from "../chains";
+import { LandingCtx } from "../MainPopup/Popup";
 
 interface SignatureProps {}
 
@@ -20,6 +20,7 @@ type Details = {
 };
 
 const Signature: React.FC<SignatureProps> = (props: SignatureProps) => {
+  const { landingAction, setLandingAction } = useContext(LandingCtx);
   const [sigSent, setSent] = useState(false);
 
   // Build a Details
@@ -49,16 +50,15 @@ const Signature: React.FC<SignatureProps> = (props: SignatureProps) => {
   const handleSig = (signed: boolean) => {
     if (signed) {
       // Proceed to the TxnPending page
-      setSent(true);
+      setLandingAction("pendingTransaction");
     } else {
       // Close the signature window / return to wallet
+      setLandingAction("wallet");
     }
   };
 
   const renderState = () => {
-    return sigSent ? (
-      <TxnPending req={example} details={sig} />
-    ) : (
+    return (
       <div className={styles["main__container"]}>
         <div className={styles["outer__container"]}>
           <div className={styles["user__container"]}>
