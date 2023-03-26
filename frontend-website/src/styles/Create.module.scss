@@ -52,5 +52,19 @@
 
 .submit__container{
   height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.continue__button{
+  background-color: var(--color-primary);
+  padding: 10px 30px;
+  border-radius: 20px;
+
+  &:hover{
+    filter: brightness(.5);
+    cursor: pointer;
+  }
 }
 

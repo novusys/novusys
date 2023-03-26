@@ -23,6 +23,7 @@ import { useAccount } from 'wagmi'
 import ChainLaunch from '@/components/Launch/ChainLaunch/ChainLaunch'
 import { ethers } from 'ethers'
 import axios from 'axios'
+import ButtonOutline from '@/components/Buttons/ButtonOutline/ButtonOutline'
 
 interface RecoverySigner {
   name: string
@@ -34,7 +35,7 @@ interface RecoverySigner {
 function Create() {
 
   const [userMetdata, setUserMetadata] = useState({})
-  
+
 
   const [submitting, setSubmitting] = useState(false)
 
@@ -55,7 +56,7 @@ function Create() {
   //       params: {email: `${user.email}`},
   //       headers: {authorization: `Bearer ${process.env.AUTH0_MANAGEMENT_API}`}
   //     };
-    
+
   //     //@ts-ignore
   //     axios.request(options).then(function (response) {
   //       setUserMetadata(response.data)
@@ -65,8 +66,8 @@ function Create() {
   //     });
   //   }
   // }, [user])
-  
-  
+
+
   const [securityFeatures, setSecurityFeatures] = useState({
     balance_multisig: {
       enabled: false,
@@ -146,7 +147,7 @@ function Create() {
   const renderSubmitChain = (signers: Array<RecoverySigner>) => {
     return chains.map((c, index) => {
       return (
-        <ChainLaunch recoverySigners={signers} custodial={keyManagement} cid={c} key={index} securityFeatures = {securityFeatures}/>
+        <ChainLaunch recoverySigners={signers} custodial={keyManagement} cid={c} key={index} securityFeatures={securityFeatures} />
       )
     })
   }
@@ -206,7 +207,12 @@ function Create() {
           <BluredContainer>
             <div className={styles['submit__container']}>
               {renderSubmitChain(recoverySigners)}
+              <div className={styles['continue__button']} onClick={()=>{window.location.href = '/profile'}}>
+                Continue
+              </div>
+
             </div>
+
           </BluredContainer>
 
         </PageLayout>
