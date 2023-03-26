@@ -237,6 +237,24 @@ chrome.runtime.onMessage.addListener(async function (message) {
       chrome.runtime.sendMessage({ isLoggedOut: true });
     }
   }
+  // else if (message.transferPopup) {
+  //   try {
+  //     chrome.windows.create(
+  //       {
+  //         focused: true,
+  //         width: 357,
+  //         height: 600,
+  //         type: "popup",
+  //         url: "transfer.html",
+  //         top: 0,
+  //         left: 0,
+  //       },
+  //       () => {}
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 });
 
 export {};

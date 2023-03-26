@@ -17,7 +17,7 @@ export default function Signers() {
       id: 1,
       avatar: "https://blogs.airdropalert.com/wp-content/uploads/2021/12/Sappy-Seal-PFP-NFTs-1003x1024.png",
       address: "0x94c7...76F3",
-      role: "Guardian",
+      role: "Signer",
     },
     {
       id: 2,
@@ -35,12 +35,12 @@ export default function Signers() {
       id: 4,
       avatar: "https://www.mintface.xyz/content/images/2021/08/QmdhoQdQ1oB2rdJD3ZpexSwwfspqAWGMdDjPR3mYeWGpZT.png",
       address: "0xfr54...76F3",
-      role: "Guardian",
+      role: "Signer",
     },
-    { id: 5, avatar: "", address: "0x46t9...43L1", role: "Guardian" },
-    { id: 6, avatar: "", address: "0x94c7...76F3", role: "Guardian" },
-    { id: 7, avatar: "", address: "0x94c7...76F3", role: "Guardian" },
-    { id: 8, avatar: "", address: "0x94c7...76F3", role: "Guardian" },
+    { id: 5, avatar: "", address: "0x46t9...43L1", role: "Signer" },
+    { id: 6, avatar: "", address: "0x94c7...76F3", role: "Signer" },
+    { id: 7, avatar: "", address: "0x94c7...76F3", role: "Signer" },
+    { id: 8, avatar: "", address: "0x94c7...76F3", role: "Signer" },
   ];
 
   const renderCell = (item: Signer) => {
@@ -55,9 +55,7 @@ export default function Signers() {
           <img src={item.avatar} className={styles["account__avatar"]} alt="" />
         </td>
         <td>{item.address}</td>
-        <td className={styles["role"] + " " + (item.role == "Guardian" ? styles["role__guardian"] : styles["role__signer"])}>
-          {item.role}
-        </td>
+        <td className={styles["role"] + " " + (item.role == "Signer" ? styles["role__signer"] : "")}>{item.role}</td>
       </>
     );
   };

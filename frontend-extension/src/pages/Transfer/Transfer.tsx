@@ -35,7 +35,6 @@ const Transfer: React.FC<TransferProps> = (props: TransferProps) => {
   const [name, setName] = useState("Wallet 1");
 
   useEffect(() => {
-    console.log(user);
     setAvatar(user.avatar);
     setName(user.name);
   }, [user]);

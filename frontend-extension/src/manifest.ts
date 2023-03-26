@@ -27,5 +27,5 @@ export default defineManifest({
       all_frames: true,
     },
   ],
-  permissions: ["identity", "storage"],
+  permissions: ["identity", "storage", "tabs"],
 });

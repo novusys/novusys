@@ -77,6 +77,13 @@ export default function App() {
     async function fetchUser() {
       const userWrapper = await chrome.storage.session.get("USER_DATA");
       const data = userWrapper.USER_DATA;
+      if (!data)
+        return {
+          auth0id: "1",
+          name: "Account 1",
+          avatar: "/images/defaultaccount.png",
+          email: "example@email.com",
+        };
       return { auth0id: data.sub, name: data.nickname, avatar: data.picture, email: data.email };
     }
 

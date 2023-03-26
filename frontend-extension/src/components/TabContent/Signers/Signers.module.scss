@@ -13,17 +13,13 @@
   justify-content: center;
   color: white;
   border-radius: 2rem;
-  padding: 0.2em;
+  padding: 0.1em 0.2em 0.1em 0.2em;
   font-weight: 600;
   margin-left: auto;
 }
 
-.role__guardian {
-  background-color: green;
-}
-
 .role__signer {
-  background-color: red;
+  background-color: #5c5cff;
 }
 
 .account__avatar {
