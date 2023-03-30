@@ -71,6 +71,19 @@ const CreateTransfer: React.FC<CreateTransferProps> = (props: CreateTransferProp
         },
       };
 
+      const txn_polygon_old_factory = {
+        body: {
+          cid: 80001,
+          target: targetAddr,
+          value: ethers.utils.parseEther(amount)._hex,
+          data: "0x",
+          provider: "https://node.stackup.sh/v1/rpc/adf24d6207f34762b88813ca0b0026b534dcb6ffc912e51305eaa98a30180a86",
+          epAddr: "0x0576a174D229E3cFA37253523E645A78A0C91B57",
+          factoryAddr: "0xFfC51BCb09c62B926Ff6c42e478995Df8BC42f08",
+          withPm: paymaster,
+        },
+      };
+
       const txn_goerli_old_factory = {
         body: {
           cid: 5,
