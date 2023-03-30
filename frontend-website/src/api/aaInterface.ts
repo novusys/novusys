@@ -124,6 +124,7 @@ export const useAAInterface = () => {
 
           console.log(op);
           const uoHash = await client.sendUserOpToBundler(op);
+          console.log(uoHash)
           callback(
             await getUserOpReceipt(
               uoHash,

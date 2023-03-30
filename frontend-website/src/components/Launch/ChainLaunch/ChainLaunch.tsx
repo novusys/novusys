@@ -74,7 +74,7 @@ const ChainLaunch: React.FC<ChainLaunchProps> = ({ cid, custodial, recoverySigne
           waitTransaction(tx, new ethers.providers.JsonRpcProvider(chains[cid].bundler), (r: any) => {
             if (r) {
               setStatus('success')
-              approveSigs()
+              // approveSigs()
               
               
             } else {
