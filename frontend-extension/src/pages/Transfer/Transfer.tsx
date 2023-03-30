@@ -40,7 +40,7 @@ const Transfer: React.FC<TransferProps> = (props: TransferProps) => {
     originAddress: "0x45d0f...7ca5ECD",
     originAvatar: "/logos/novusys-leaf.png",
     target: "",
-    message: ``,
+    message: "",
     txnValue: "",
   });
 
@@ -49,10 +49,14 @@ const Transfer: React.FC<TransferProps> = (props: TransferProps) => {
       .then((res) => {
         if (res && res.status == 200) {
           setDetails(res.data.details);
+        } else {
+          console.log(res);
+          setLandingAction("wallet");
         }
       })
       .catch((err) => {
         console.log("err while getting txn from storage", err);
+        setLandingAction("wallet");
       });
   }, []);
 

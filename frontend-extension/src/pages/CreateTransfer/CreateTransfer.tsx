@@ -40,10 +40,10 @@ const CreateTransfer: React.FC<CreateTransferProps> = (props: CreateTransferProp
     setName(user.name);
   }, [user]);
 
-  // The idea is to transition to a pending screen upon 'Confirm' click
   const compileTransfer = async (transfer: boolean) => {
     if (transfer) {
       // Build a txn request and set it in storage
+      // Txn below is for Goerli
       const txn = {
         body: {
           cid: 5,

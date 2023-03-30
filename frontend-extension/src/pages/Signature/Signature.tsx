@@ -23,6 +23,8 @@ const Signature: React.FC<SignatureProps> = (props: SignatureProps) => {
   const { landingAction, setLandingAction } = useContext(LandingCtx);
   const [sigSent, setSent] = useState(false);
 
+  // Configure for Signatures
+
   // Build a Details
   const sig: Details = {
     chainInfo: chains[1],
