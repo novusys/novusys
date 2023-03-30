@@ -41,24 +41,53 @@ const CreateTransfer: React.FC<CreateTransferProps> = (props: CreateTransferProp
   }, [user]);
 
   const compileTransfer = async (transfer: boolean) => {
+    // Check valid inputs here
     if (transfer) {
       // Build a txn request and set it in storage
       // Txn below is for Goerli
-      const txn = {
+      const txn_goerli_example = {
         body: {
           cid: 5,
           target: targetAddr,
           value: ethers.utils.parseEther(amount)._hex,
           data: "0x",
-          provider: "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071",
+          provider: "https://node.stackup.sh/v1/rpc/9bf24b7d46a1e044c3244088dfe8dee6c87bb2399278bbb3c3f9935c00451f4e",
+          epAddr: "0x0576a174D229E3cFA37253523E645A78A0C91B57",
+          factoryAddr: "0x7253ED561ac227aa4D6604704f85631f80CD64fa",
+          withPm: paymaster,
+        },
+      };
+
+      const txn_polygon_example = {
+        body: {
+          cid: 80001,
+          target: targetAddr,
+          value: ethers.utils.parseEther(amount)._hex,
+          data: "0x",
+          provider: "https://node.stackup.sh/v1/rpc/adf24d6207f34762b88813ca0b0026b534dcb6ffc912e51305eaa98a30180a86",
+          epAddr: "0x0576a174D229E3cFA37253523E645A78A0C91B57",
+          factoryAddr: "0x9315e1f3F9f44ebc3d1308F16b96279b8958E070",
+          withPm: paymaster,
+        },
+      };
+
+      const txn_goerli_old_factory = {
+        body: {
+          cid: 5,
+          target: targetAddr,
+          value: ethers.utils.parseEther(amount)._hex,
+          data: "0x",
+          provider: "https://node.stackup.sh/v1/rpc/9bf24b7d46a1e044c3244088dfe8dee6c87bb2399278bbb3c3f9935c00451f4e",
           epAddr: "0x0576a174D229E3cFA37253523E645A78A0C91B57",
           factoryAddr: "0x2bC52aEd814Ee695c9FD7B7EB4F8B9821E710ceF",
           withPm: paymaster,
         },
       };
 
+      const txn = txn_goerli_old_factory;
+
       const details: Details = {
-        chainInfo: chains[5],
+        chainInfo: chains[txn.body.cid],
         originName: "novusys wallet",
         originAddress: "0x45d0f...7ca5ECD",
         originAvatar: "/logos/novusys-leaf.png",

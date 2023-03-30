@@ -41,7 +41,8 @@
   },
   "scripts": {
     "dev": "npm-watch",
-    "build": "tsc && vite build"
+    "build": "tsc && vite build",
+    "patch": "patch-package"
   },
   "dependencies": {
     "@account-abstraction/sdk": "^0.5.0",

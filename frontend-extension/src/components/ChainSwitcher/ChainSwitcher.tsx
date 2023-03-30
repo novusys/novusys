@@ -42,9 +42,9 @@ export default function ChainSwitcher() {
   // May need to implement a char limit for chain name to prevent it from breaking the styles of the header
   // Not super important but something to consider later
   const chainItems: Chain[] = [
-    { chainID: 5, name: "Goerli Testnet", address: "", icon: "" },
     { chainID: 1, name: "Ethereum Mainnet", address: "", icon: "" },
-    { chainID: 137, name: "Polygon Mainnet", address: "", icon: "" },
+    { chainID: 5, name: "Goerli Testnet", address: "", icon: "" },
+    { chainID: 80001, name: "Polygon Mumbai", address: "", icon: "" },
     { chainID: 10, name: "Optimism", address: "", icon: "" },
   ];
 

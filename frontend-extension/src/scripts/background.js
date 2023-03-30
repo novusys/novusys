@@ -83,12 +83,12 @@ async function fetchUserInfo() {
 // https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#example-post-to-token-url
 async function handleAuth0Login() {
   // Before re-running access token oauth flow, check if there is already a valid access token in storage
-  if ((await checkAccessToken()).status == 200) {
-    setTimeout(async () => {
-      await fetchUserInfo();
-      return { status: 200, message: "novusys wallet access token still alive" };
-    }, 1000);
-  }
+  // if ((await checkAccessToken()).status == 200) {
+  //   setTimeout(async () => {
+  //     await fetchUserInfo();
+  //     return { status: 200, message: "novusys wallet access token still alive" };
+  //   }, 1000);
+  // }
   const redirectUrl = chrome.identity.getRedirectURL();
 
   // https://auth0.com/docs/get-started/authentication-and-authorization-flow/call-your-api-using-the-authorization-code-flow-with-pkce#create-code-verifier

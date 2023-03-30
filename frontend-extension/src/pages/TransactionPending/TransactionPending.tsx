@@ -94,7 +94,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
     entryPoint: string,
     factoryAddress: string,
     sender: string,
-    timeout = 60000,
+    timeout = 90000,
     interval = 5000
   ) => {
     const sw = new SimpleAccountAPI({
@@ -156,9 +156,8 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
     let url = `https://${auth0_config.AUTH0_DOMAIN}/authorize?${queryString}`;
 
     const provider = new ethers.providers.JsonRpcProvider(
-      "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071"
+      "https://node.stackup.sh/v1/rpc/9bf24b7d46a1e044c3244088dfe8dee6c87bb2399278bbb3c3f9935c00451f4e"
     );
-
     return chrome.identity
       .launchWebAuthFlow({
         url,
@@ -172,11 +171,12 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
         try {
           console.log(data);
           const op = JSON.parse(data);
+          console.log(op);
 
           const chainId = await provider.getNetwork().then((net) => net.chainId);
           const client = new HttpRpcClient(
-            "https://node.stackup.sh/v1/rpc/6380f138e4c833860d3cd29c4ddcd5c0367ac95b636ba4d64e103c2cc41c0071",
-            "0x0576a174D229E3cFA37253523E645A78A0C91B57",
+            "https://node.stackup.sh/v1/rpc/9bf24b7d46a1e044c3244088dfe8dee6c87bb2399278bbb3c3f9935c00451f4e",
+            epAddr,
             chainId
           );
           const uoHash = await client.sendUserOpToBundler(op);
@@ -193,7 +193,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
               .catch((err) => console.log(err));
           }
         } catch (error) {
-          return { status: 400, message: "novusys wallet error while sending txn", error: error, data: data };
+          return { status: 400, message: "novusys wallet error while sending txn to bundler", error: error, data: data };
         }
       })
       .catch((error) => {
