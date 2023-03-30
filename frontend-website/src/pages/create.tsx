@@ -48,25 +48,6 @@ function Create() {
 
   const [recoverySigners, setRecoverySigners] = useState([{ name: "", email: "", address: "" }])
 
-  // useEffect(() => {
-  //   if(user != null){
-  //     var options = {
-  //       method: "get",
-  //       url: `https://dev-27jeufvx256r244q.us.auth0.com/api/v2/users-by-email`,
-  //       params: {email: `${user.email}`},
-  //       headers: {authorization: `Bearer ${process.env.AUTH0_MANAGEMENT_API}`}
-  //     };
-
-  //     //@ts-ignore
-  //     axios.request(options).then(function (response) {
-  //       setUserMetadata(response.data)
-  //       console.log(response.data)
-  //     }).catch(function (error) {
-  //       console.error(error);
-  //     });
-  //   }
-  // }, [user])
-
 
   const [securityFeatures, setSecurityFeatures] = useState({
     balance_multisig: {
