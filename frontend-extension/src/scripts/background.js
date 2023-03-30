@@ -247,6 +247,8 @@ chrome.runtime.onMessage.addListener(async function (message) {
 });
 
 chrome.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
+  // Can be generalized to different func types via 'data' field
+  // Also could simplify by having a lookup for epAddr and factoryAddr
   if (message.type === "EXTERNAL_SITE_TRANSFER") {
     const checkList = ["cid", "target", "value", "data", "provider", "epAddr", "factoryAddr", "withPm"];
     const txn = message.data;

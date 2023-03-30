@@ -138,7 +138,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
     const codeVerifier = buf2Base64(inputBytes);
     const codeChallenge = buf2Base64(sha256(codeVerifier));
     const redirectUrl = chrome.identity.getRedirectURL();
-
+    const target = req.body.target;
     const factoryAddr = req.body.factoryAddr;
     const epAddr = req.body.epAddr;
 
@@ -180,7 +180,7 @@ const TxnPending: React.FC<TxnPendingProps> = (props: TxnPendingProps) => {
             chainId
           );
           const uoHash = await client.sendUserOpToBundler(op);
-          const hash = await getUserOpReceipt(uoHash, provider, epAddr, factoryAddr, "0xc0f70D98eC6aD9767d49341dB57674F1E2305B87");
+          const hash = await getUserOpReceipt(uoHash, provider, epAddr, factoryAddr, op.sender);
           if (!hash) {
             setHash("err getting hash");
             return { status: 400, message: "novusys wallet error while fetching hash", txnHash: hash };

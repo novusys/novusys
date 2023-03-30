@@ -36,25 +36,26 @@ export default function ChainSwitcher() {
   const menuRef = useRef<HTMLDivElement>(null);
   clickOutside(menuRef, setOpen);
 
+  // Chains to import can be ones that the user has interacted with our contracts
+  // Probably want to useContext for the chain switcher so that the chain choice persists acros diff pages
+
+  // May need to implement a char limit for chain name to prevent it from breaking the styles of the header
+  // Not super important but something to consider later
+  const chainItems: Chain[] = [
+    { chainID: 5, name: "Goerli Testnet", address: "", icon: "" },
+    { chainID: 1, name: "Ethereum Mainnet", address: "", icon: "" },
+    { chainID: 137, name: "Polygon Mainnet", address: "", icon: "" },
+    { chainID: 10, name: "Optimism", address: "", icon: "" },
+  ];
+
   // Likely set to null here at startup or load most recently used chain for wallet
-  const [chain, setChain] = useState<string | undefined>("Ethereum Mainnet");
+  const [chain, setChain] = useState<string | undefined>(chainItems[0].name);
 
   const handleMenuItemClick = (item: Chain) => {
     setChain(item.name);
     setOpen(!open);
     // Update wallet state
   };
-
-  // Chains to import can be ones that the user has interacted with our contracts
-
-  // May need to implement a char limit for chain name to prevent it from breaking the styles of the header
-  // Not super important but something to consider later
-  const chainItems: Chain[] = [
-    { chainID: 1, name: "Ethereum Mainnet", address: "", icon: "" },
-    { chainID: 137, name: "Polygon Mainnet", address: "", icon: "" },
-    { chainID: 10, name: "Optimism", address: "", icon: "" },
-    { chainID: 5, name: "Goerli Testnet", address: "", icon: "" },
-  ];
 
   return (
     <div ref={menuRef} className={styles["main__container"]}>
