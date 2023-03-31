@@ -1,14 +1,11 @@
-import {
-  withApiAuthRequired,
-  getSession,
-  getAccessToken,
-} from "@auth0/nextjs-auth0";
+import { withApiAuthRequired, getSession, getAccessToken } from "@auth0/nextjs-auth0";
 import axios from "axios";
 import { ethers } from "ethers";
 var request = require("request");
 
 //@ts-ignore
 async function handle(req, res) {
+  console.log("SIGNER HERE");
   let op = {};
   try {
     //${auth0_id}, "target": ${target}, "value": ${value}, "data": ${data}
@@ -21,7 +18,7 @@ async function handle(req, res) {
     const factory = req.body[0].factoryAddr;
     const withPm = req.body[0].withPm;
     const paymasterAddress = req.body[0].paymasterAddress;
-    const cid = req.body[0].cid
+    const cid = req.body[0].cid;
 
     // var options = {
     //   method: "POST",
@@ -54,10 +51,10 @@ async function handle(req, res) {
     //@ts-ignore
     await request(options, function (error, response, body) {
       // console.log(body, response)
-      console.log(body, error)
+      console.log(body, error);
       const json = JSON.parse(body);
-      op = json.error
-      console.log(op)
+      op = json.error;
+      console.log(op);
       res.status(200).send(JSON.stringify(op));
     });
     // res.status(200).send(JSON.stringify(op));

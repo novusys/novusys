@@ -71,17 +71,7 @@ export const useAAInterface = () => {
     withPm: boolean,
     paymasterAddress: string
   ) => {
-    if (
-      !(
-        auth0_id &&
-        target &&
-        value &&
-        data &&
-        providerUrl &&
-        entryPoint &&
-        factory
-      )
-    ) {
+    if (!(auth0_id && target && value && data && providerUrl && entryPoint && factory)) {
       return "Error! Missing Provided Data";
     }
 
@@ -115,25 +105,13 @@ export const useAAInterface = () => {
         .then(async function (response) {
           console.log(response.data);
           const chainId = cid;
-          const client = await new aaSdk.HttpRpcClient(
-            providerUrl,
-            entryPoint,
-            chainId
-          );
+          const client = await new aaSdk.HttpRpcClient(providerUrl, entryPoint, chainId);
           const op = response.data;
 
           console.log(op);
           const uoHash = await client.sendUserOpToBundler(op);
-          console.log(uoHash)
-          callback(
-            await getUserOpReceipt(
-              uoHash,
-              providerRpc,
-              entryPoint,
-              factory,
-              op.sender
-            )
-          );
+          console.log(uoHash);
+          callback(await getUserOpReceipt(uoHash, providerRpc, entryPoint, factory, op.sender));
         })
         .catch(function (error) {
           console.error(error);
@@ -224,10 +202,7 @@ export const useAAInterface = () => {
 
     const provider = new ethers.providers.JsonRpcProvider(providerUrl);
     const walletContract = new ethers.Contract(target, walletAbi, provider);
-    const encodedData = walletContract.interface.encodeFunctionData(
-      "initializeVoters",
-      [signers]
-    );
+    const encodedData = walletContract.interface.encodeFunctionData("initializeVoters", [signers]);
     console.log(encodedData);
     // setStatus("processing");
     // const provider = new ethers.providers.JsonRpcProvider(providerUrl);
@@ -259,25 +234,13 @@ export const useAAInterface = () => {
       .then(async function (response) {
         console.log(response.data);
         const chainId = cid;
-        const client = await new aaSdk.HttpRpcClient(
-          providerUrl,
-          entryPoint,
-          chainId
-        );
+        const client = await new aaSdk.HttpRpcClient(providerUrl, entryPoint, chainId);
         const op = response.data;
 
         console.log(op);
         //console.log(BigNumber.from(op.maxFeePerGas).mul(BigNumber.from(1.15)), op.maxFeePerGas)
         const uoHash = await client.sendUserOpToBundler(op);
-        callback(
-          await getUserOpReceipt(
-            uoHash,
-            providerRpc,
-            entryPoint,
-            factory,
-            op.sender
-          )
-        );
+        callback(await getUserOpReceipt(uoHash, providerRpc, entryPoint, factory, op.sender));
       })
       .catch(function (error) {
         console.error(error);
@@ -317,10 +280,7 @@ export const useAAInterface = () => {
 
     const provider = new ethers.providers.JsonRpcProvider(providerUrl);
     const walletContract = new ethers.Contract(target, walletAbi, provider);
-    const encodedData = walletContract.interface.encodeFunctionData(
-      "setSavingsAccount",
-      [savings, 5, percentage]
-    );
+    const encodedData = walletContract.interface.encodeFunctionData("setSavingsAccount", [savings, 5, percentage]);
     console.log(encodedData);
     // setStatus("processing");
     // const provider = new ethers.providers.JsonRpcProvider(providerUrl);
@@ -352,25 +312,13 @@ export const useAAInterface = () => {
       .then(async function (response) {
         console.log(response.data);
         const chainId = cid;
-        const client = await new aaSdk.HttpRpcClient(
-          providerUrl,
-          entryPoint,
-          chainId
-        );
+        const client = await new aaSdk.HttpRpcClient(providerUrl, entryPoint, chainId);
         const op = response.data;
 
         console.log(op);
         //console.log(BigNumber.from(op.maxFeePerGas).mul(BigNumber.from(1.15)), op.maxFeePerGas)
         const uoHash = await client.sendUserOpToBundler(op);
-        callback(
-          await getUserOpReceipt(
-            uoHash,
-            providerRpc,
-            entryPoint,
-            factory,
-            op.sender
-          )
-        );
+        callback(await getUserOpReceipt(uoHash, providerRpc, entryPoint, factory, op.sender));
       })
       .catch(function (error) {
         console.error(error);
@@ -408,10 +356,9 @@ export const useAAInterface = () => {
 
     const provider = new ethers.providers.JsonRpcProvider(providerUrl);
     const walletContract = new ethers.Contract(target, walletAbi, provider);
-    const encodedData = walletContract.interface.encodeFunctionData(
-      "setGlobalLockdownAddress",
-      ["0x3C445B5174EED7a7f267cd37b87Fec13c59f4128"]
-    );
+    const encodedData = walletContract.interface.encodeFunctionData("setGlobalLockdownAddress", [
+      "0x3C445B5174EED7a7f267cd37b87Fec13c59f4128",
+    ]);
     console.log(encodedData);
     // setStatus("processing");
     // const provider = new ethers.providers.JsonRpcProvider(providerUrl);
@@ -443,32 +390,19 @@ export const useAAInterface = () => {
       .then(async function (response) {
         console.log(response.data);
         const chainId = cid;
-        const client = await new aaSdk.HttpRpcClient(
-          providerUrl,
-          entryPoint,
-          chainId
-        );
+        const client = await new aaSdk.HttpRpcClient(providerUrl, entryPoint, chainId);
         const op = response.data;
 
         console.log(op);
         //console.log(BigNumber.from(op.maxFeePerGas).mul(BigNumber.from(1.15)), op.maxFeePerGas)
         const uoHash = await client.sendUserOpToBundler(op);
-        callback(
-          await getUserOpReceipt(
-            uoHash,
-            providerRpc,
-            entryPoint,
-            factory,
-            op.sender
-          )
-        );
+        callback(await getUserOpReceipt(uoHash, providerRpc, entryPoint, factory, op.sender));
       })
       .catch(function (error) {
         console.error(error);
         return error;
       });
   };
-
 
   const getOp = async (
     auth0_id: string,
@@ -481,17 +415,8 @@ export const useAAInterface = () => {
     cid: number,
     callback: Function
   ) => {
-    if (
-      !(
-        auth0_id &&
-        target &&
-        value &&
-        data &&
-        providerUrl &&
-        entryPoint &&
-        factory
-      )
-    ) {
+    console.log("getOp HERE");
+    if (!(auth0_id && target && value && data && providerUrl && entryPoint && factory)) {
       return "Error! Missing Provided Data";
     }
     const provider = new ethers.providers.JsonRpcProvider(providerUrl);
@@ -538,20 +463,16 @@ export const useAAInterface = () => {
       });
   };
 
-  const checkAddress = async (
-    address: string,
-    provider: any,
-    callback: Function
-  ) => {
-    const code = await provider.getCode(address);
-    callback(code);
+  const checkAddress = async (address: string, provider: any, callback: Function) => {
+    try {
+      const code = await provider.getCode(address);
+      callback(code);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const waitTransaction = async (
-    hash: string,
-    provider: any,
-    callback: Function
-  ) => {
+  const waitTransaction = async (hash: string, provider: any, callback: Function) => {
     console.log("HASH", hash);
     const receipt = await provider.waitForTransaction(hash);
     console.log(receipt);

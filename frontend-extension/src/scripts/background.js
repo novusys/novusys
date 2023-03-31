@@ -264,9 +264,9 @@ chrome.runtime.onMessageExternal.addListener(async (message, sender, sendRespons
       }
     }
 
-    const amount = txn.body.value.toString();
+    const amount = txn.body.value;
+    txn.body.value = ethers.utils.parseEther(amount)._hex;
 
-    // TODO: ask site for the func name or parse it from hash + contract?
     const details = {
       chainInfo: chains[txn.body.cid],
       originName: "novusys",

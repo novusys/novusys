@@ -16,6 +16,7 @@
     "@ensdomains/ensjs": "^3.0.0-alpha.52",
     "@material-design-icons/svg": "^0.14.3",
     "@mui/material": "^5.11.13",
+    "@types/chrome": "^0.0.227",
     "@types/node": "18.15.3",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
