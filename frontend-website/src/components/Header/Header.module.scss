@@ -1,74 +1,76 @@
-.out__container{
-    width: 100vw;
-    display: flex;
-    // justify-content: center;
-    align-items: center;
-    padding-top: var(--top-padding);
-    padding: var(--top-padding) var(--side-padding) 0 var(--side-padding);
-    max-width: var(--max-width);
+.out__container {
+  width: 100vw;
+  display: flex;
+  // justify-content: center;
+  align-items: center;
+  padding-top: var(--top-padding);
+  padding: var(--top-padding) var(--side-padding) 0 var(--side-padding);
+  max-width: var(--max-width);
 }
 
-.left__container{
-    display: flex;
-    align-items: center;
-    gap: 60px;
-    color: var(--color-primary);
-    margin-right: auto;
+.left__container {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  color: var(--color-primary);
+  margin-right: auto;
 }
-.logo__container{
-    padding-top: 3px;
+.logo__container {
+  padding-top: 3px;
 }
 
-.pages__container{
-    display: flex;
-    align-items: center;
-    gap: 50px;
-    font-weight: 100;
-    font-size: 18px;
+.pages__container {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  font-weight: 100;
+  font-size: 18px;
 }
 
 //TODO: Refactor middle container to absolute pos at top bar
-.middle__container{
-    color: var(--color-primary);
-    font-weight: 700;
-    display: flex;
-    flex: 1;
-    justify-content: center;
+.middle__container {
+  color: var(--color-primary);
+  font-weight: 700;
+  display: flex;
+  flex: 1;
+  justify-content: center;
 }
 
-.right__container{
-    display: flex;
-    align-items: center;
-    color: var(--color-primary);
-    gap: 50px;
-    font-weight: 700;
-    margin-left: auto;
+.right__container {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  color: var(--color-primary);
+  gap: 50px;
+  font-weight: 700;
+  margin-left: auto;
 }
 
-.icon__container{
-    display: flex;
-    align-items: center;
-    font-size: 40px !important;
+.icon__container {
+  display: flex;
+  align-items: center;
+  font-size: 40px !important;
 
-    svg{
-        width: 1em;
-        height: 1em;
-    }
+  svg {
+    width: 1em;
+    height: 1em;
+  }
 }
 
-.signup__container{
-    display: flex;
-    gap: 20px;
+.signup__container {
+  cursor: pointer;
+  display: flex;
+  gap: 20px;
 }
 
 @media only screen and (max-width: 600px) {
-    .left__container{
-        gap: 30px;
-    }
-    .middle__container{
-        display: none;
-    }
-    .right__container{
-        display: none;
-    }
+  .left__container {
+    gap: 30px;
   }
+  .middle__container {
+    display: none;
+  }
+  .right__container {
+    display: none;
+  }
+}
