@@ -4,6 +4,8 @@
 
 [HackerMD](https://hackmd.io/@_cMV-ermRxuF4CvD9o92uA/rJUECPJen)
 
+[ETHGlobal Project Page](https://ethglobal.com/showcase/novusys-ir3qq)
+
 ## Goal
 The goal of Novusys is to provide an end-to-end Web3 wallet solution (ERC-4337). Newcomers to Web3 often find the onboarding process to be onerous. Requiring them to setup a crypto wallet, safeguard their private keys, and create an account with an exchange to fund their account. By abstracting wallet creation, funding, and management we can provide a frictionless Web3 experience. We aim to bridge the gap between Web2 and Web3 by allowing users to interact with blockchain in a familiar way.
 
